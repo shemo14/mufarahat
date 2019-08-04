@@ -1,0 +1,1 @@
+export default {	labelBackground : '#43A0C8',	white			: '#fff',	darkRed 		: '#B7264B'}

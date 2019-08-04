@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="76.62" height="148.451" viewBox="0 0 76.62 148.451">
+  <defs>
+    <clipPath id="clip-path">
+      <rect width="76.62" height="148.451" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="Value_Indicator" clip-path="url(#clip-path)">
+    <path id="Value_Indicator-2" data-name="Value Indicator" d="M65.414,3.39C59.931,8.873,40.7,23.746,40.7,40.961v7.19c0,7.3,6.082,12.106,7.758,13.782a14.354,14.354,0,1,1-20.328,0c1.7-1.676,7.782-6.479,7.782-13.782v-7.19c0-17.215-19.227-32.088-24.71-37.571A38.18,38.18,0,0,1,0-23.69,38.3,38.3,0,0,1,38.31-62,38.3,38.3,0,0,1,76.62-23.69,38.18,38.18,0,0,1,65.414,3.39Z" transform="translate(0 62)" fill="#5aacd0" fill-rule="evenodd"/>
+  </g>
+</svg>

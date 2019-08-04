@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="31.453" height="62.906" viewBox="0 0 31.453 62.906">
+  <defs>
+    <clipPath id="clip-path">
+      <rect width="31.453" height="62.906" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="facebook" clip-path="url(#clip-path)">
+    <g id="Group_4" data-name="Group 4">
+      <path id="Path_1030" data-name="Path 1030" d="M147.658,21.624V13.761a3.933,3.933,0,0,1,3.932-3.932h3.932V0h-7.863a11.794,11.794,0,0,0-11.795,11.795v9.829H128v9.829h7.863V62.906h11.795V31.453h7.863l3.932-9.829Z" transform="translate(-128)" fill="#575757"/>
+    </g>
+  </g>
+</svg>

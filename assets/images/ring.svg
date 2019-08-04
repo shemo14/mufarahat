@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="72" height="72" viewBox="0 0 72 72">
+  <defs>
+    <clipPath id="clip-path">
+      <rect width="72" height="72" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="ring" clip-path="url(#clip-path)">
+    <g id="Group_29" data-name="Group 29">
+      <path id="Path_1061" data-name="Path 1061" d="M70.938,51.455C62.47,42.984,61.2,38.734,61.2,25.2a25.2,25.2,0,1,0-50.39,0c0,7.3-.194,10.021-1.2,13.366-1.249,4.166-3.814,8.155-8.545,12.889A3.6,3.6,0,0,0,3.606,57.6H23.583L23.4,59.4a12.6,12.6,0,1,0,25.2,0l-.181-1.8H68.393A3.6,3.6,0,0,0,70.938,51.455ZM36,68.4a9,9,0,0,1-9-9l.181-1.8H44.817L45,59.4A9,9,0,0,1,36,68.4ZM3.607,54c10.8-10.8,10.8-18,10.8-28.8a21.6,21.6,0,1,1,43.191,0c0,10.8,0,18,10.8,28.8Z" transform="translate(0)" fill="#fff"/>
+    </g>
+  </g>
+</svg>

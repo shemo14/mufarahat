@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="50.25" height="50.25" viewBox="0 0 50.25 50.25">
+  <defs>
+    <clipPath id="clip-path">
+      <rect width="50.25" height="50.25" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="select_blue_rules" transform="translate(0 0)" clip-path="url(#clip-path)">
+    <path id="Selection_Control_Checkbox_On_Enabled" data-name="Selection Control / Checkbox / On / Enabled" d="M50.667-681H11.583A5.582,5.582,0,0,0,6-675.417v39.083a5.582,5.582,0,0,0,5.583,5.583H50.667a5.582,5.582,0,0,0,5.583-5.583v-39.083A5.582,5.582,0,0,0,50.667-681ZM25.542-641.916,11.583-655.875l3.936-3.936,10.022,9.994,21.189-21.189,3.936,3.964Z" transform="translate(-6 681)" fill="#66b1d2"/>
+  </g>
+</svg>

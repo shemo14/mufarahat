@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="62.015" height="62.006" viewBox="0 0 62.015 62.006">
+  <defs>
+    <clipPath id="clip-path">
+      <rect width="62.015" height="62.006" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="star" clip-path="url(#clip-path)">
+    <path id="star-2" data-name="star" d="M32.928,2.08l8.414,23.684H63.934L45.5,39.675l6.593,24.411L32.93,49.451,13.769,64.086l6.589-24.411L1.919,25.764H24.511L32.928,2.08Z" transform="translate(-1.919 -2.08)" fill="#f0aa0c"/>
+  </g>
+</svg>

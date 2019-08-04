@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="44.747" height="77.029" viewBox="0 0 44.747 77.029">
+  <defs>
+    <clipPath id="clip-path">
+      <rect width="44.747" height="77.029" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="smartphone" clip-path="url(#clip-path)">
+    <path id="Path_1029" data-name="Path 1029" d="M46.878,0H12.537a5.217,5.217,0,0,0-5.2,5.2V71.824a5.219,5.219,0,0,0,5.2,5.2H46.878a5.216,5.216,0,0,0,5.2-5.2V5.2A5.217,5.217,0,0,0,46.878,0ZM24.214,3.75H35.2a.631.631,0,0,1,0,1.261H24.214a.631.631,0,0,1,0-1.261Zm5.493,70.677a2.6,2.6,0,1,1,2.6-2.6A2.6,2.6,0,0,1,29.708,74.427ZM48.461,67.4H10.954V8.251H48.461Z" transform="translate(-7.334)" fill="#575757"/>
+  </g>
+</svg>

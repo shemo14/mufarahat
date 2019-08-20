@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, I18nManager } from 'react-native';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import { AppLoading } from 'expo';
@@ -16,6 +16,8 @@ export default class App extends React.Component {
 		this.state = {
 			isReady: false,
 		};
+
+		I18nManager.forceRTL(true)
 	}
 
 	async componentDidMount() {

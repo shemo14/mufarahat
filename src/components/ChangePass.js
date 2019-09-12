@@ -4,6 +4,7 @@ import {Container, Content, Form, Item, Input, Label, Button, Toast, Header, Ico
 import styles from '../../assets/styles'
 import i18n from '../../locale/i18n'
 import {DoubleBounce} from "react-native-loader";
+import * as Animatable from 'react-native-animatable';
 
 
 class ChangePass extends Component {
@@ -38,45 +39,46 @@ class ChangePass extends Component {
 
             <Container style={styles.container}>
 
-                <Content contentContainerStyle={{ flexGrow: 1 }}>
+                <Content contentContainerStyle={styles.flexGrow}>
                     <TouchableOpacity style={styles.authBack} onPress={() => this.props.navigation.goBack()}>
-                        <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon  , {height:45 , width:45}]} />
+                        <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
                     </TouchableOpacity>
-                    <KeyboardAvoidingView behavior={'padding'} style={styles.keyboardAvoid}>
                         <View style={styles.imageBackgroundStyle}>
-                            <Image source={require('../../assets/images/logo.png')} style={styles.logoStyle} resizeMode={'contain'} />
+                            <Animatable.View animation="zoomIn" duration={1400}>
+                                <Image source={require('../../assets/images/logo.png')} style={styles.logoStyle} resizeMode={'contain'} />
+                            </Animatable.View>
 
                             <View style={styles.loginFormContainerStyle}>
-                                <Form style={{ width: '100%' , paddingHorizontal:25}}>
-                                    <Text style={styles.authTitle}>{ i18n.t('recoverPass') }</Text>
-                                    <Text style={styles.authDesc}>{ i18n.t('changePassText') }</Text>
+                                <KeyboardAvoidingView behavior={'padding'} style={styles.keyboardAvoid}>
+                                    <Form style={[styles.w100 , styles.ph25 ]}>
+                                        <Text style={styles.authTitle}>{ i18n.t('recoverPass') }</Text>
+                                        <Text style={styles.authDesc}>{ i18n.t('changePassText') }</Text>
 
-                                    <View style={[ styles.itemView ]}>
-                                        <Item floatingLabel style={styles.loginItem} bordered>
-                                            <Label style={[styles.label]}>{ i18n.t('newPass') }</Label>
-                                            <Input autoCapitalize='none' onChangeText={(newPass) => this.setState({newPass})} secureTextEntry style={styles.input}  />
-                                        </Item>
+                                        <View style={[ styles.itemView ]}>
+                                            <Item floatingLabel style={styles.loginItem} bordered>
+                                                <Label style={[styles.label]}>{ i18n.t('newPass') }</Label>
+                                                <Input autoCapitalize='none' onChangeText={(newPass) => this.setState({newPass})} secureTextEntry style={styles.input}  />
+                                            </Item>
 
-                                    </View>
+                                        </View>
 
-                                    <View style={[ styles.itemView , styles.inputMarginTop ]}>
-                                        <Item floatingLabel style={styles.loginItem} bordered>
-                                            <Label style={[styles.label]}>{ i18n.t('verifyNewPass') }</Label>
-                                            <Input autoCapitalize='none' onChangeText={(reNewPass) => this.setState({reNewPass})} secureTextEntry style={styles.input}  />
-                                        </Item>
+                                        <View style={[ styles.itemView , styles.inputMarginTop ]}>
+                                            <Item floatingLabel style={styles.loginItem} bordered>
+                                                <Label style={[styles.label]}>{ i18n.t('verifyNewPass') }</Label>
+                                                <Input autoCapitalize='none' onChangeText={(reNewPass) => this.setState({reNewPass})} secureTextEntry style={styles.input}  />
+                                            </Item>
 
-                                    </View>
+                                        </View>
 
-                                    <View style={[styles.loginBtnContainer , {marginTop:45} ]}>
-                                        { this.renderSubmit() }
-                                    </View>
+                                        <View style={[styles.loginBtnContainer , styles.mt45 ]}>
+                                            { this.renderSubmit() }
+                                        </View>
 
-                                </Form>
-
+                                    </Form>
+                                </KeyboardAvoidingView>
 
                             </View>
                         </View>
-                    </KeyboardAvoidingView>
                 </Content>
             </Container>
         );

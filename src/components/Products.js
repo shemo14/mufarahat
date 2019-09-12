@@ -5,20 +5,15 @@ import styles from '../../assets/styles'
 import i18n from '../../locale/i18n'
 import COLORS from '../../src/consts/colors'
 import { DoubleBounce } from 'react-native-loader';
+import * as Animatable from 'react-native-animatable';
+import {getProducts} from "../actions";
+import {connect} from "react-redux";
 
 
 
 const height = Dimensions.get('window').height;
 const IS_IPHONE_X = height === 812 || height === 896;
 
-const products=[
-    {id:1 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_of_sweet.png') , price:'12 ريال', oldPrice:'30 ريال'},
-    {id:2 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_two-1.png') , price:'12 ريال', oldPrice:'30 ريال'},
-    {id:3 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_of_sweet.png') , price:'12 ريال', oldPrice:'30 ريال'},
-    {id:4 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_two-1.png') , price:'12 ريال', oldPrice:'30 ريال'},
-    {id:5 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_of_sweet.png') , price:'12 ريال', oldPrice:'30 ريال'},
-    {id:6 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_two-1.png') , price:'12 ريال', oldPrice:'30 ريال'},
-]
 
 
 class Products extends Component {
@@ -26,7 +21,6 @@ class Products extends Component {
         super(props);
 
         this.state={
-            products,
             status: null,
             backgroundColor: new Animated.Value(0),
             availabel: 0,
@@ -39,19 +33,35 @@ class Products extends Component {
         drawerLabel: () => null
     });
 
+    componentWillMount() {
+        this.props.getProducts( this.props.lang , this.props.navigation.state.params.category_id )
+    }
+
+    renderLoader(){
+        if (this.props.loader){
+            return(
+                <View style={{ alignItems: 'center', justifyContent: 'center', height: height , alignSelf:'center' , backgroundColor:'#fff' , width:'100%' , position:'absolute' , zIndex:1  }}>
+                    <DoubleBounce size={20} color={COLORS.labelBackground} />
+                </View>
+            );
+        }
+    }
+
 
     _keyExtractor = (item, index) => item.id;
 
     renderItems = (item) => {
         return(
-            <TouchableOpacity onPress={() => this.props.navigation.navigate('product')} style={[styles.scrollParent2 , { alignSelf: 'center', flex: 1, margin: 7 }]}>
-                <Image source={item.image} style={styles.scrollImg2} resizeMode={'contain'} />
-                <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
-                <Text style={[styles.type ,{color:COLORS.boldgray}]}>{item.name}</Text>
-                <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{item.category}</Text>
-                <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>{item.price}</Text>
-                <Text style={[styles.type ,{color:COLORS.mediumgray , fontSize:14 , textDecorationLine: 'line-through'}]}>{item.oldPrice}</Text>
-            </TouchableOpacity>
+            <Animatable.View animation="zoomIn" duration={1000} style={[ styles.touchProduct]}>
+                <TouchableOpacity onPress={() => this.props.navigation.navigate('product', { id: item.id })} style={[styles.scrollParent2 , styles.touchProduct]}>
+                    <Image source={{ uri: item.image }} style={styles.scrollImg2} resizeMode={'cover'} />
+                    <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
+                    <Text style={[styles.type ,{color:COLORS.boldgray}]}>{item.name}</Text>
+                    <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{item.category}</Text>
+                    <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>{item.price}</Text>
+                    <Text style={styles.oldPrice}>{item.old_price}</Text>
+                </TouchableOpacity>
+            </Animatable.View>
         );
     }
 
@@ -99,23 +109,24 @@ class Products extends Component {
 
         return (
             <Container>
-                <Header style={[styles.header , {marginTop:Platform.OS === 'ios' ? 10 : 40}]} noShadow>
-                    <Animated.View style={[styles.headerView , { backgroundColor: backgroundColor, height: 80 , marginTop:-50 , alignItems:'center'}]}>
-                        <Right style={{flex:0 }}>
+                <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
+                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
+                        <Right style={styles.flex0}>
                             <Button transparent onPress={() => this.props.navigation.goBack()} style={styles.headerBtn}>
                                 <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
                             </Button>
                         </Right>
-                        <Text style={[styles.headerText , {top:10  , right:15}]}>المنتجات</Text>
-                        <Left style={{flex:0 , backgroundColor:'#000'}}/>
+                        <Text style={[styles.headerText , styles.headerTitle]}>{i18n.t('products')}</Text>
+                        <Left style={styles.flex0}/>
                     </Animated.View>
                 </Header>
-                <Content  contentContainerStyle={{ flexGrow: 1 }} style={[styles.homecontent , {} ]}  onScroll={e => this.headerScrollingAnimation(e) }>
-                    <ImageBackground source={require('../../assets/images/bg_blue_big.png')} resizeMode={'cover'} style={styles.imageBackground}>
-                        <View style={{marginTop:70}}>
+                <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
+                    { this.renderLoader() }
+                    <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground}>
+                        <View style={Platform.OS === 'ios' ? styles.mt90 : styles.mT70}>
                             <View style={styles.flatContainer}>
                                 <FlatList
-                                    data={this.state.products}
+                                    data={this.props.products}
                                     renderItem={({item}) => this.renderItems(item)}
                                     numColumns={2}
                                     keyExtractor={this._keyExtractor}
@@ -131,4 +142,12 @@ class Products extends Component {
     }
 }
 
-export default Products;
+
+const mapStateToProps = ({ lang  , products}) => {
+    return {
+        lang: lang.lang,
+        products: products.products,
+        loader: products.loader
+    };
+};
+export default connect(mapStateToProps, {getProducts})(Products);

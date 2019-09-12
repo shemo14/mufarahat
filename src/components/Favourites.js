@@ -6,6 +6,9 @@ import i18n from '../../locale/i18n'
 import COLORS from '../../src/consts/colors'
 import { DoubleBounce } from 'react-native-loader';
 import FooterSection from './FooterSection';
+import RBSheet from "react-native-raw-bottom-sheet";
+import DrawerCustomization from '../routes/DrawerCustomization';
+import * as Animatable from 'react-native-animatable';
 
 
 
@@ -49,7 +52,7 @@ class Favourites extends Component {
 
     renderItems = (item) => {
         return(
-            <View style={[styles.scrollParent2 , { alignSelf: 'center', flex: 1, margin: 7 }]}>
+            <Animatable.View animation="zoomIn" duration={1000} style={[styles.scrollParent2 , styles.touchProduct]}>
                 <TouchableOpacity onPress={() => this.props.navigation.navigate('product')}>
                     <Image source={item.image} style={styles.scrollImg2} resizeMode={'contain'} />
                 </TouchableOpacity>
@@ -59,11 +62,11 @@ class Favourites extends Component {
                 </TouchableOpacity>
                 <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{item.category}</Text>
                 <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>{item.price}</Text>
-                <Text style={[styles.type ,{color:COLORS.mediumgray , fontSize:14 , textDecorationLine: 'line-through'}]}>{item.oldPrice}</Text>
+                <Text style={styles.oldPrice}>{item.oldPrice}</Text>
                 <TouchableOpacity onPress={() => this.onFavPress()} style={{alignSelf:'flex-end'}}>
                     <Icon type={'FontAwesome'} name={'heart'} style={{ fontSize: 20, color: this.state.fav? '#ff5252' : COLORS.lightgray }} />
                 </TouchableOpacity>
-            </View>
+            </Animatable.View>
         );
     }
 
@@ -100,7 +103,9 @@ class Favourites extends Component {
             this.setAnimate(1)
         }
     }
-
+    closeDrawer(){
+        this.RBSheet.close()
+    }
     render() {
 
         const backgroundColor = this.state.backgroundColor.interpolate({
@@ -111,20 +116,20 @@ class Favourites extends Component {
 
         return (
             <Container>
-                <Header style={[styles.header , {marginTop:Platform.OS === 'ios' ? 10 : 40}]} noShadow>
-                    <Animated.View style={[styles.headerView , { backgroundColor: backgroundColor, height: 80 , marginTop:-50 , alignItems:'center'}]}>
-                        <Button transparent onPress={() => this.props.navigation.openDrawer()} style={styles.headerBtn}>
+                <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
+                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
+                        <Button transparent onPress={() => this.RBSheet.open()} style={styles.headerBtn}>
                             <Image source={require('../../assets/images/menu.png')} style={[styles.headerMenu , styles.transform]} resizeMode={'contain'} />
                         </Button>
-                        <Text style={[styles.headerText , {top:15}]}>{ i18n.t('favorites') }</Text>
+                        <Text style={[styles.headerText , styles.t15]}>{ i18n.t('favorites') }</Text>
                         <Button onPress={() => this.props.navigation.navigate('cart')} transparent  style={styles.headerBtn}>
                             <Image source={require('../../assets/images/shopping_cart.png')} style={styles.headerMenu} resizeMode={'contain'} />
                         </Button>
                     </Animated.View>
                 </Header>
-                <Content  contentContainerStyle={{ flexGrow: 1 }} style={[styles.homecontent , {} ]}  onScroll={e => this.headerScrollingAnimation(e) }>
-                    <ImageBackground source={require('../../assets/images/bg_blue_big.png')} resizeMode={'cover'} style={styles.imageBackground}>
-                        <View style={{marginTop:60}}>
+                <Content  contentContainerStyle={styles.flexGrow} style={styles.homecontent}  onScroll={e => this.headerScrollingAnimation(e) }>
+                    <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground}>
+                        <View style={Platform.OS === 'ios' ? styles.mt90 : styles.mT70}>
                             <View style={styles.flatContainer}>
                                 <FlatList
                                     data={this.state.favs}
@@ -139,6 +144,19 @@ class Favourites extends Component {
                 </Content>
 
                 <FooterSection routeName={'favourites'} navigation={this.props.navigation}/>
+                {/*drawer content*/}
+                <RBSheet
+                    ref={ref => {
+                        this.RBSheet = ref;
+                    }}
+                    height={400}
+                    duration={350}
+                    customStyles={{
+                        container: styles.drawerCont
+                    }}
+                >
+                    <DrawerCustomization onClose={() => this.closeDrawer()} navigation={this.props.navigation}/>
+                </RBSheet>
             </Container>
 
         );

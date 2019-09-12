@@ -5,6 +5,7 @@ import styles from '../../assets/styles'
 import i18n from '../../locale/i18n'
 import COLORS from '../../src/consts/colors'
 import { DoubleBounce } from 'react-native-loader';
+import * as Animatable from 'react-native-animatable';
 
 
 
@@ -30,6 +31,7 @@ class SearchResult extends Component {
             status: null,
             backgroundColor: new Animated.Value(0),
             availabel: 0,
+            search:'',
         }
     }
 
@@ -44,14 +46,16 @@ class SearchResult extends Component {
 
     renderItems = (item) => {
         return(
-            <TouchableOpacity onPress={() => this.props.navigation.navigate('product')} style={[styles.scrollParent2 , { alignSelf: 'center', flex: 1, margin: 7 }]}>
-                <Image source={item.image} style={styles.scrollImg2} resizeMode={'contain'} />
-                <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
-                <Text style={[styles.type ,{color:COLORS.boldgray}]}>{item.name}</Text>
-                <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{item.category}</Text>
-                <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>{item.price}</Text>
-                <Text style={[styles.type ,{color:COLORS.mediumgray , fontSize:14 , textDecorationLine: 'line-through'}]}>{item.oldPrice}</Text>
-            </TouchableOpacity>
+            <Animatable.View animation="zoomIn" duration={1000}>
+                <TouchableOpacity onPress={() => this.props.navigation.navigate('product')} style={[styles.scrollParent2 , styles.touchProduct]}>
+                    <Image source={item.image} style={styles.scrollImg2} resizeMode={'contain'} />
+                    <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
+                    <Text style={[styles.type ,{color:COLORS.boldgray}]}>{item.name}</Text>
+                    <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{item.category}</Text>
+                    <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>{item.price}</Text>
+                    <Text style={[styles.type ,{color:COLORS.mediumgray , fontSize:14 , textDecorationLine: 'line-through'}]}>{item.oldPrice}</Text>
+                </TouchableOpacity>
+            </Animatable.View>
         );
     }
 
@@ -89,6 +93,10 @@ class SearchResult extends Component {
         }
     }
 
+    submitSearch(){
+        this.props.navigation.navigate('searchResult', { search : this.state.search } );
+    }
+
     render() {
 
         const backgroundColor = this.state.backgroundColor.interpolate({
@@ -99,23 +107,23 @@ class SearchResult extends Component {
 
         return (
             <Container>
-                <Header style={[styles.header , {marginTop:Platform.OS === 'ios' ? 10 : 40}]} noShadow>
-                    <Animated.View style={[styles.headerView , { backgroundColor: backgroundColor, height: 80 , marginTop:-50 , alignItems:'center'}]}>
-                        <Right style={{flex:0 }}>
-                            <Button transparent onPress={() => this.props.navigation.navigate('drawerNavigator')} style={styles.headerBtn}>
-                                <Image source={require('../../assets/images/cancel.png')} style={styles.headerMenu} resizeMode={'contain'} />
+                <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
+                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
+                        <Right style={styles.flex0}>
+                            <Button transparent onPress={() => this.props.navigation.goBack()} style={styles.headerBtn}>
+                                <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
                             </Button>
                         </Right>
-                        <Text style={[styles.headerText , {top:10  , right:15}]}>نتائج البحث</Text>
-                        <Left style={{flex:0 , backgroundColor:'#000'}}/>
+                        <Text style={[styles.headerText , styles.headerTitle]}>{ i18n.t('searchResults') }</Text>
+                        <Left style={styles.flex0}/>
                     </Animated.View>
                 </Header>
-                <Content  contentContainerStyle={{ flexGrow: 1 }} style={[styles.homecontent , {} ]}  onScroll={e => this.headerScrollingAnimation(e) }>
-                    <ImageBackground source={require('../../assets/images/bg_blue_big.png')} resizeMode={'cover'} style={styles.imageBackground}>
-                        <View style={{marginTop:70}}>
+                <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
+                    <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground}>
+                        <View style={Platform.OS === 'ios' ? styles.mt90 : styles.mT70}>
                             <View style={styles.inputView}>
                                 <Item  style={styles.inputItem} bordered>
-                                    <Input onChangeText={(search) => this.setState({ search })} placeholder={ i18n.t('searchProduct') } placeholderTextColor={'#acabae'} style={styles.modalInput}   />
+                                    <Input autoCapitalize='none' onSubmitEditing={() => this.submitSearch() } onChangeText={(search) => this.setState({ search })} placeholder={ i18n.t('searchProduct') } placeholderTextColor={'#acabae'} style={styles.modalInput}   />
                                 </Item>
                                 <Image source={require('../../assets/images/search.png')} style={[styles.searchImg , styles.transform]} resizeMode={'contain'}/>
                             </View>

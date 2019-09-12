@@ -1,10 +1,13 @@
 import React, { Component } from "react";
-import {View, Text, Image, TouchableOpacity, I18nManager, FlatList, Platform, Dimensions, ImageBackground, Animated,} from "react-native";
-import {Container, Content, Icon, Header, List, ListItem, Left, Button, Item, Input, Right} from 'native-base'
+import {View, Text, Image,  Dimensions, ImageBackground, Animated,I18nManager} from "react-native";
+import {Container, Content, Icon, Header, Left, Button, Right} from 'native-base'
 import styles from '../../assets/styles'
 import i18n from '../../locale/i18n'
 import COLORS from '../../src/consts/colors'
 import { DoubleBounce } from 'react-native-loader';
+import {connect} from "react-redux";
+import * as Animatable from 'react-native-animatable';
+import {getFaq} from "../actions";
 
 
 
@@ -25,12 +28,19 @@ class Faq extends Component {
     }
 
 
+    componentWillMount() {
+        this.props.getFaq( this.props.lang )
+    }
 
-    static navigationOptions = () => ({
-        drawerLabel: i18n.t('faq') ,
-        drawerIcon: (<Image source={require('../../assets/images/customer_service.png')} style={{ height: 20, width: 20 }} resizeMode={'contain'} /> )
-    })
-
+    renderLoader(){
+        if (this.props.loader){
+            return(
+                <View style={{ alignItems: 'center', justifyContent: 'center', height: height , alignSelf:'center' , backgroundColor:'#fff' , width:'100%' , position:'absolute' , zIndex:1  }}>
+                    <DoubleBounce size={20} color={COLORS.labelBackground} />
+                </View>
+            );
+        }
+    }
 
 
     setAnimate(availabel){
@@ -75,36 +85,39 @@ class Faq extends Component {
         });
         return (
             <Container>
-                <Header style={[styles.header , {marginTop:Platform.OS === 'ios' ? 10 : 40}]} noShadow>
-                    <Animated.View style={[styles.headerView , { backgroundColor: backgroundColor, height: 80 , marginTop:-50 , alignItems:'center'}]}>
-                        <Right style={{flex:0 }}>
-                            <Button transparent onPress={() => this.props.navigation.navigate('drawerNavigator')} style={styles.headerBtn}>
-                                <Image source={require('../../assets/images/cancel.png')} style={styles.headerMenu} resizeMode={'contain'} />
+                <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
+                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
+                        <Right style={styles.flex0}>
+                            <Button transparent onPress={() => this.props.navigation.goBack()} style={styles.headerBtn}>
+                                <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
                             </Button>
                         </Right>
-                        <Text style={[styles.headerText , {top:10  , right:15}]}>{ i18n.t('faq') }</Text>
-                        <Left style={{flex:0 , backgroundColor:'#000'}}/>
+                        <Text style={[styles.headerText , styles.headerTitle]}>{ i18n.t('faq') }</Text>
+                        <Left style={styles.flex0}/>
                     </Animated.View>
                 </Header>
-                <Content  contentContainerStyle={{ flexGrow: 1 }} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
+                <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
+                    { this.renderLoader() }
                     <ImageBackground source={require('../../assets/images/question_bg.png')} resizeMode={'cover'} style={styles.imageBackground}>
                         <View style={[styles.curvedImg]}>
-                            <Image source={require('../../assets/images/ques_pic.png')} style={[styles.swiperimageEvent , { borderBottomLeftRadius:0}]} resizeMode={'cover'} />
+                            <Image source={require('../../assets/images/ques_pic.png')} style={[styles.headImg , styles.bBLR0]} resizeMode={'cover'} />
                             <View style={styles.overBg}/>
                         </View>
-                        <View style={{padding:20}}>
-                            <View style={{marginBottom:10}}>
-                                <Text style={[styles.termsText , {color:COLORS.boldgray , fontSize:14}]}>صيغة سؤال ؟</Text>
-                                <Text style={[styles.type ,{color:COLORS.mediumgray }]}>هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص
-                                    هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص
-                                </Text>
-                            </View>
-                            <View style={{marginBottom:10}}>
-                                <Text style={[styles.termsText , {color:COLORS.boldgray , fontSize:14}]}>صيغة سؤال ؟</Text>
-                                <Text style={[styles.type ,{color:COLORS.mediumgray }]}>هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص
-                                    هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص
-                                </Text>
-                            </View>
+                        <View style={styles.p20}>
+                            {
+
+                                this.props.faq.map((q, i) => (
+                                    <Animatable.View animation="fadeInUp" duration={1000} style={styles.mb10} key={i}>
+                                        <Text style={[styles.termsText , styles.aSFS , {color:COLORS.boldgray , fontSize:14,  writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr'}]}>{q.qu}</Text>
+                                        <Text style={[styles.type ,{color:COLORS.mediumgray,  writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr' }]}>
+                                            {q.ans}
+                                        </Text>
+                                    </Animatable.View>
+                                ))
+                            }
+
+
+
                         </View>
                     </ImageBackground>
                 </Content>
@@ -114,4 +127,13 @@ class Faq extends Component {
     }
 }
 
-export default Faq;
+
+
+const mapStateToProps = ({ lang , faq }) => {
+    return {
+        lang: lang.lang,
+        faq: faq.ques,
+        loader: faq.loader
+    };
+};
+export default connect(mapStateToProps, {getFaq})(Faq);

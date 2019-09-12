@@ -9,6 +9,7 @@ import Swiper from 'react-native-swiper';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import Modal from "react-native-modal";
 import Communications from "react-native-communications";
+import * as Animatable from 'react-native-animatable';
 
 
 
@@ -125,7 +126,7 @@ class NewOrderProduct extends Component {
     };
 
     sendEval = () => {
-        this.props.navigation.navigate('drawerNavigator');
+        this.props.navigation.navigate('home');
         this.setState({ evaluateModal: !this.state.evaluateModal });
     };
 
@@ -139,8 +140,8 @@ class NewOrderProduct extends Component {
 
         return (
             <Container>
-                <Header style={[styles.header , {marginTop:Platform.OS === 'ios' ? 10 : 40}]} noShadow>
-                    <Animated.View style={[styles.headerView , { backgroundColor: backgroundColor, height: 80 , marginTop:-50 , alignItems:'center'}]}>
+                <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
+                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
                         <Button transparent onPress={() => this.props.navigation.goBack()} style={styles.headerBtn}>
                             <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
                         </Button>
@@ -149,60 +150,70 @@ class NewOrderProduct extends Component {
                         </Button>
                     </Animated.View>
                 </Header>
-                <Content  contentContainerStyle={{ flexGrow: 1 }} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
-                    <Swiper horizontal={false} dotStyle={styles.eventdoteStyle} activeDotStyle={styles.eventactiveDot}
-                            containerStyle={styles.eventswiper} showsButtons={false} autoplay={true}>
+                <Content  contentContainerStyle={styles.flexGrow} style={styles.homecontent}  onScroll={e => this.headerScrollingAnimation(e) }>
+                    <Swiper horizontal={Platform.OS === 'ios' ? true :false} dotStyle={styles.eventdoteStyle2} activeDotStyle={styles.eventactiveDot2}
+                            containerStyle={styles.eventswiper2} showsButtons={false} autoplay={true}>
                         {
                             this.state.images.map((img,i) => (
-                                <Image source={ img.props.source } style={styles.swiperimageEvent} resizeMode={'cover'}/>
+                                <View style={styles.directionColumn}>
+                                    <View style={styles.swiperimageEvent2}>
+                                        <Image source={ img.props.source } resizeMode={'cover'}/>
+                                    </View>
+                                    <View style={styles.prodDet}>
+                                        <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم المنتج</Text>
+                                        <Text style={[styles.type ,{color:COLORS.mediumgray}]}>تصنيفات حلويات شرقية</Text>
+                                        <Text style={[styles.type ,{color:COLORS.labelBackground}]}>{ i18n.t('NumberOfItems') } 4</Text>
+                                        <Animatable.View animation="zoomIn" duration={1000} style={[ styles.availableProduct,styles.pack]}>
+                                            <View style={styles.directionRow}>
+                                                <Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('productPrice') } : </Text>
+                                                <Text style={[styles.type ,{color:COLORS.labelBackground}]}>116</Text>
+                                            </View>
+                                            <View style={styles.directionRow}>
+                                                <Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('packagingPrice') } : </Text>
+                                                <Text style={[styles.type ,{color:COLORS.labelBackground}]}>116</Text>
+                                            </View>
+                                        </Animatable.View>
+
+                                        <View style={[styles.desc , styles.mb25 , styles.mt10 ]}>
+                                            <Text style={[styles.type , styles.aSFS ,{color:COLORS.boldgray}]}>{ i18n.t('orderSpecification') }</Text>
+                                            <Text style={[styles.type , styles.aSFS ,{color:COLORS.mediumgray}]}>{ i18n.t('packingMethod') } : تغليف هدايا</Text>
+                                            <Text style={[styles.type , styles.aSFS ,{color:COLORS.mediumgray,  writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr'}]}>مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة</Text>
+                                        </View>
+
+                                    </View>
+                                </View>
                             ))
 
                         }
                     </Swiper>
-                    <View style={{ alignItems:'center'  , marginVertical:10}}>
-                        <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم المنتج</Text>
-                        <Text style={[styles.type ,{color:COLORS.mediumgray}]}>تصنيفات حلويات شرقية</Text>
-                        <Text style={[styles.type ,{color:COLORS.labelBackground}]}>عدد الاصناف 4</Text>
-                        <View style={[ styles.availableProduct,{justifyContent:'space-between', paddingHorizontal:15 , paddingVertical:7 }]}>
-                            <View style={{flexDirection:'row'}}>
-                                <Text style={[styles.type ,{color:COLORS.boldgray}]}>سعر المنتج : </Text>
-                                <Text style={[styles.type ,{color:COLORS.labelBackground}]}>116</Text>
-                            </View>
-                            <View style={{flexDirection:'row'}}>
-                                <Text style={[styles.type ,{color:COLORS.boldgray}]}>سعر التغليف : </Text>
-                                <Text style={[styles.type ,{color:COLORS.labelBackground}]}>116</Text>
-                            </View>
-                        </View>
-
-                        <View style={[styles.desc , {marginBottom:25 , marginTop:10}]}>
-                            <Text style={[styles.type ,{color:COLORS.boldgray , alignSelf:'flex-start' }]}>مواصفات الطلب</Text>
-                            <Text style={[styles.type ,{color:COLORS.mediumgray, alignSelf:'flex-start'}]}>طرسقة التغليف : تغليف هدايا</Text>
-                            <Text style={[styles.type ,{color:COLORS.mediumgray, alignSelf:'flex-start'}]}>مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة</Text>
-                        </View>
+                    <View style={styles.prodDet}>
 
                         <View style={[styles.line , {marginVertical:0}]}/>
                         <View style={[styles.tklfa , { borderColor:COLORS.yellowBorder}]}>
-                            <Text style={[styles.type ,{color:COLORS.boldgray}]}>تكلفة الطلبية كاملة : </Text>
+                            <Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('fullOrderCost') } : </Text>
                             <Text style={[styles.type ,{color:COLORS.labelBackground}]}>116</Text>
                         </View>
+
                         <View style={[styles.line , {marginVertical:0}]}/>
                         <View style={[styles.tklfa , { borderColor:COLORS.purpleBorder}]}>
-                            <Text style={[styles.type ,{color:COLORS.boldgray}]}>سعر التوصيل : </Text>
+                            <Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('deliveryPrice') } : </Text>
                             <Text style={[styles.type ,{color:COLORS.labelBackground}]}>116</Text>
                         </View>
                         <View style={[styles.line , {marginVertical:0}]}/>
 
-                        <Button  onPress={() => this.evaluateModal()} style={[styles.cartBtn , {marginVertical:35}]}>
-                            <Image source={require('../../assets/images/tick_white.png')} style={{width:20 , height:20 , marginRight:5}} resizeMode={'contain'}/>
-                            <Text style={styles.btnTxt}> انهاء الطلب</Text>
-                        </Button>
+                        <Animatable.View animation="flash" duration={1400}>
+                            <Button  onPress={() => this.evaluateModal()} style={[styles.cartBtn , styles.mv35 ]}>
+                                <Image source={require('../../assets/images/tick_white.png')} style={[styles.btnImg , styles.transform]} resizeMode={'contain'}/>
+                                <Text style={styles.btnTxt}> { i18n.t('finishOrder') }</Text>
+                            </Button>
+                        </Animatable.View>
 
                         <View style={[styles.line , {marginVertical:0}]}/>
 
 
-                        <View style={[styles.desc , { marginTop:10}]}>
-                            <Text style={[styles.type ,{color:COLORS.boldgray , alignSelf:'flex-start' }]}>مواصفات المندوب</Text>
-                            <View style={[styles.directionRowSpace , {width:'100%' , marginBottom:20}]}>
+                        <View style={[styles.desc , styles.mt10 ]}>
+                            <Text style={[styles.type , styles.aSFS ,{color:COLORS.boldgray }]}>{ i18n.t('specOfDele') }</Text>
+                            <View style={[styles.directionRowSpace , styles.w100 , styles.mb20 ]}>
                                 <View style={styles.directionRowCenter}>
                                     <View style={styles.mandob}>
                                         <Image source={require('../../assets/images/profile.png')} style={[styles.profileImg , {height:50}]} resizeMode={'cover'} />
@@ -210,27 +221,27 @@ class NewOrderProduct extends Component {
                                     <Text style={[styles.type ,{color:COLORS.labelBackground  }]}>اسم المندوب</Text>
                                 </View>
                                 <TouchableOpacity onPress={() => Communications.phonecall('0123456789', true)} style={styles.directionRowCenter}>
-                                    <Text style={[styles.type ,{color:COLORS.darkRed , marginRight:5 }]}>اتصل</Text>
+                                    <Text style={[styles.type , styles.mr10 ,{color:COLORS.darkRed }]}>{ i18n.t('call') }</Text>
                                     <Image source={require('../../assets/images/call.png')} style={[{width:20 , height:20} , styles.transform ]} resizeMode={'contain'} />
                                 </TouchableOpacity>
                             </View>
-                            <View style={{flexDirection:'row' , marginBottom:15}} >
-                                <Image source={require('../../assets/images/smartphone.png')} style={[styles.headerMenu , {marginRight:10}]} resizeMode={'contain'} />
+                            <View style={[ styles.directionRow , styles.mb15]} >
+                                <Image source={require('../../assets/images/smartphone.png')} style={[styles.headerMenu , styles.mr10]} resizeMode={'contain'} />
                                 <Text style={[styles.type ,{color:COLORS.mediumgray }]}>0123456789</Text>
                             </View>
-                            <View style={{flexDirection:'row' , marginBottom:15}} >
-                                <Image source={require('../../assets/images/ride_gray.png')} style={[styles.headerMenu , {marginRight:10}]} resizeMode={'contain'} />
+                            <View style={[ styles.directionRow , styles.mb15]} >
+                                <Image source={require('../../assets/images/ride_gray.png')} style={[styles.headerMenu , styles.mr10]} resizeMode={'contain'} />
                                 <Text style={[styles.type ,{color:COLORS.mediumgray  }]}>4568 س م ع</Text>
                             </View>
                         </View>
 
                         <View style={[styles.line , {marginVertical:0}]}/>
 
-                        <View style={[styles.desc , {marginBottom:25 , marginTop:15}]}>
-                            <Text style={[styles.type ,{color:COLORS.boldgray , alignSelf:'flex-start' }]}>مكان التسليم</Text>
-                            <View style={{flexDirection:'row'   , marginTop:15 }} >
-                                <Image source={require('../../assets/images/marker_gray.png')} style={[styles.headerMenu , {marginRight:10}]} resizeMode={'contain'} />
-                                <Text style={[styles.type ,{color:COLORS.mediumgray  }]}>العنوان بالتفصيل بالمدينة و المنطقة</Text>
+                        <View style={[styles.desc , styles.mb25 , styles.mt15 ]}>
+                            <Text style={[styles.type , styles.aSFS,{color:COLORS.boldgray }]}>{ i18n.t('deliveryPlace') }</Text>
+                            <View  style={[ styles.directionRow , styles.mt15]} >
+                                <Image source={require('../../assets/images/marker_gray.png')} style={[styles.headerMenu , styles.mr10]} resizeMode={'contain'} />
+                                <Text style={[styles.type ,{color:COLORS.mediumgray ,  writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr' }]}>العنوان بالتفصيل بالمدينة و المنطقة</Text>
                             </View>
                         </View>
 
@@ -246,7 +257,7 @@ class NewOrderProduct extends Component {
                                 <Image source={require('../../assets/images/close_page.png')} style={styles.closeImg} resizeMode={'contain'} />
                             </TouchableOpacity>
                             <ScrollView showsVerticalScrollIndicator={false}>
-                                <Text style={[styles.ques]}>استبيان و تقييم للخدمة</Text>
+                                <Text style={[styles.ques]}>{ i18n.t('questionnaire') }</Text>
 
                                 <View style={styles.sliderParent}>
                                     <View style={styles.range}>
@@ -267,21 +278,21 @@ class NewOrderProduct extends Component {
                                 </View>
                                 <View style={[styles.line ]}/>
 
-                                <Text style={[styles.ques , {marginBottom:10}]}>صيغة سؤال من المشكلات المواجهة للتطبيق ؟</Text>
-                                <View style={styles.directionRowSpace}>
-                                    <View style={[ styles.directionRow ]}>
+                                <Text style={[styles.ques , styles.mb10]}>صيغة سؤال من المشكلات المواجهة للتطبيق ؟</Text>
+                                <View style={[styles.directionRowSpace , {flexWrap:'wrap'}]}>
+                                    <View style={[ styles.directionRow , styles.mt10 ]}>
                                         <CheckBox checked={true}  color={COLORS.labelBackground} style={styles.quesCheckBox} />
                                         <Text style={[styles.check]}>{ i18n.t('excellent') } </Text>
                                     </View>
-                                    <View style={[ styles.directionRow ]}>
+                                    <View style={[ styles.directionRow , styles.mt10 ]}>
                                         <CheckBox checked={false} color={COLORS.labelBackground} style={styles.quesCheckBox} />
                                         <Text style={[styles.check]}>{ i18n.t('good') } </Text>
                                     </View>
-                                    <View style={[ styles.directionRow ]}>
+                                    <View style={[ styles.directionRow , styles.mt10 ]}>
                                         <CheckBox checked={false} color={COLORS.labelBackground} style={styles.quesCheckBox} />
                                         <Text style={[styles.check]}>{ i18n.t('acceptable') } </Text>
                                     </View>
-                                    <View style={[ styles.directionRow ]}>
+                                    <View style={[ styles.directionRow , styles.mt10 ]}>
                                         <CheckBox checked={false} color={COLORS.labelBackground} style={styles.quesCheckBox} />
                                         <Text style={[styles.check]}>{ i18n.t('poor') } </Text>
                                     </View>
@@ -289,21 +300,21 @@ class NewOrderProduct extends Component {
 
                                 <View style={[styles.line ]}/>
 
-                                <Text style={[styles.ques , {marginBottom:10}]}>صيغة سؤال من المشكلات المواجهة للتطبيق ؟</Text>
-                                <View style={styles.directionRowSpace}>
-                                    <View style={[ styles.directionRow ]}>
+                                <Text style={[styles.ques , styles.mb10]}>صيغة سؤال من المشكلات المواجهة للتطبيق ؟</Text>
+                                <View style={[styles.directionRowSpace , {flexWrap:'wrap'}]}>
+                                    <View style={[ styles.directionRow , styles.mt10 ]}>
                                         <CheckBox checked={true}  color={COLORS.labelBackground} style={styles.quesCheckBox} />
                                         <Text style={[styles.check]}>{ i18n.t('excellent') } </Text>
                                     </View>
-                                    <View style={[ styles.directionRow ]}>
+                                    <View style={[ styles.directionRow , styles.mt10 ]}>
                                         <CheckBox checked={false} color={COLORS.labelBackground} style={styles.quesCheckBox} />
                                         <Text style={[styles.check]}>{ i18n.t('good') } </Text>
                                     </View>
-                                    <View style={[ styles.directionRow ]}>
+                                    <View style={[ styles.directionRow , styles.mt10 ]}>
                                         <CheckBox checked={false} color={COLORS.labelBackground} style={styles.quesCheckBox} />
                                         <Text style={[styles.check]}>{ i18n.t('acceptable') } </Text>
                                     </View>
-                                    <View style={[ styles.directionRow ]}>
+                                    <View style={[ styles.directionRow , styles.mt10 ]}>
                                         <CheckBox checked={false} color={COLORS.labelBackground} style={styles.quesCheckBox} />
                                         <Text style={[styles.check]}>{ i18n.t('poor') } </Text>
                                     </View>
@@ -311,21 +322,21 @@ class NewOrderProduct extends Component {
 
                                 <View style={[styles.line ]}/>
 
-                                <Text style={[styles.ques , {marginBottom:10}]}>صيغة سؤال من المشكلات المواجهة للتطبيق ؟</Text>
-                                <View style={styles.directionRowSpace}>
-                                    <View style={[ styles.directionRow ]}>
+                                <Text style={[styles.ques , styles.mb10]}>صيغة سؤال من المشكلات المواجهة للتطبيق ؟</Text>
+                                <View style={[styles.directionRowSpace , {flexWrap:'wrap'}]}>
+                                    <View style={[ styles.directionRow , styles.mt10 ]}>
                                         <CheckBox checked={true}  color={COLORS.labelBackground} style={styles.quesCheckBox} />
                                         <Text style={[styles.check]}>{ i18n.t('excellent') } </Text>
                                     </View>
-                                    <View style={[ styles.directionRow ]}>
+                                    <View style={[ styles.directionRow , styles.mt10 ]}>
                                         <CheckBox checked={false} color={COLORS.labelBackground} style={styles.quesCheckBox} />
                                         <Text style={[styles.check]}>{ i18n.t('good') } </Text>
                                     </View>
-                                    <View style={[ styles.directionRow ]}>
+                                    <View style={[ styles.directionRow , styles.mt10 ]}>
                                         <CheckBox checked={false} color={COLORS.labelBackground} style={styles.quesCheckBox} />
                                         <Text style={[styles.check]}>{ i18n.t('acceptable') } </Text>
                                     </View>
-                                    <View style={[ styles.directionRow ]}>
+                                    <View style={[ styles.directionRow , styles.mt10 ]}>
                                         <CheckBox checked={false} color={COLORS.labelBackground} style={styles.quesCheckBox} />
                                         <Text style={[styles.check]}>{ i18n.t('poor') } </Text>
                                     </View>

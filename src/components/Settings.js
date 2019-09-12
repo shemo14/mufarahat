@@ -4,11 +4,17 @@ import {Container, Content, Icon, Header, Left, Button, Right, Item, Picker} fro
 import styles from '../../assets/styles'
 import i18n from '../../locale/i18n'
 import COLORS from '../../src/consts/colors'
-import { DoubleBounce } from 'react-native-loader';
+import {connect} from "react-redux";
+import {DoubleBounce} from "react-native-loader";
+import axios from "axios";
+import CONST from "../consts";
+import {updateProfile , chooseLang} from "../actions";
+import * as Animatable from 'react-native-animatable';
 
 
 
 const height = Dimensions.get('window').height;
+const width = Dimensions.get('window').width;
 const IS_IPHONE_X = height === 812 || height === 896;
 
 
@@ -22,16 +28,16 @@ class Settings extends Component {
             availabel: 0,
             value:0,
             SwitchOnValueHolder:false,
-            language:null
+            language:this.props.lang
         }
     }
 
-
-
-    static navigationOptions = () => ({
-        drawerLabel: i18n.t('settings') ,
-        drawerIcon: (<Image source={require('../../assets/images/settings.png')} style={{ height: 20, width: 20 }} resizeMode={'contain'} /> )
-    })
+    onChangeLang(value){
+        this.setState({ language: value })
+        if (this.props.lang != value){
+            this.props.chooseLang(value);
+        }
+    }
 
     stopNotification = (value) =>{
         this.setState({  SwitchOnValueHolder:!this.state.SwitchOnValueHolder})
@@ -78,25 +84,25 @@ class Settings extends Component {
         });
         return (
             <Container>
-                <Header style={[styles.header , {marginTop:Platform.OS === 'ios' ? 10 : 40}]} noShadow>
-                    <Animated.View style={[styles.headerView , { backgroundColor: backgroundColor, height: 80 , marginTop:-50 , alignItems:'center'}]}>
-                        <Right style={{flex:0 }}>
-                            <Button transparent onPress={() => this.props.navigation.navigate('drawerNavigator')} style={styles.headerBtn}>
-                                <Image source={require('../../assets/images/cancel.png')} style={styles.headerMenu} resizeMode={'contain'} />
+                <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
+                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
+                        <Right style={styles.flex0}>
+                            <Button transparent onPress={() => this.props.navigation.goBack()} style={styles.headerBtn}>
+                                <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
                             </Button>
                         </Right>
-                        <Text style={[styles.headerText , {top:10  , right:15}]}>{ i18n.t('settings') }</Text>
-                        <Left style={{flex:0 , backgroundColor:'#000'}}/>
+                        <Text style={[styles.headerText , styles.headerTitle]}>{ i18n.t('settings') }</Text>
+                        <Left style={styles.flex0}/>
                     </Animated.View>
                 </Header>
-                <Content  contentContainerStyle={{ flexGrow: 1 }} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
+                <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
                     <ImageBackground source={require('../../assets/images/setting_bg.png')} resizeMode={'cover'} style={styles.imageBackground}>
                         <View style={[styles.curvedImg]}>
-                            <Image source={require('../../assets/images/setting_pic.png')} style={[styles.swiperimageEvent , { borderBottomLeftRadius:0}]} resizeMode={'cover'} />
+                            <Image source={require('../../assets/images/setting_pic.png')} style={[styles.headImg , styles.bBLR0]} resizeMode={'cover'} />
                             <View style={styles.overBg}/>
                         </View>
-                        <View style={{padding:20}}>
-                            <View style={{flexDirection:'row' , justifyContent:'space-between', alignItems:'center'}}>
+                        <View style={styles.p20}>
+                            <Animatable.View animation="fadeInUp" duration={1000} style={styles.directionRowSpace}>
                                 <Text style={[styles.type ,{color:COLORS.mediumgray  , fontSize:16 }]}>{ i18n.t('notifications') }</Text>
                                 <Switch
                                     onValueChange={(value) => this.stopNotification(value)}
@@ -105,31 +111,38 @@ class Settings extends Component {
                                     thumbTintColor={COLORS.labelBackground}
                                     tintColor={'#c5c5c5'}
                                 />
-                            </View>
+                            </Animatable.View>
 
-                            <View style={[styles.line , {borderColor:'#cfcfcf'}]}/>
-                            <View style={{flexDirection:'row' , justifyContent:'space-between', alignItems:'center'}}>
-                                <Text style={[styles.type ,{color:COLORS.mediumgray  , fontSize:16 , position:'absolute' , backgroundColor:'#fff' , zIndex:1 , width:'92.5%' }]}>{ i18n.t('languageSettings') }</Text>
+                            <Animatable.View animation="fadeInUp" duration={1300} style={[styles.line , {borderColor:'#cfcfcf'}]}/>
+
+                            <Animatable.View animation="fadeInUp" duration={1500} style={styles.directionRowSpace}>
                                 <Item style={[styles.catPicker ]} regular >
                                     <Picker
                                         mode="dropdown"
-                                        iosIcon={<Icon name="arrow-down" />}
-                                        style={styles.pickerLabel}
+                                        style={[styles.pickerLabel, { width: width - 80, marginRight:20 , right:Platform.OS === 'ios' ? 15 : 10 }]}
                                         placeholderStyle={{ color: "#acabae" }}
                                         placeholderIconColor="#acabae"
+                                        textStyle={{ color: "#acabae" }}
+                                        itemTextStyle={{ color: '#acabae' }}
                                         selectedValue={this.state.language}
-                                        onValueChange={(value) => this.setState({ language: value })}
+                                        onValueChange={(value) => this.onChangeLang(value)}
                                     >
-                                        <Picker.Item label={'العربية'} value={"1"} />
-                                        <Picker.Item label={'English'} value={"2"} />
+                                        <Picker.Item label={i18n.t('languageSettings')} value={null} />
+                                        <Picker.Item label={'العربية'} value={"ar"} />
+                                        <Picker.Item label={'English'} value={"en"} />
                                     </Picker>
-                                    <Image source={require('../../assets/images/right_arrow_drop.png')}  style={{right:5,width:20 , height:20}} resizeMode={'contain'} />
+                                    <Image source={require('../../assets/images/right_arrow_drop.png')}  style={styles.dropArrow} resizeMode={'contain'} />
                                 </Item>
-                            </View>
+                            </Animatable.View>
 
-                            <TouchableOpacity  onPress={() => this.props.navigation.navigate('login')} style={styles.delAcc}>
-                                <Text style={[styles.type ,{color:'#ff3c3c'}]}>حذف الحساب</Text>
-                            </TouchableOpacity>
+                            <Animatable.View animation="fadeInUp" duration={1700}>
+                                <TouchableOpacity  onPress={() => this.props.navigation.navigate('login')} style={styles.delAcc}>
+                                    <Text style={[styles.type ,{color:'#ff3c3c'}]}>{ i18n.t('deleteAcc') }</Text>
+                                </TouchableOpacity>
+                            </Animatable.View>
+
+
+
                         </View>
                     </ImageBackground>
                 </Content>
@@ -139,4 +152,11 @@ class Settings extends Component {
     }
 }
 
-export default Settings;
+const mapStateToProps = ({ profile, lang }) => {
+    return {
+        user: profile.user,
+        lang: lang.lang
+    };
+};
+
+export default connect(mapStateToProps, {updateProfile , chooseLang})(Settings);

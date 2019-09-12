@@ -1,12 +1,13 @@
 import React, { Component } from "react";
-import {View, Text, Image, TouchableOpacity, I18nManager, FlatList, Platform, Dimensions, ImageBackground, Animated,ScrollView} from "react-native";
-import {Container, Content, Icon, Header, List, ListItem, Left, Button, Item, Input} from 'native-base'
+import {View, Text, Image, TouchableOpacity, Dimensions, Animated, Platform} from "react-native";
+import {Container, Content, Icon, Header, Button} from 'native-base'
 import styles from '../../assets/styles'
 import i18n from '../../locale/i18n'
 import COLORS from '../../src/consts/colors'
 import { DoubleBounce } from 'react-native-loader';
 import Swiper from 'react-native-swiper';
 import StarRating from 'react-native-star-rating';
+import * as Animatable from 'react-native-animatable';
 
 
 
@@ -100,8 +101,8 @@ class BoxProduct extends Component {
 
         return (
             <Container>
-                <Header style={[styles.header , {marginTop:Platform.OS === 'ios' ? 10 : 40}]} noShadow>
-                    <Animated.View style={[styles.headerView , { backgroundColor: backgroundColor, height: 80 , marginTop:-50 , alignItems:'center'}]}>
+                <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
+                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
                         <Button transparent onPress={() => this.props.navigation.goBack()} style={styles.headerBtn}>
                             <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
                         </Button>
@@ -110,55 +111,68 @@ class BoxProduct extends Component {
                         </Button>
                     </Animated.View>
                 </Header>
-                <Content  contentContainerStyle={{ flexGrow: 1 }} style={[styles.homecontent , {} ]}  onScroll={e => this.headerScrollingAnimation(e) }>
-                    <Swiper horizontal={false} dotStyle={styles.eventdoteStyle} activeDotStyle={styles.eventactiveDot}
+                <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
+                    <Swiper  horizontal={Platform.OS === 'ios' ? true :false} dotStyle={styles.eventdoteStyle} activeDotStyle={styles.eventactiveDot}
                             containerStyle={styles.eventswiper} showsButtons={false} autoplay={true}>
-                        <Image source={require('../../assets/images/pic_two.png')} style={styles.swiperimageEvent} resizeMode={'cover'}/>
-                        <Image source={require('../../assets/images/pic_one.png')} style={styles.swiperimageEvent} resizeMode={'cover'}/>
-                        <Image source={require('../../assets/images/pic_two.png')} style={styles.swiperimageEvent} resizeMode={'cover'}/>
-                        <Image source={require('../../assets/images/pic_one.png')} style={styles.swiperimageEvent} resizeMode={'cover'}/>
+                        <View style={styles.swiperimageEvent}>
+                        <Image source={require('../../assets/images/pic_two.png')} resizeMode={'cover'}/>
+                        </View>
+                        <View style={styles.swiperimageEvent}>
+                        <Image source={require('../../assets/images/pic_one.png')} resizeMode={'cover'}/>
+                        </View>
+                        <View style={styles.swiperimageEvent}>
+                        <Image source={require('../../assets/images/pic_two.png')}  resizeMode={'cover'}/>
+                        </View>
+                        <View style={styles.swiperimageEvent}>
+                        <Image source={require('../../assets/images/pic_one.png')}  resizeMode={'cover'}/>
+                        </View>
                     </Swiper>
 
-                    <View style={{ alignItems:'center'  , marginVertical:10}}>
+                    <View style={styles.productContainer}>
                         <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>12 ريال</Text>
-                        <Text style={[styles.type ,{color:COLORS.mediumgray , fontSize:14 , textDecorationLine: 'line-through'}]}>30 ريال</Text>
+                        <Text style={styles.oldPrice }>30 ريال</Text>
                         <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم المنتج</Text>
                         <Text style={[styles.type ,{color:COLORS.mediumgray}]}>تصنيفات حلويات شرقية</Text>
-                        <View style={{marginVertical:5}}>
+                        <Animatable.View animation="zoomIn" duration={1000} style={styles.mv5}>
                             <StarRating
                                 disabled={false}
                                 maxStars={5}
                                 rating={this.state.starCount}
-                                fullStarColor={'#ffcd00'}
+                                fullStarColor={'#f0aa0b'}
                                 selectedStar={(rating) => this.onStarRatingPress(rating)}
                                 starSize={20}
-                                starStyle={{color: '#ffcd00', marginHorizontal: 2}}
+                                starStyle={styles.starStyle}
                             />
-                        </View>
+                        </Animatable.View>
                         <View style={styles.availableProduct}>
-                            <Text style={[styles.type ,{color:COLORS.boldgray}]}>الكمية الموجودة : </Text>
+                            <Text style={[styles.type ,{color:COLORS.boldgray}]}>{i18n.t('existingQuantity')} : </Text>
                             <Text style={[styles.type ,{color:COLORS.labelBackground}]}>50 منتج</Text>
                         </View>
                         <View style={styles.counterParent}>
                             <TouchableOpacity onPress={() => this.increment()} style={styles.touchPlus}>
                                 <Icon type={'Entypo'} name={'plus'} style={styles.plus} />
                             </TouchableOpacity>
-                            <Text style={[styles.countText ]}>{this.state.value}</Text>
+                            <Text style={[styles.countText]}>{this.state.value}</Text>
                             <TouchableOpacity onPress={() => this.decrement()} style={styles.touchMinus}>
                                 <Icon type={'Entypo'} name={'minus'} style={styles.minus} />
                             </TouchableOpacity>
                         </View>
-                        <Button style={styles.cartBtn}>
-                            <Image source={require('../../assets/images/shopping_cart.png')} style={{width:20 , height:20 , marginRight:5}} resizeMode={'contain'}/>
-                            <Text style={styles.btnTxt}> اضف الي السلة</Text>
-                        </Button>
+
+
+                        <Animatable.View animation="flash" duration={1400}>
+                            <Button style={styles.cartBtn}>
+                                <Image source={require('../../assets/images/shopping_cart.png')} style={[styles.btnImg , styles.transform]} resizeMode={'contain'}/>
+                                <Text style={styles.btnTxt}> {i18n.t('addToCart')}</Text>
+                            </Button>
+                        </Animatable.View>
+
                         <View style={styles.line}/>
                         <View style={styles.desc}>
-                            <Text style={[styles.type ,{color:COLORS.boldgray , alignSelf:'flex-start' , marginBottom:10}]}>محتويات البوكس</Text>
-                            <Text style={[styles.type ,{color:COLORS.mediumgray, alignSelf:'flex-start'}]}>- هذا النص هو مثال لنص يمكن ان يستبدل</Text>
-                            <Text style={[styles.type ,{color:COLORS.mediumgray, alignSelf:'flex-start'}]}>- هذا النص هو مثال لنص يمكن ان يستبدل</Text>
-                            <Text style={[styles.type ,{color:COLORS.mediumgray, alignSelf:'flex-start'}]}>- هذا النص هو مثال لنص يمكن ان يستبدل</Text>
-                            <Text style={[styles.type ,{color:COLORS.mediumgray, alignSelf:'flex-start'}]}>- هذا النص هو مثال لنص يمكن ان يستبدل</Text>
+                            <Text style={[styles.type , styles.aSFS , styles.mb10 , {color:COLORS.boldgray}]}>{i18n.t('boxContents')}</Text>
+                            <Text style={[styles.type , styles.aSFS ,{color:COLORS.mediumgray}]}>- هذا النص هو مثال لنص يمكن ان يستبدل</Text>
+                            <Text style={[styles.type , styles.aSFS ,{color:COLORS.mediumgray}]}>- هذا النص هو مثال لنص يمكن ان يستبدل</Text>
+                            <Text style={[styles.type , styles.aSFS ,{color:COLORS.mediumgray}]}>- هذا النص هو مثال لنص يمكن ان يستبدل</Text>
+                            <Text style={[styles.type , styles.aSFS ,{color:COLORS.mediumgray}]}>- هذا النص هو مثال لنص يمكن ان يستبدل</Text>
                         </View>
                     </View>
 

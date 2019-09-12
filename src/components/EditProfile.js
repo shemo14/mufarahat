@@ -20,6 +20,7 @@ import COLORS from '../../src/consts/colors'
 import { DoubleBounce } from 'react-native-loader';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
+import * as Animatable from 'react-native-animatable';
 
 
 
@@ -117,55 +118,60 @@ class EditProfile extends Component {
 
         return (
             <Container>
-                <Header style={[styles.header , {marginTop:Platform.OS === 'ios' ? 10 : 40}]} noShadow>
-                    <Animated.View style={[styles.headerView , { backgroundColor: backgroundColor, height: 80 , marginTop:-50 , alignItems:'center'}]}>
-                        <Right style={{flex:0 }}>
+                <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
+                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
+                        <Right style={styles.flex0}>
                             <Button transparent onPress={() => this.props.navigation.goBack()} style={styles.headerBtn}>
                                 <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
                             </Button>
                         </Right>
-                        <Text style={[styles.headerText , {top:10  , right:15}]}>{ i18n.t('editProfile') }</Text>
-                        <Left style={{flex:0 , backgroundColor:'#000'}}/>
+                        <Text style={[styles.headerText , styles.headerTitle]}>{ i18n.t('editProfile') }</Text>
+                        <Left style={styles.flex0}/>
                     </Animated.View>
                 </Header>
-                <Content  contentContainerStyle={{ flexGrow: 1 }} style={[styles.homecontent , {} ]}  onScroll={e => this.headerScrollingAnimation(e) }>
-                    <KeyboardAvoidingView behavior={'padding'} style={styles.keyboardAvoid}>
-                        <ImageBackground source={require('../../assets/images/bg_blue.png')} resizeMode={'cover'} style={styles.imageBackground}>
-
+                <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
+                        <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue.png') : require('../../assets/images/bg_blue2.png')} resizeMode={'cover'} style={styles.imageBackground}>
 
                             {image != null?
-                                <TouchableOpacity onPress={this._pickImage}  style={[styles.profileImgParent , {marginTop:'50%'}]}>
+                                <TouchableOpacity onPress={this._pickImage}  style={[styles.profileImgParent , styles.mtt50]}>
                                     <Image source={{ uri: image }} style={[styles.profileImg]} resizeMode={'cover'} />
                                 </TouchableOpacity>
                                 :
-                                <TouchableOpacity onPress={this._pickImage}  style={[styles.profileImgParent , {marginTop:'50%'}]}>
-                                    <Image source={require('../../assets/images/profile.png')} style={[styles.profileImg]} resizeMode={'cover'} />
-                                    <View style={{ width:'100%' , height:90 , position:'absolute' ,zIndex:1 , backgroundColor:'#ffffff8c'}}/>
-                                    <Image source={require('../../assets/images/upload.png')} style={styles.upload} resizeMode={'contain'} />
-                                </TouchableOpacity>
+                                <Animatable.View animation="zoomIn" duration={1000}>
+                                    <TouchableOpacity onPress={this._pickImage}  style={[styles.profileImgParent , styles.mtt50]}>
+                                        <Image source={require('../../assets/images/profile.png')} style={[styles.profileImg]} resizeMode={'cover'} />
+                                        <View style={styles.opacityView}/>
+                                        <Image source={require('../../assets/images/upload.png')} style={styles.upload} resizeMode={'contain'} />
+                                    </TouchableOpacity>
+                                </Animatable.View>
                             }
-                            <View style={[styles.loginFormContainerStyle , {marginTop:30}]}>
-                                <Form style={{ width: '100%' , paddingHorizontal:25}}>
-                                    <View style={[styles.itemView ,{borderColor: COLORS.mediumgray}]}>
-                                        <Item floatingLabel style={styles.loginItem} bordered>
-                                            <Label style={[styles.label , {backgroundColor: '#EAEAEA' , color:COLORS.mediumgray , top:17}]}>{ i18n.t('fullName') }</Label>
-                                            <Input disabled={true} value={this.state.fullName} onChangeText={(fullName) => this.setState({fullName})} autoCapitalize='none' style={[styles.input ,{color:COLORS.mediumgray}]}  />
-                                        </Item>
-                                    </View>
 
-                                    <View style={[ styles.itemView , styles.inputMarginTop ,{borderColor: COLORS.mediumgray}]}>
-                                        <Item floatingLabel style={styles.loginItem} bordered>
-                                            <Label style={[styles.label , {backgroundColor: '#EAEAEA' , color:COLORS.mediumgray , top:17}]}>{ i18n.t('phoneNumber') }</Label>
-                                            <Input disabled={true} value={this.state.phone} onChangeText={(phone) => this.setState({phone})} keyboardType={'number-pad'} style={[styles.input ,{color:COLORS.mediumgray}]}  />
-                                        </Item>
-                                    </View>
-                                    <Button  onPress={() => this.props.navigation.navigate('profile')} style={[styles.loginBtn ,{marginTop:50 , width:180 }]}>
-                                        <Text style={styles.btnTxt}>{ i18n.t('save') }</Text>
-                                    </Button>
-                                </Form>
+                            <View style={[styles.loginFormContainerStyle , styles.mt30]}>
+                                <KeyboardAvoidingView behavior={'padding'} style={styles.keyboardAvoid}>
+                                    <Form style={[styles.ph25 , styles.w100]}>
+                                        <Animatable.View animation="fadeInUp" duration={1400} style={[styles.itemView ,{borderColor: COLORS.mediumgray}]}>
+                                            <Item floatingLabel style={styles.loginItem} bordered>
+                                                <Label style={[styles.label , {backgroundColor: '#EAEAEA' , color:COLORS.mediumgray , top:17}]}>{ i18n.t('fullName') }</Label>
+                                                <Input value={this.state.fullName} onChangeText={(fullName) => this.setState({fullName})} autoCapitalize='none' style={[styles.input ,{color:COLORS.mediumgray}]}  />
+                                            </Item>
+                                        </Animatable.View>
+
+                                        <Animatable.View animation="fadeInUp" duration={1800} style={[ styles.itemView , styles.inputMarginTop ,{borderColor: COLORS.mediumgray}]}>
+                                            <Item floatingLabel style={styles.loginItem} bordered>
+                                                <Label style={[styles.label , {backgroundColor: '#EAEAEA' , color:COLORS.mediumgray , top:17}]}>{ i18n.t('phoneNumber') }</Label>
+                                                <Input value={this.state.phone} onChangeText={(phone) => this.setState({phone})} keyboardType={'number-pad'} style={[styles.input ,{color:COLORS.mediumgray}]}  />
+                                            </Item>
+                                        </Animatable.View>
+
+                                        <Animatable.View animation="flash" duration={2200}>
+                                            <Button  onPress={() => this.props.navigation.navigate('profile')} style={[styles.loginBtn ,styles.btnWidth]}>
+                                                <Text style={styles.btnTxt}>{ i18n.t('save') }</Text>
+                                            </Button>
+                                        </Animatable.View>
+                                    </Form>
+                                </KeyboardAvoidingView>
                             </View>
                         </ImageBackground>
-                    </KeyboardAvoidingView>
                 </Content>
 
             </Container>

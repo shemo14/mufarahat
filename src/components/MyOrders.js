@@ -6,6 +6,9 @@ import i18n from '../../locale/i18n'
 import COLORS from '../../src/consts/colors'
 import { DoubleBounce } from 'react-native-loader';
 import FooterSection from './FooterSection';
+import RBSheet from "react-native-raw-bottom-sheet";
+import DrawerCustomization from '../routes/DrawerCustomization';
+import * as Animatable from 'react-native-animatable';
 
 
 
@@ -21,6 +24,7 @@ class MyOrders extends Component {
             status: null,
             backgroundColor: new Animated.Value(0),
             availabel: 0,
+            orderType:0
         }
     }
 
@@ -64,6 +68,113 @@ class MyOrders extends Component {
             this.setAnimate(1)
         }
     }
+    closeDrawer(){
+        this.RBSheet.close()
+    }
+
+
+
+
+
+    renderOrders(){
+        if(this.state.orderType === 0){
+            return(
+                <View style={styles.flatContainer}>
+                    <Animatable.View animation="zoomIn" duration={1000} style={[styles.scrollParent2 , styles.orderProduct ]}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('orderProduct')}>
+                            <Image source={require('../../assets/images/pic_two-1.png')} style={styles.scrollImg2} resizeMode={'contain'} />
+                        </TouchableOpacity>
+                        <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('orderProduct')}>
+                            <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم الحلويات</Text>
+                        </TouchableOpacity>
+                        <Text style={[styles.type ,{color:COLORS.mediumgray}]}>التصنيف</Text>
+                        <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>12 ريال</Text>
+                        <Text style={styles.oldPrice}>30 ريال</Text>
+                        <TouchableOpacity  style={{alignSelf:'flex-end'}}>
+                            <Image source={require('../../assets/images/dustbin_red.png')} style={styles.headerMenu} resizeMode={'contain'} />
+                        </TouchableOpacity>
+                    </Animatable.View>
+                    <Animatable.View animation="zoomIn" duration={1000} style={[styles.scrollParent2 , styles.orderProduct ]}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('orderProduct')}>
+                            <Image source={require('../../assets/images/pic_of_sweet.png')} style={[styles.scrollImg2 , {position:'absolute' , left:10}]} resizeMode={'contain'} />
+                            <Image source={require('../../assets/images/pic_of_sweet.png')} style={styles.scrollImg2} resizeMode={'contain'} />
+                            <Image source={require('../../assets/images/pic_of_sweet.png')} style={[styles.scrollImg2 , {position:'absolute' , right:10}]} resizeMode={'contain'} />
+                        </TouchableOpacity>
+                        <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('orderProduct')}>
+                            <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم الحلويات</Text>
+                        </TouchableOpacity>
+                        <Text style={[styles.type ,{color:COLORS.mediumgray}]}>التصنيف</Text>
+                        <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>12 ريال</Text>
+                        <Text style={styles.oldPrice}>30 ريال</Text>
+                        <TouchableOpacity  style={{alignSelf:'flex-end'}}>
+                            <Image source={require('../../assets/images/dustbin_red.png')} style={styles.headerMenu} resizeMode={'contain'} />
+                        </TouchableOpacity>
+                    </Animatable.View>
+                    <Animatable.View animation="zoomIn" duration={1000} style={[styles.scrollParent2 , styles.orderProduct ]}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('orderProduct')}>
+                            <Image source={require('../../assets/images/pic_two-1.png')} style={styles.scrollImg2} resizeMode={'contain'} />
+                        </TouchableOpacity>
+                        <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('orderProduct')}>
+                            <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم الحلويات</Text>
+                        </TouchableOpacity>
+                        <Text style={[styles.type ,{color:COLORS.mediumgray}]}>التصنيف</Text>
+                        <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>12 ريال</Text>
+                        <Text style={styles.oldPrice}>30 ريال</Text>
+                        <TouchableOpacity  style={{alignSelf:'flex-end'}}>
+                            <Image source={require('../../assets/images/dustbin_red.png')} style={styles.headerMenu} resizeMode={'contain'} />
+                        </TouchableOpacity>
+                    </Animatable.View>
+                </View>
+            )
+        } else {
+            return(
+                <View style={styles.flatContainer}>
+                    <Animatable.View animation="zoomIn" duration={1000} style={[styles.scrollParent2 , styles.orderProduct ]}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct')}>
+                            <Image source={require('../../assets/images/pic_two-1.png')} style={styles.scrollImg2} resizeMode={'contain'} />
+                        </TouchableOpacity>
+                        <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct')}>
+                            <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم الحلويات</Text>
+                        </TouchableOpacity>
+                        <Text style={[styles.type ,{color:COLORS.mediumgray}]}>التصنيف</Text>
+                        <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>12 ريال</Text>
+                        <Text style={styles.oldPrice}>30 ريال</Text>
+                    </Animatable.View>
+                    <Animatable.View animation="zoomIn" duration={1000} style={[styles.scrollParent2 , styles.orderProduct ]}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct')}>
+                            <Image source={require('../../assets/images/pic_of_sweet.png')} style={[styles.scrollImg2 , {position:'absolute' , left:10}]} resizeMode={'contain'} />
+                            <Image source={require('../../assets/images/pic_of_sweet.png')} style={styles.scrollImg2} resizeMode={'contain'} />
+                            <Image source={require('../../assets/images/pic_of_sweet.png')} style={[styles.scrollImg2 , {position:'absolute' , right:10}]} resizeMode={'contain'} />
+                        </TouchableOpacity>
+                        <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct')}>
+                            <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم الحلويات</Text>
+                        </TouchableOpacity>
+                        <Text style={[styles.type ,{color:COLORS.mediumgray}]}>التصنيف</Text>
+                        <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>12 ريال</Text>
+                        <Text style={styles.oldPrice}>30 ريال</Text>
+                    </Animatable.View>
+                    <Animatable.View animation="zoomIn" duration={1000} style={[styles.scrollParent2 , styles.orderProduct ]}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct')}>
+                            <Image source={require('../../assets/images/pic_two-1.png')} style={styles.scrollImg2} resizeMode={'contain'} />
+                        </TouchableOpacity>
+                        <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct')}>
+                            <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم الحلويات</Text>
+                        </TouchableOpacity>
+                        <Text style={[styles.type ,{color:COLORS.mediumgray}]}>التصنيف</Text>
+                        <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>12 ريال</Text>
+                        <Text style={styles.oldPrice}>30 ريال</Text>
+                    </Animatable.View>
+                </View>
+            )
+        }
+    }
+
 
     render() {
 
@@ -75,84 +186,50 @@ class MyOrders extends Component {
 
         return (
             <Container>
-                <Header style={[styles.header , {marginTop:Platform.OS === 'ios' ? 10 : 40}]} noShadow>
-                    <Animated.View style={[styles.headerView , { backgroundColor: backgroundColor, height: 80 , marginTop:-50 , alignItems:'center'}]}>
-                        <Button transparent onPress={() => this.props.navigation.openDrawer()} style={styles.headerBtn}>
+                <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
+                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
+                        <Button transparent onPress={() => this.RBSheet.open()} style={styles.headerBtn}>
                             <Image source={require('../../assets/images/menu.png')} style={[styles.headerMenu , styles.transform]} resizeMode={'contain'} />
                         </Button>
-                        <Text style={[styles.headerText , {top:15}]}>{ i18n.t('myOrders') }</Text>
+                        <Text style={[styles.headerText , styles.t15]}>{ i18n.t('myOrders') }</Text>
                         <Button onPress={() => this.props.navigation.navigate('cart')} transparent  style={styles.headerBtn}>
                             <Image source={require('../../assets/images/shopping_cart.png')} style={styles.headerMenu} resizeMode={'contain'} />
                         </Button>
                     </Animated.View>
                 </Header>
-                <Content  contentContainerStyle={{ flexGrow: 1 }} style={[styles.homecontent , {} ]}  onScroll={e => this.headerScrollingAnimation(e) }>
-                    <ImageBackground source={require('../../assets/images/bg_blue_big.png')} resizeMode={'cover'} style={styles.imageBackground}>
-                        <View style={{marginTop:60}}>
+                <Content  contentContainerStyle={styles.flexGrow} style={styles.homecontent}  onScroll={e => this.headerScrollingAnimation(e) }>
+                    <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground}>
+                        <View style={Platform.OS === 'ios' ? styles.mt90 : styles.mT70}>
 
-                            <View style={{flexDirection:'row' , justifyContent:'space-between' , alignItems:'center' , marginTop:20}}>
-                                 <TouchableOpacity style={styles.activeTab}>
-                                    <Text style={styles.activeTabText} >الطلبات المنفذه</Text>
+                            <View style={styles.orderTabs}>
+                                <TouchableOpacity onPress={ () => this.setState({orderType:0})} style={this.state.orderType === 0 ? styles.activeTab : styles.normalTab}>
+                                    <Text style={this.state.orderType === 0 ? styles.activeTabText :styles.normalTabText} >{ i18n.t('implementedOrd') }</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrders')} style={styles.normalTab}>
-                                    <Text style={styles.normalTabText} >الطلبات الجديدة</Text>
+                                <TouchableOpacity onPress={ () => this.setState({orderType:1})} style={this.state.orderType === 1 ? styles.activeTab : styles.normalTab}>
+                                    <Text style={this.state.orderType === 1 ? styles.activeTabText :styles.normalTabText} >{ i18n.t('newOrd') }</Text>
                                 </TouchableOpacity>
                             </View>
 
-                            <View style={styles.flatContainer}>
-                                <View style={[styles.scrollParent2 , { alignSelf: 'center' ,  width:'45%', margin: 7 }]}>
-                                    <TouchableOpacity onPress={() => this.props.navigation.navigate('orderProduct')}>
-                                        <Image source={require('../../assets/images/pic_two-1.png')} style={styles.scrollImg2} resizeMode={'contain'} />
-                                    </TouchableOpacity>
-                                    <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
-                                    <TouchableOpacity onPress={() => this.props.navigation.navigate('orderProduct')}>
-                                        <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم الحلويات</Text>
-                                    </TouchableOpacity>
-                                    <Text style={[styles.type ,{color:COLORS.mediumgray}]}>التصنيف</Text>
-                                    <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>12 ريال</Text>
-                                    <Text style={[styles.type ,{color:COLORS.mediumgray , fontSize:14 , textDecorationLine: 'line-through'}]}>30 ريال</Text>
-                                    <TouchableOpacity  style={{alignSelf:'flex-end'}}>
-                                        <Image source={require('../../assets/images/dustbin_red.png')} style={{width:23 , height:23}} resizeMode={'contain'} />
-                                    </TouchableOpacity>
-                                </View>
-                                <View style={[styles.scrollParent2 , { alignSelf: 'center',  width:'45%', margin: 7 }]}>
-                                    <TouchableOpacity onPress={() => this.props.navigation.navigate('orderProduct')}>
-                                        <Image source={require('../../assets/images/pic_of_sweet.png')} style={[styles.scrollImg2 , {position:'absolute' , left:10}]} resizeMode={'contain'} />
-                                        <Image source={require('../../assets/images/pic_of_sweet.png')} style={styles.scrollImg2} resizeMode={'contain'} />
-                                        <Image source={require('../../assets/images/pic_of_sweet.png')} style={[styles.scrollImg2 , {position:'absolute' , right:10}]} resizeMode={'contain'} />
-                                    </TouchableOpacity>
-                                    <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
-                                    <TouchableOpacity onPress={() => this.props.navigation.navigate('orderProduct')}>
-                                        <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم الحلويات</Text>
-                                    </TouchableOpacity>
-                                    <Text style={[styles.type ,{color:COLORS.mediumgray}]}>التصنيف</Text>
-                                    <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>12 ريال</Text>
-                                    <Text style={[styles.type ,{color:COLORS.mediumgray , fontSize:14 , textDecorationLine: 'line-through'}]}>30 ريال</Text>
-                                    <TouchableOpacity  style={{alignSelf:'flex-end'}}>
-                                        <Image source={require('../../assets/images/dustbin_red.png')} style={{width:23 , height:23}} resizeMode={'contain'} />
-                                    </TouchableOpacity>
-                                </View>
-                                <View style={[styles.scrollParent2 , { alignSelf: 'center',  width:'45%', margin: 7 }]}>
-                                    <TouchableOpacity onPress={() => this.props.navigation.navigate('orderProduct')}>
-                                        <Image source={require('../../assets/images/pic_two-1.png')} style={styles.scrollImg2} resizeMode={'contain'} />
-                                    </TouchableOpacity>
-                                    <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
-                                    <TouchableOpacity onPress={() => this.props.navigation.navigate('orderProduct')}>
-                                        <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم الحلويات</Text>
-                                    </TouchableOpacity>
-                                    <Text style={[styles.type ,{color:COLORS.mediumgray}]}>التصنيف</Text>
-                                    <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>12 ريال</Text>
-                                    <Text style={[styles.type ,{color:COLORS.mediumgray , fontSize:14 , textDecorationLine: 'line-through'}]}>30 ريال</Text>
-                                    <TouchableOpacity  style={{alignSelf:'flex-end'}}>
-                                        <Image source={require('../../assets/images/dustbin_red.png')} style={{width:23 , height:23}} resizeMode={'contain'} />
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
+                            { this.renderOrders() }
+
                         </View>
                     </ImageBackground>
                 </Content>
 
                 <FooterSection routeName={'myOrders'} navigation={this.props.navigation}/>
+                {/*drawer content*/}
+                <RBSheet
+                    ref={ref => {
+                        this.RBSheet = ref;
+                    }}
+                    height={400}
+                    duration={350}
+                    customStyles={{
+                        container: styles.drawerCont
+                    }}
+                >
+                    <DrawerCustomization onClose={() => this.closeDrawer()} navigation={this.props.navigation}/>
+                </RBSheet>
             </Container>
 
         );

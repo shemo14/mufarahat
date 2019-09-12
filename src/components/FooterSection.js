@@ -40,15 +40,15 @@ class FooterSection extends Component {
                     break;
                 case 'notifications':
                     activePath = require('../../assets/images/blue_notifcation.png');
-                    activeText =  i18n.t('notifications') ;
+                    activeText =  i18n.t('notifs') ;
                     break;
             }
 
             return(
                 <Button transparent>
                     <View style={styles.activeDot}/>
-                    <Image style={{ width: 24, height: 24}} resizeMode={'contain'} source={activePath}/>
-                    <Text style={[styles.type ,{color:COLORS.labelBackground ,fontSize:14 , borderBottomWidth:3 , borderBottomColor:COLORS.labelBackground , paddingBottom:0}]}>{activeText}</Text>
+                    <Image style={styles.footImg} resizeMode={'contain'} source={activePath}/>
+                    <Text style={[styles.type ,styles.activeFoot]}>{activeText}</Text>
                 </Button>
             );
         }
@@ -70,7 +70,7 @@ class FooterSection extends Component {
         return(
 
             <Button transparent onPress={() => this.props.navigation.navigate(tabName)} >
-                <Image style={{ width: 24, height: 24 }} resizeMode={'contain'} source={path}/>
+                <Image style={styles.footImg} resizeMode={'contain'} source={path}/>
             </Button>
         );
     }

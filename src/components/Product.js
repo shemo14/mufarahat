@@ -7,6 +7,9 @@ import COLORS from '../../src/consts/colors'
 import { DoubleBounce } from 'react-native-loader';
 import Swiper from 'react-native-swiper';
 import StarRating from 'react-native-star-rating';
+import * as Animatable from 'react-native-animatable';
+import {getProduct} from "../actions";
+import {connect} from "react-redux";
 
 
 
@@ -32,7 +35,19 @@ class Product extends Component {
         drawerLabel: () => null
     });
 
+    componentWillMount() {
+        this.props.getProduct( this.props.lang , this.props.navigation.state.params.id )
+    }
 
+    renderLoader(){
+        if (this.props.loader){
+            return(
+                <View style={{ alignItems: 'center', justifyContent: 'center', height: height , alignSelf:'center' , backgroundColor:'#fff' , width:'100%' , position:'absolute' , zIndex:1  }}>
+                    <DoubleBounce size={20} color={COLORS.labelBackground} />
+                </View>
+            );
+        }
+    }
     onStarRatingPress(rating) {
         this.setState({
             starCount: rating
@@ -100,8 +115,8 @@ class Product extends Component {
 
         return (
             <Container>
-                <Header style={[styles.header , {marginTop:Platform.OS === 'ios' ? 10 : 40}]} noShadow>
-                    <Animated.View style={[styles.headerView , { backgroundColor: backgroundColor, height: 80 , marginTop:-50 , alignItems:'center'}]}>
+                <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
+                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
                         <Button transparent onPress={() => this.props.navigation.goBack()} style={styles.headerBtn}>
                             <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
                         </Button>
@@ -110,33 +125,43 @@ class Product extends Component {
                         </Button>
                     </Animated.View>
                 </Header>
-                <Content  contentContainerStyle={{ flexGrow: 1 }} style={[styles.homecontent , {} ]}  onScroll={e => this.headerScrollingAnimation(e) }>
-                    <Swiper horizontal={false} dotStyle={styles.eventdoteStyle} activeDotStyle={styles.eventactiveDot}
+                <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
+                    { this.renderLoader() }
+                    <Swiper horizontal={Platform.OS === 'ios' ? true :false} dotStyle={styles.eventdoteStyle} activeDotStyle={styles.eventactiveDot}
                             containerStyle={styles.eventswiper} showsButtons={false} autoplay={true}>
-                                <Image source={require('../../assets/images/pic_two.png')} style={styles.swiperimageEvent} resizeMode={'cover'}/>
-                                <Image source={require('../../assets/images/pic_one.png')} style={styles.swiperimageEvent} resizeMode={'cover'}/>
-                                <Image source={require('../../assets/images/pic_two.png')} style={styles.swiperimageEvent} resizeMode={'cover'}/>
-                                <Image source={require('../../assets/images/pic_one.png')} style={styles.swiperimageEvent} resizeMode={'cover'}/>
+
+                        {
+                            this.props.product.images.map((img, i) =>{
+                                console.log('imageeee' , img)
+                                return (
+                                    <View key={i} style={styles.swiperimageEvent}>
+                                        <Image source={{ uri: img }} resizeMode={'cover'}/>
+                                    </View>
+                                )
+                            }
+                            )
+                        }
+
                     </Swiper>
 
-                    <View style={{ alignItems:'center'  , marginVertical:10}}>
+                    <View style={styles.productContainer}>
                         <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>12 ريال</Text>
                         <Text style={[styles.type ,{color:COLORS.mediumgray , fontSize:14 , textDecorationLine: 'line-through'}]}>30 ريال</Text>
                         <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم المنتج</Text>
                         <Text style={[styles.type ,{color:COLORS.mediumgray}]}>تصنيفات حلويات شرقية</Text>
-                        <View style={{marginVertical:5}}>
+                        <Animatable.View animation="zoomIn" duration={1000} style={styles.mv5}>
                             <StarRating
                                 disabled={false}
                                 maxStars={5}
                                 rating={this.state.starCount}
-                                fullStarColor={'#ffcd00'}
+                                fullStarColor={'#f0aa0c'}
                                 selectedStar={(rating) => this.onStarRatingPress(rating)}
                                 starSize={20}
-                                starStyle={{color: '#ffcd00', marginHorizontal: 2}}
+                                starStyle={styles.starStyle}
                             />
-                        </View>
+                        </Animatable.View>
                         <View style={styles.availableProduct}>
-                            <Text style={[styles.type ,{color:COLORS.boldgray}]}>الكمية الموجودة : </Text>
+                            <Text style={[styles.type ,{color:COLORS.boldgray}]}>{i18n.t('existingQuantity')} : </Text>
                             <Text style={[styles.type ,{color:COLORS.labelBackground}]}>50 منتج</Text>
                         </View>
                         <View style={styles.counterParent}>
@@ -148,14 +173,19 @@ class Product extends Component {
                                 <Icon type={'Entypo'} name={'minus'} style={styles.minus} />
                             </TouchableOpacity>
                         </View>
-                        <Button style={styles.cartBtn}>
-                            <Image source={require('../../assets/images/shopping_cart.png')} style={{width:20 , height:20 , marginRight:5}} resizeMode={'contain'}/>
-                            <Text style={styles.btnTxt}> اضف الي السلة</Text>
-                        </Button>
+
+
+                        <Animatable.View animation="flash" duration={1400}>
+                            <Button style={styles.cartBtn}>
+                                <Image source={require('../../assets/images/shopping_cart.png')} style={[styles.btnImg , styles.transform]} resizeMode={'contain'}/>
+                                <Text style={styles.btnTxt}> {i18n.t('addToCart')}</Text>
+                            </Button>
+                        </Animatable.View>
+
                         <View style={styles.line}/>
                         <View style={styles.desc}>
-                            <Text style={[styles.type ,{color:COLORS.boldgray , alignSelf:'flex-start' , marginBottom:10}]}>مواصفات السلعة</Text>
-                            <Text style={[styles.type ,{color:COLORS.mediumgray, alignSelf:'flex-start'}]}>مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة</Text>
+                            <Text style={[styles.type , styles.aSFS , styles.mb10 , {color:COLORS.boldgray}]}>{i18n.t('itemSpecification')}</Text>
+                            <Text style={[styles.type , styles.aSFS ,{color:COLORS.mediumgray , writingDirection: I18nManager.isRTL ? 'rtl' : ' ltr'}]}>مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة</Text>
                         </View>
                     </View>
 
@@ -166,4 +196,12 @@ class Product extends Component {
     }
 }
 
-export default Product;
+
+const mapStateToProps = ({ lang , product}) => {
+    return {
+        lang: lang.lang,
+        product: product.product,
+        loader: product.loader
+    };
+};
+export default connect(mapStateToProps, {getProduct})(Product);

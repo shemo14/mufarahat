@@ -5,7 +5,11 @@ import styles from '../../assets/styles'
 import i18n from '../../locale/i18n'
 import COLORS from '../../src/consts/colors'
 import { DoubleBounce } from 'react-native-loader';
+import {connect} from "react-redux";
 import Communications from 'react-native-communications';
+import * as Animatable from 'react-native-animatable';
+import {getContactUs} from "../actions";
+import contactUs from "../reducers/ContactUsReducer";
 
 
 
@@ -26,11 +30,19 @@ class ContactUs extends Component {
     }
 
 
+    componentWillMount() {
+        this.props.getContactUs( this.props.lang )
+    }
 
-    static navigationOptions = () => ({
-        drawerLabel: i18n.t('contactUs') ,
-        drawerIcon: (<Image source={require('../../assets/images/contact.png')} style={{ height: 20, width: 20 }} resizeMode={'contain'} /> )
-    })
+    renderLoader(){
+        if (this.props.loader){
+            return(
+                <View style={{ alignItems: 'center', justifyContent: 'center', height: height , alignSelf:'center' , backgroundColor:'#fff' , width:'100%' , position:'absolute' , zIndex:1  }}>
+                    <DoubleBounce size={20} color={COLORS.labelBackground} />
+                </View>
+            );
+        }
+    }
 
 
 
@@ -79,51 +91,62 @@ class ContactUs extends Component {
         });
         return (
             <Container>
-                <Header style={[styles.header , {marginTop:Platform.OS === 'ios' ? 10 : 40}]} noShadow>
-                    <Animated.View style={[styles.headerView , { backgroundColor: backgroundColor, height: 80 , marginTop:-50 , alignItems:'center'}]}>
-                        <Right style={{flex:0 }}>
-                            <Button transparent onPress={() => this.props.navigation.navigate('drawerNavigator')} style={styles.headerBtn}>
-                                <Image source={require('../../assets/images/cancel.png')} style={styles.headerMenu} resizeMode={'contain'} />
+                <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
+                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
+                        <Right style={styles.flex0}>
+                            <Button transparent onPress={() => this.props.navigation.goBack()} style={styles.headerBtn}>
+                                <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
                             </Button>
                         </Right>
-                        <Text style={[styles.headerText , {top:10  , right:15}]}>{ i18n.t('contactUs') }</Text>
-                        <Left style={{flex:0 , backgroundColor:'#000'}}/>
+                        <Text style={[styles.headerText , styles.headerTitle]}>{ i18n.t('contactUs') }</Text>
+                        <Left style={styles.flex0}/>
                     </Animated.View>
                 </Header>
-                <Content  contentContainerStyle={{ flexGrow: 1 }} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
+                <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
+                    { this.renderLoader() }
                     <ImageBackground source={require('../../assets/images/contact_bg.png')} resizeMode={'cover'} style={styles.imageBackground}>
                         <View style={[styles.curvedImg]}>
-                            <Image source={require('../../assets/images/contact_pic.png')} style={[styles.swiperimageEvent , { borderBottomLeftRadius:0}]} resizeMode={'cover'} />
+                            <Image source={require('../../assets/images/contact_pic.png')} style={[styles.headImg , styles.bBLR0]} resizeMode={'cover'} />
                             <View style={styles.overBg}/>
                         </View>
-                        <View style={{padding:20}}>
-                            <TouchableOpacity style={{flexDirection:'row'}} onPress={() => Communications.phonecall('0123456789', true)}>
-                                <Image source={require('../../assets/images/smartphone.png')} style={[styles.headerMenu , {marginRight:10}]} resizeMode={'contain'} />
-                                <Text style={[styles.type ,{color:COLORS.mediumgray , fontSize:16 }]}>0123456789</Text>
+                        <View style={styles.p20}><Animatable.View animation={I18nManager.isRTL ? "fadeInRight" : "fadeInLeft"} duration={1000}>
+                            <TouchableOpacity style={styles.directionRow} onPress={() => Communications.phonecall(this.props.phone, true)}>
+                                <Image source={require('../../assets/images/smartphone.png')} style={[styles.headerMenu ,styles.mr10]} resizeMode={'contain'} />
+                                <Text style={[styles.type ,{color:COLORS.mediumgray , fontSize:16 }]}>{this.props.phone}</Text>
                             </TouchableOpacity>
+                        </Animatable.View>
+
+                            <View style={[styles.line , {borderColor:'#cfcfcf'}]}/>
+                            <Animatable.View animation={I18nManager.isRTL ? "fadeInRight" : "fadeInLeft"} duration={1400}>
+                                <TouchableOpacity  style={styles.directionRow} onPress={()=> Communications.email(this.props.mail , null , null , null , null)}>
+                                    <Image source={require('../../assets/images/internet.png')} style={[styles.headerMenu ,styles.mr10]} resizeMode={'contain'} />
+                                    <Text style={[styles.type ,{color:COLORS.mediumgray  , fontSize:16 }]}>{this.props.mail}</Text>
+                                </TouchableOpacity>
+                            </Animatable.View>
 
                             <View style={[styles.line , {borderColor:'#cfcfcf'}]}/>
 
-                            <TouchableOpacity  style={{flexDirection:'row'}} onPress={()=> this._linkPressed('https://www.aait.sa')}>
-                                <Image source={require('../../assets/images/internet.png')} style={[styles.headerMenu , {marginRight:10}]} resizeMode={'contain'} />
-                                <Text style={[styles.type ,{color:COLORS.mediumgray  , fontSize:16 }]}>www.aait.sa</Text>
-                            </TouchableOpacity>
+                            {
+                                this.props.socials.map((soc, i) => (
+                                    <View key={i}>
+                                        <Animatable.View animation={I18nManager.isRTL ? "fadeInRight" : "fadeInLeft"}
+                                                         duration={1800}>
+                                            <TouchableOpacity style={styles.directionRow}
+                                                              onPress={() => this._linkPressed(soc.url)}>
+                                                <Image source={{ uri: soc.logo }}
+                                                       style={[styles.headerMenu, styles.mr10]} resizeMode={'contain'}/>
+                                                <Text style={[styles.type, {
+                                                    color: COLORS.mediumgray,
+                                                    fontSize: 16
+                                                }]}>{soc.name}</Text>
+                                            </TouchableOpacity>
+                                        </Animatable.View>
 
-                            <View style={[styles.line , {borderColor:'#cfcfcf'}]}/>
-
-                            <TouchableOpacity  style={{flexDirection:'row'}} onPress={()=> this._linkPressed('https://facebook.com/')}>
-                                <Image source={require('../../assets/images/facebook.png')} style={[styles.headerMenu , {marginRight:10}]} resizeMode={'contain'} />
-                                <Text style={[styles.type ,{color:COLORS.mediumgray  , fontSize:16 }]}>Facebook/shaqraa</Text>
-                            </TouchableOpacity>
-
-                            <View style={[styles.line , {borderColor:'#cfcfcf'}]}/>
-
-                            <TouchableOpacity  style={{flexDirection:'row'}} onPress={()=> this._linkPressed('https://twitter.com/')}>
-                                <Image source={require('../../assets/images/twitter-logo-silhouette.png')} style={[styles.headerMenu , {marginRight:10}]} resizeMode={'contain'} />
-                                <Text style={[styles.type ,{color:COLORS.mediumgray  , fontSize:16 }]}>Twitter/shaqraa</Text>
-                            </TouchableOpacity>
-
-                            <View style={[styles.line , {borderColor:'#cfcfcf'}]}/>
+                                        < View style={[styles.line , {borderColor:'#cfcfcf'}]}/>
+                                    </View>
+                                )
+                                )
+                            }
 
 
                         </View>
@@ -135,4 +158,14 @@ class ContactUs extends Component {
     }
 }
 
-export default ContactUs;
+
+const mapStateToProps = ({ lang , contactUs }) => {
+    return {
+        lang: lang.lang,
+        phone: contactUs.phone,
+        mail: contactUs.mail,
+        socials: contactUs.socials,
+        loader: contactUs.loader
+    };
+};
+export default connect(mapStateToProps, {getContactUs})(ContactUs);

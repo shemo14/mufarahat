@@ -1,10 +1,34 @@
 import React, { Component } from "react";
-import {View, Text, Image, TouchableOpacity, I18nManager, FlatList, Platform, Dimensions, ImageBackground, Animated,ScrollView} from "react-native";
-import {Container, Content, Icon, Header, List, Right, Left, Button, Item, Input , Accordion} from 'native-base'
+import {
+    View,
+    Text,
+    Image,
+    TouchableOpacity,
+    Dimensions,
+    ImageBackground,
+    Animated,
+    I18nManager,
+    Platform
+} from "react-native";
+import {
+    Container,
+    Content,
+    Icon,
+    Header,
+    Right,
+    Left,
+    Button,
+    Item,
+    Input,
+    Accordion,
+} from 'native-base'
 import styles from '../../assets/styles'
 import i18n from '../../locale/i18n'
 import COLORS from '../../src/consts/colors'
 import { DoubleBounce } from 'react-native-loader';
+import StarRating from 'react-native-star-rating';
+import CartHeaderItem from './CartHeaderItem'
+import * as Animatable from 'react-native-animatable';
 
 
 
@@ -14,9 +38,9 @@ const IS_IPHONE_X = height === 812 || height === 896;
 
 
 const dataArray = [
-    { title: "اسم المنتج", price: '12 ريال', image:require('../../assets/images/pic_of_sweet.png') ,content: "Lorem ipsum dolor sit amet" , category:'التصنيف'},
-    { title: "اسم المنتج ٢", price: '12 ريال', image:require('../../assets/images/pic_two-1.png') ,content: "Lorem ipsum dolor sit amet" , category:'التصنيف'},
-    { title: "اسم المنتج ٣", price: '12 ريال', image:require('../../assets/images/pic_of_sweet.png') ,content: "Lorem ipsum dolor sit amet" , category:'التصنيف'}
+    { title: "اسم المنتج", price: '12 ريال', image:require('../../assets/images/pic_of_sweet.png') ,content: "Lorem ipsum dolor sit amet" , category:'تصنيفات حلويات شرقية'},
+    { title: "اسم المنتج ٢", price: '12 ريال', image:require('../../assets/images/pic_two-1.png') ,content: "Lorem ipsum dolor sit amet" , category:'تصنيفات حلويات شرقية'},
+    { title: "اسم المنتج ٣", price: '12 ريال', image:require('../../assets/images/pic_of_sweet.png') ,content: "Lorem ipsum dolor sit amet" , category:'تصنيفات حلويات شرقية'}
 ];
 
 class Cart extends Component {
@@ -27,58 +51,87 @@ class Cart extends Component {
             status: null,
             backgroundColor: new Animated.Value(0),
             availabel: 0,
+            value:0,
+            search:'',
+            hideCheck:false,
+            checkAll:false
         }
     }
-
-
 
     static navigationOptions = () => ({
         drawerLabel: () => null
     });
-    _renderHeader(item, expanded) {
+
+    showCheckBox(){
+        this.setState({hideCheck: !this.state.hideCheck})
+    }
+
+    checkAll(){
+        if (this.state.hideCheck)
+            this.setState({checkAll: !this.state.checkAll})
+        else
+            this.setState({hideCheck: !this.state.hideCheck , checkAll: !this.state.checkAll})
+    }
+
+    _renderHeader(item, expanded, hideCheck) {
+        return <CartHeaderItem item={item}  expanded={expanded} hideCheck={hideCheck} />;
+    }
+
+    _renderContent(item , value) {
         return (
-            <View style={{flexDirection: "row", padding: 10, justifyContent: "space-between", alignItems: "center" , backgroundColor: "#fff" }}>
-                <View style={styles.directionRow}>
-                    <Image source={item.image} style={[styles.scrollImg2 , {marginHorizontal:10}]} resizeMode={'contain'} />
-                    <View>
-                        <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{item.title}</Text>
-                        <Text style={[styles.type ,{color:COLORS.labelBackground}]}>{item.price}</Text>
+            <View style={styles.acorrContent}>
+                <View style={styles.directionRowSpace}>
+                    <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{item.category}</Text>
+                    <StarRating
+                        disabled={false}
+                        maxStars={5}
+                        rating={5}
+                        fullStarColor={'#f0aa0c'}
+                        starSize={20}
+                        starStyle={{color: '#f0aa0c', marginLeft: 5}}
+                    />
+                </View>
+                <Text style={[styles.type , styles.mv10 , styles.aSFS ,{color:COLORS.boldgray }]}>{ i18n.t('itemSpecification') }</Text>
+                <Text style={[styles.type , styles.aSFS ,{color:COLORS.mediumgray}]}>مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة</Text>
+
+                <View style={[styles.line ]}/>
+
+                <View style={styles.directionRowSpace}>
+                    <View style={styles.directionRowCenter}>
+                        <TouchableOpacity onPress={() => this.increment()} style={styles.touchPlus}>
+                            <Icon type={'Entypo'} name={'plus'} style={styles.plus} />
+                        </TouchableOpacity>
+                        <Text style={[styles.countText ]}>{value}</Text>
+                        <TouchableOpacity onPress={() => this.decrement()} style={styles.touchMinus}>
+                            <Icon type={'Entypo'} name={'minus'} style={styles.minus} />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.directionRowSpace}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('paymentSteps')} >
+                            <Image source={require('../../assets/images/credit_card.png')} style={[styles.headerMenu , styles.mr20]} resizeMode={'contain'} />
+                        </TouchableOpacity>
+                        <TouchableOpacity >
+                            <Image source={require('../../assets/images/dustbin.png')} style={styles.headerMenu} resizeMode={'contain'} />
+                        </TouchableOpacity>
                     </View>
                 </View>
-                {expanded
-                    ? <Icon style={styles.arrowIcon} type={'FontAwesome'} name="angle-up" />
-                    : <Icon style={styles.arrowIcon} type={'FontAwesome'} name="angle-down" />}
+
             </View>
         );
     }
-    _renderContent(item) {
-        return (
-            <Text
-                style={{
-                    backgroundColor: "#e3f1f1",
-                    padding: 10,
-                    fontStyle: "italic",
-                }}
-            >
-                {item.content}
-            </Text>
-        );
-    }
-    _keyExtractor = (item, index) => item.id;
 
-    renderItems = (item) => {
-        return(
-            <TouchableOpacity onPress={() => this.props.navigation.navigate('boxProduct')} style={[styles.cartItem ]}>
-                <Image source={item.image} style={styles.scrollImg2} resizeMode={'contain'} />
-                <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
-                <Text style={[styles.type ,{color:COLORS.boldgray}]}>{item.name}</Text>
-                <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{item.category}</Text>
-                <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>{item.price}</Text>
-                <Text style={[styles.type ,{color:COLORS.mediumgray , fontSize:14 , textDecorationLine: 'line-through'}]}>{item.oldPrice}</Text>
-            </TouchableOpacity>
-        );
+
+    increment(){
+        this.setState({value: this.state.value + 1 })
     }
 
+    decrement(){
+        if (this.state.value === 0){
+            this.setState({value: 0})
+        } else {
+            this.setState({value: this.state.value - 1})
+        }
+    }
 
     setAnimate(availabel){
         if (availabel === 0){
@@ -113,6 +166,10 @@ class Cart extends Component {
         }
     }
 
+    submitSearch(){
+        this.props.navigation.navigate('searchResult', { search : this.state.search } );
+    }
+
     render() {
 
         const backgroundColor = this.state.backgroundColor.interpolate({
@@ -123,35 +180,43 @@ class Cart extends Component {
 
         return (
             <Container>
-                <Header style={[styles.header , {marginTop:Platform.OS === 'ios' ? 10 : 40}]} noShadow>
-                    <Animated.View style={[styles.headerView , { backgroundColor: backgroundColor, height: 80 , marginTop:-50 , alignItems:'center'}]}>
-                        <Right style={{flex:0 }}>
-                            <Button transparent onPress={() => this.props.navigation.navigate('home')} style={styles.headerBtn}>
-                                <Image source={require('../../assets/images/cancel.png')} style={styles.headerMenu} resizeMode={'contain'} />
+                <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
+                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
+                        <Right style={styles.flex0}>
+                            <Button transparent onPress={() => this.props.navigation.goBack()} style={styles.headerBtn}>
+                                <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
                             </Button>
                         </Right>
-                        <Text style={[styles.headerText , {top:10  , right:15}]}>{ i18n.t('cart') }</Text>
-                        <Left style={{flex:0 , backgroundColor:'#000'}}/>
+                        <Text style={[styles.headerText , styles.headerTitle]}>{ i18n.t('cart') }</Text>
+                        <Left style={styles.flex0}/>
                     </Animated.View>
                 </Header>
-                <Content  contentContainerStyle={{ flexGrow: 1 }} style={[styles.homecontent , {} ]}  onScroll={e => this.headerScrollingAnimation(e) }>
-                    <ImageBackground source={require('../../assets/images/bg_blue_big.png')} resizeMode={'cover'} style={styles.imageBackground}>
-                        <View style={{marginTop:70}}>
-                            <View style={[styles.inputView , { marginBottom:15}]}>
+                <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
+                    <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground}>
+                        <View style={Platform.OS === 'ios' ? styles.mt90 : styles.mT70}>
+                            <View style={[styles.inputView ,styles.mb15]}>
                                 <Item  style={styles.inputItem} bordered>
-                                    <Input onChangeText={(search) => this.setState({ search })} placeholder={ i18n.t('searchPlaceholder') } placeholderTextColor={'#acabae'} style={styles.modalInput}   />
+                                    <Input autoCapitalize='none' onSubmitEditing={() => this.submitSearch() } onChangeText={(search) => this.setState({ search })} placeholder={ i18n.t('searchPlaceholder') } placeholderTextColor={'#acabae'} style={styles.modalInput}   />
                                 </Item>
                                 <Image source={require('../../assets/images/search.png')} style={[styles.searchImg , styles.transform]} resizeMode={'contain'}/>
                             </View>
 
-                            <View style={[styles.directionRow , {paddingHorizontal:20 }]}>
-                                <TouchableOpacity>
-                                    <Text style={styles.type}>{ i18n.t('select') }</Text>
-                                </TouchableOpacity>
-                                <View style={styles.verticalLine}/>
-                                <TouchableOpacity>
-                                    <Text style={styles.type}>{ i18n.t('selectAll') }</Text>
-                                </TouchableOpacity>
+                            <View style={[styles.directionRowSpace , styles.ph23 ]}>
+                                <View style={styles.directionRow}>
+                                    <TouchableOpacity onPress={() => this.showCheckBox()}>
+                                        <Text style={styles.type}>{ i18n.t('select') }</Text>
+                                    </TouchableOpacity>
+                                    <View style={styles.verticalLine}/>
+                                    <TouchableOpacity  onPress={() => this.checkAll()}>
+                                        <Text style={styles.type}>{ i18n.t('selectAll') }</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                {
+                                    this.state.hideCheck ?
+                                        <TouchableOpacity onPress={() => this.props.navigation.navigate('paymentSteps')} style={styles.doneStyle}>
+                                            <Text style={[styles.type , {color:COLORS.labelBackground}]}>{ i18n.t('done') }</Text>
+                                        </TouchableOpacity> : <View />
+                                }
                             </View>
 
                             <View style={styles.flatContainer}>
@@ -159,8 +224,9 @@ class Cart extends Component {
                                     dataArray={dataArray}
                                     animation={true}
                                     expanded={true}
-                                    renderHeader={this._renderHeader}
-                                    renderContent={this._renderContent}
+                                    renderHeader={(item, expanded) => this._renderHeader(item, expanded , this.state.hideCheck)}
+                                    renderContent={(item) => this._renderContent(item, this.state.value)}
+                                    style={styles.accordion}
                                 />
                             </View>
                         </View>

@@ -4,6 +4,7 @@ import {Container, Content, Form, Item, Input, Label, Button, Toast, Header, Ico
 import styles from '../../assets/styles'
 import i18n from '../../locale/i18n'
 import {DoubleBounce} from "react-native-loader";
+import * as Animatable from 'react-native-animatable';
 
 
 class VerifyCode extends Component {
@@ -39,33 +40,34 @@ class VerifyCode extends Component {
                 <TouchableOpacity style={styles.authBack} onPress={() => this.props.navigation.goBack()}>
                     <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon  , {height:45 , width:45}]} />
                 </TouchableOpacity>
-                <Content contentContainerStyle={{ flexGrow: 1 }}>
-                    <KeyboardAvoidingView behavior={'padding'} style={styles.keyboardAvoid}>
+                <Content contentContainerStyle={styles.flexGrow}>
                         <View style={styles.imageBackgroundStyle}>
-                            <Image source={require('../../assets/images/logo.png')} style={styles.logoStyle} resizeMode={'contain'} />
+                            <Animatable.View animation="zoomIn" duration={1400}>
+                                <Image source={require('../../assets/images/logo.png')} style={styles.logoStyle} resizeMode={'contain'} />
+                            </Animatable.View>
 
                             <View style={styles.loginFormContainerStyle}>
-                                <Form style={{ width: '100%' , paddingHorizontal:25}}>
-                                    <Text style={styles.authTitle}>{ i18n.t('recoverPass') }</Text>
-                                    <Text style={styles.authDesc}>{ i18n.t('verifyText') }</Text>
+                                <KeyboardAvoidingView behavior={'padding'} style={styles.keyboardAvoid}>
+                                    <Form  style={[styles.w100 , styles.ph25 ]}>
+                                        <Text style={styles.authTitle}>{ i18n.t('recoverPass') }</Text>
+                                        <Text style={styles.authDesc}>{ i18n.t('verifyText') }</Text>
 
-                                    <View style={styles.itemView}>
-                                        <Item floatingLabel style={styles.loginItem} bordered>
-                                            <Label style={styles.label}>{ i18n.t('verifyCode') }</Label>
-                                            <Input onChangeText={(code) => this.setState({code})} keyboardType={'number-pad'} style={styles.input}  />
-                                        </Item>
-                                    </View>
+                                        <View style={styles.itemView}>
+                                            <Item floatingLabel style={styles.loginItem} bordered>
+                                                <Label style={styles.label}>{ i18n.t('verifyCode') }</Label>
+                                                <Input onChangeText={(code) => this.setState({code})} keyboardType={'number-pad'} style={styles.input}  />
+                                            </Item>
+                                        </View>
 
-                                    <View style={[styles.loginBtnContainer , {marginTop:45} ]}>
-                                        { this.renderSubmit() }
-                                    </View>
+                                        <View style={[styles.loginBtnContainer , styles.mt45 ]}>
+                                            { this.renderSubmit() }
+                                        </View>
 
-                                </Form>
-
+                                    </Form>
+                                </KeyboardAvoidingView>
 
                             </View>
                         </View>
-                    </KeyboardAvoidingView>
                 </Content>
             </Container>
         );

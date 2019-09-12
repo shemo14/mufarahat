@@ -9,6 +9,7 @@ import * as Permissions from 'expo-permissions';
 import MapView from 'react-native-maps';
 import * as Location from 'expo-location';
 import axios from 'axios';
+import * as Animatable from 'react-native-animatable';
 
 
 class Register extends Component {
@@ -145,70 +146,73 @@ class Register extends Component {
             <Container style={styles.container}>
 
                 <TouchableOpacity style={styles.authBack} onPress={() => this.props.navigation.goBack()}>
-                    <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon  , {height:45 , width:45}]} />
+                    <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
                 </TouchableOpacity>
 
-                <Content contentContainerStyle={{ flexGrow: 1 }}>
-                    <KeyboardAvoidingView behavior={'padding'} style={styles.keyboardAvoid}>
+                <Content contentContainerStyle={styles.flexGrow}>
                         <View style={styles.imageBackgroundStyle}>
-                            <Image source={require('../../assets/images/logo.png')} style={styles.logoStyle} resizeMode={'contain'} />
+                            <Animatable.View animation="zoomIn" duration={1400}>
+                                <Image source={require('../../assets/images/logo.png')} style={styles.logoStyle} resizeMode={'contain'} />
+                            </Animatable.View>
 
                             <View style={styles.loginFormContainerStyle}>
-                                <Form style={{ width: '100%' , paddingHorizontal:25}}>
-                                    <View style={styles.itemView}>
-                                        <Item floatingLabel style={styles.loginItem} bordered>
-                                            <Label style={styles.label}>{ i18n.t('fullName') }</Label>
-                                            <Input onChangeText={(fullName) => this.setState({fullName})} autoCapitalize='none' style={styles.input}  />
-                                        </Item>
-                                    </View>
+                                <KeyboardAvoidingView behavior={'padding'} style={styles.keyboardAvoid}>
+                                    <Form  style={[styles.w100 , styles.ph25 ]}>
+                                        <View style={styles.itemView}>
+                                            <Item floatingLabel style={styles.loginItem} bordered>
+                                                <Label style={styles.label}>{ i18n.t('fullName') }</Label>
+                                                <Input onChangeText={(fullName) => this.setState({fullName})} autoCapitalize='none' style={styles.input}  />
+                                            </Item>
+                                        </View>
 
-                                    <View style={[ styles.itemView , styles.inputMarginTop ]}>
-                                        <Item floatingLabel style={styles.loginItem} bordered>
-                                            <Label style={styles.label}>{ i18n.t('phoneNumber') }</Label>
-                                            <Input onChangeText={(phone) => this.setState({phone})} keyboardType={'number-pad'} style={styles.input}  />
-                                        </Item>
-                                    </View>
+                                        <View style={[ styles.itemView , styles.inputMarginTop ]}>
+                                            <Item floatingLabel style={styles.loginItem} bordered>
+                                                <Label style={styles.label}>{ i18n.t('phoneNumber') }</Label>
+                                                <Input onChangeText={(phone) => this.setState({phone})} keyboardType={'number-pad'} style={styles.input}  />
+                                            </Item>
+                                        </View>
 
-                                    <View style={[ styles.itemView , styles.inputMarginTop ]}>
-                                        <Item floatingLabel style={styles.loginItem} bordered>
-                                            <Label style={[styles.label]}>{ i18n.t('password') }</Label>
-                                            <Input autoCapitalize='none' onChangeText={(password) => this.setState({password})} secureTextEntry style={styles.input}  />
-                                        </Item>
+                                        <View style={[ styles.itemView , styles.inputMarginTop ]}>
+                                            <Item floatingLabel style={styles.loginItem} bordered>
+                                                <Label style={[styles.label]}>{ i18n.t('password') }</Label>
+                                                <Input autoCapitalize='none' onChangeText={(password) => this.setState({password})} secureTextEntry style={styles.input}  />
+                                            </Item>
 
-                                    </View>
+                                        </View>
 
-                                    <View style={[ styles.itemView , styles.inputMarginTop ]}>
-                                        <Item floatingLabel style={styles.loginItem} bordered>
-                                            <Label style={[styles.label]}>{ i18n.t('rePassword') }</Label>
-                                            <Input autoCapitalize='none' onChangeText={(rePassword) => this.setState({rePassword})} secureTextEntry style={styles.input}  />
-                                        </Item>
+                                        <View style={[ styles.itemView , styles.inputMarginTop ]}>
+                                            <Item floatingLabel style={styles.loginItem} bordered>
+                                                <Label style={[styles.label]}>{ i18n.t('rePassword') }</Label>
+                                                <Input autoCapitalize='none' onChangeText={(rePassword) => this.setState({rePassword})} secureTextEntry style={styles.input}  />
+                                            </Item>
 
-                                    </View>
+                                        </View>
 
-                                    <View style={[ styles.itemView , styles.inputMarginTop ]}>
-                                        <Item floatingLabel style={styles.loginItem} bordered onPress={() =>this._toggleModal()}>
-                                            <Label style={[styles.label]}>{ i18n.t('location') }</Label>
-                                            <Input autoCapitalize='none'  disabled value={this.state.city}  style={styles.input}  />
-                                        </Item>
-                                        <Image source={require('../../assets/images/map_marker_white.png')} style={{width:20 , height:20 , position:'absolute' , right:10 , zIndex:1 , top:'40%'}} resizeMode={'contain'} />
-                                    </View>
+                                        <View style={[ styles.itemView , styles.inputMarginTop ]}>
+                                            <Item floatingLabel style={[styles.loginItem , { top:0 , height:50}]} bordered onPress={() =>this._toggleModal()}>
+                                                <Label style={[styles.label , {top:-5}]}>{ i18n.t('location') }</Label>
+                                                <Input autoCapitalize='none'  disabled value={this.state.city}  style={[styles.input , { height:30 , lineHeight:23 , top:0}]}  />
+                                            </Item>
+                                            <Image source={require('../../assets/images/map_marker_white.png')} style={styles.regMarker} resizeMode={'contain'} />
+                                        </View>
 
-                                    <View style={[ styles.inputMarginTop ,styles.directionRow]}>
-                                        <CheckBox checked={true} color={'transparent'} style={styles.checkBox} />
-                                        <Text style={styles.agreeText}>{ i18n.t('agreeTo') } <Text  style={styles.termsText}>{ i18n.t('terms') }</Text></Text>
-                                    </View>
+                                        <View style={[ styles.inputMarginTop ,styles.directionRow]}>
+                                            <CheckBox checked={true} color={'transparent'} style={styles.checkBox} />
+                                            <Text style={styles.agreeText}>{ i18n.t('agreeTo') } <Text  style={styles.termsText}>{ i18n.t('terms') }</Text></Text>
+                                        </View>
 
-                                    <View style={styles.loginBtnContainer}>
-                                        { this.renderSubmit() }
-                                    </View>
-                                </Form>
+                                        <View style={styles.loginBtnContainer}>
+                                            { this.renderSubmit() }
+                                        </View>
+                                    </Form>
+                                </KeyboardAvoidingView>
 
                                 <Modal onBackdropPress={()=> this.setState({ isModalVisible : false })} isVisible={this.state.isModalVisible}>
-                                    <View style={[styles.modalStyle , {padding:10}]}>
+                                    <View style={[styles.modalStyle , styles.p10]}>
                                         {
                                             !this.state.initMap ? (
                                                 <MapView
-                                                    style={{ flex: 1 , width:'100%' , height:350 }}
+                                                    style={styles.mapView}
                                                     initialRegion={{
                                                         latitude: this.state.mapRegion.latitude,
                                                         longitude: this.state.mapRegion.longitude,
@@ -220,19 +224,18 @@ class Register extends Component {
                                                                     coordinate={this.state.mapRegion}
                                                                     onDragEnd={(e) =>  this._handleMapRegionChange(e.nativeEvent.coordinate)}
                                                     >
-                                                        <Image source={require('../../assets/images/location_map.png')} resizeMode={'contain'} style={{ width: 35, height: 35 }}/>
+                                                        <Image source={require('../../assets/images/location_map.png')} resizeMode={'contain'} style={styles.mapMarker}/>
                                                     </MapView.Marker>
                                                 </MapView>
                                             ) : (<View />)
                                         }
-                                        <Button onPress={() => this.confirmLocation()} style={[styles.loginBtn ,{marginTop:10}]}>
+                                        <Button onPress={() => this.confirmLocation()} style={[styles.loginBtn ,styles.mt10]}>
                                             <Text style={styles.btnTxt}>{ i18n.t('confirm') }</Text>
                                         </Button>
                                     </View>
                                 </Modal>
                             </View>
                         </View>
-                    </KeyboardAvoidingView>
                 </Content>
             </Container>
         );

@@ -19,6 +19,9 @@ import styles from '../../assets/styles'
 import i18n from '../../locale/i18n'
 import COLORS from '../../src/consts/colors'
 import { DoubleBounce } from 'react-native-loader';
+import {getRules} from '../actions'
+import * as Animatable from 'react-native-animatable';
+import {connect} from "react-redux";
 
 
 
@@ -38,12 +41,6 @@ class Rules extends Component {
         }
     }
 
-
-
-    static navigationOptions = () => ({
-        drawerLabel: i18n.t('terms') ,
-        drawerIcon: (<Image source={require('../../assets/images/law.png')} style={{ height: 20, width: 20 }} resizeMode={'contain'} /> )
-    })
 
 
 
@@ -80,6 +77,19 @@ class Rules extends Component {
         }
     }
 
+    componentWillMount() {
+        this.props.getRules( this.props.lang )
+    }
+
+    renderLoader(){
+        if (this.props.loader){
+            return(
+                <View style={{ alignItems: 'center', justifyContent: 'center', height: height , alignSelf:'center' , backgroundColor:'#fff' , width:'100%' , position:'absolute' , zIndex:1  }}>
+                    <DoubleBounce size={20} color={COLORS.labelBackground} />
+                </View>
+            );
+        }
+    }
 
     render() {
 
@@ -89,41 +99,34 @@ class Rules extends Component {
         });
         return (
             <Container>
-                <Header style={[styles.header , {marginTop:Platform.OS === 'ios' ? 10 : 40}]} noShadow>
-                    <Animated.View style={[styles.headerView , { backgroundColor: backgroundColor, height: 80 , marginTop:-50 , alignItems:'center'}]}>
-                        <Right style={{flex:0 }}>
-                            <Button transparent onPress={() => this.props.navigation.navigate('drawerNavigator')} style={styles.headerBtn}>
-                                <Image source={require('../../assets/images/cancel.png')} style={styles.headerMenu} resizeMode={'contain'} />
+                <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
+                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
+                        <Right style={styles.flex0}>
+                            <Button transparent onPress={() => this.props.navigation.goBack()} style={styles.headerBtn}>
+                                <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
                             </Button>
                         </Right>
-                        <Text style={[styles.headerText , {top:10  , right:15}]}>{ i18n.t('terms') }</Text>
-                        <Left style={{flex:0 , backgroundColor:'#000'}}/>
+                        <Text style={[styles.headerText , styles.headerTitle]}>{ i18n.t('terms') }</Text>
+                        <Left style={styles.flex0}/>
                     </Animated.View>
                 </Header>
-                <Content  contentContainerStyle={{ flexGrow: 1 }} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
+                <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
+                    { this.renderLoader() }
                     <ImageBackground source={require('../../assets/images/rules_bg.png')} resizeMode={'cover'} style={styles.imageBackground}>
                         <View style={[styles.curvedImg]}>
-                            <Image source={require('../../assets/images/rules_pic.png')} style={[styles.swiperimageEvent , { borderBottomLeftRadius:0}]} resizeMode={'cover'} />
+                            <Image source={require('../../assets/images/rules_pic.png')} style={[styles.headImg , styles.bBLR0]} resizeMode={'cover'} />
                             <View style={styles.overBg}/>
                         </View>
-                        <View style={{padding:20}}>
-                            <View style={{marginBottom:10}}>
-                                <Text style={[styles.termsText , {color:COLORS.boldgray , fontSize:14}]}>البند الأول</Text>
-                                <Text style={[styles.type ,{color:COLORS.mediumgray }]}>هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص </Text>
-                            </View>
-                            <View style={{marginBottom:10}}>
-                                <Text style={[styles.termsText , {color:COLORS.boldgray , fontSize:14}]}>البند الثاني</Text>
-                                <Text style={[styles.type ,{color:COLORS.mediumgray }]}>هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص </Text>
-                            </View>
-                            <View style={{marginBottom:10}}>
-                                <Text style={[styles.termsText , {color:COLORS.boldgray , fontSize:14}]}>البند الثالث</Text>
-                                <Text style={[styles.type ,{color:COLORS.mediumgray }]}>هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص هذا النص </Text>
-                            </View>
+                        <View style={styles.p20}>
+                            <Animatable.View animation="fadeInUp" duration={1000} style={styles.mb10}>
+                                {/*<Text style={[styles.termsText , styles.aSFS , {color:COLORS.boldgray , fontSize:14,  writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr'}]}>البند الأول</Text>*/}
+                                <Text style={[styles.type ,{color:COLORS.mediumgray ,  writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr'}]}>  { this.props.rules } </Text>
+                            </Animatable.View>
                         </View>
-                        <View style={[ styles.directionRow , {marginLeft:15}]}>
-                            <CheckBox checked={true} color={COLORS.labelBackground} style={{marginRight:20 , paddingRight:2 , backgroundColor:COLORS.labelBackground}} />
+                        <Animatable.View animation="fadeInUp" duration={1000} style={[ styles.directionRow , styles.ml15]}>
+                            <CheckBox checked={true} color={COLORS.labelBackground} style={[ styles.mr20 , styles.pr2 ,{backgroundColor:COLORS.labelBackground}]} />
                             <Text style={[styles.agreeText , {color:COLORS.mediumgray}]}>{ i18n.t('agreeTo') } <Text  style={styles.termsText}>{ i18n.t('terms') }</Text></Text>
-                        </View>
+                        </Animatable.View>
                     </ImageBackground>
                 </Content>
             </Container>
@@ -132,4 +135,11 @@ class Rules extends Component {
     }
 }
 
-export default Rules;
+const mapStateToProps = ({ lang , rules }) => {
+    return {
+        lang: lang.lang,
+        rules: rules.rules,
+        loader: rules.loader
+    };
+};
+export default connect(mapStateToProps, {getRules})(Rules);

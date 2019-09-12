@@ -6,6 +6,9 @@ import i18n from '../../locale/i18n'
 import COLORS from '../../src/consts/colors'
 import { DoubleBounce } from 'react-native-loader';
 import FooterSection from './FooterSection';
+import RBSheet from "react-native-raw-bottom-sheet";
+import DrawerCustomization from '../routes/DrawerCustomization';
+import * as Animatable from 'react-native-animatable';
 
 
 
@@ -62,6 +65,10 @@ class Profile extends Component {
         }
     }
 
+    closeDrawer(){
+        this.RBSheet.close()
+    }
+
     render() {
 
         const backgroundColor = this.state.backgroundColor.interpolate({
@@ -72,54 +79,69 @@ class Profile extends Component {
 
         return (
             <Container>
-                <Header style={[styles.header , {marginTop:Platform.OS === 'ios' ? 10 : 40}]} noShadow>
-                    <Animated.View style={[styles.headerView , { backgroundColor: backgroundColor, height: 80 , marginTop:-50 , alignItems:'center'}]}>
-                        <Button transparent onPress={() => this.props.navigation.openDrawer()} style={styles.headerBtn}>
+                <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
+                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
+                        <Button transparent onPress={() => this.RBSheet.open()} style={styles.headerBtn}>
                             <Image source={require('../../assets/images/menu.png')} style={[styles.headerMenu , styles.transform]} resizeMode={'contain'} />
                         </Button>
-                        <Text style={[styles.headerText , {top:15}]}>{ i18n.t('profile') }</Text>
+                        <Text style={[styles.headerText , styles.t15]}>{ i18n.t('profile') }</Text>
                         <Button onPress={() => this.props.navigation.navigate('cart')} transparent  style={styles.headerBtn}>
                             <Image source={require('../../assets/images/shopping_cart.png')} style={styles.headerMenu} resizeMode={'contain'} />
                         </Button>
                     </Animated.View>
                 </Header>
-                <Content  contentContainerStyle={{ flexGrow: 1 }} style={[styles.homecontent , {} ]}  onScroll={e => this.headerScrollingAnimation(e) }>
-                    <ImageBackground source={require('../../assets/images/bg_blue.png')} resizeMode={'cover'} style={styles.imageBackground}>
+                <Content  contentContainerStyle={styles.flexGrow} style={styles.homecontent}  onScroll={e => this.headerScrollingAnimation(e) }>
+                    <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue.png') : require('../../assets/images/bg_blue2.png')} resizeMode={'cover'} style={styles.imageBackground}>
 
-                        <View style={styles.profileImgParent}>
+                        <Animatable.View animation="zoomIn" duration={1000} style={styles.profileImgParent}>
                             <Image source={require('../../assets/images/profile.png')} style={[styles.profileImg]} resizeMode={'cover'} />
-                        </View>
+                        </Animatable.View>
 
-                        <View style={{justifyContent:'center' , alignItems:'center' , flexDirection:'column'}}>
-                            <Text style={[styles.type ,{color:COLORS.boldgray , fontFamily: I18nManager.isRTL ? 'cairoBold' : 'openSansBold'}]}>اسم المستخدم بالكامل</Text>
-                            <TouchableOpacity onPress={() => this.props.navigation.navigate('editProfile')} style={{flexDirection:'row' , justifyContent:'center' , alignItems:'center'}}>
-                                <Image source={require('../../assets/images/edit_profile.png')} style={[styles.headerMenu , styles.transform , {marginRight:7}]} resizeMode={'contain'} />
-                                <Text style={[styles.type ,{color:COLORS.darkRed , marginVertical:10}]}>تعديل الملف الشخصي</Text>
-                            </TouchableOpacity>
+                        <View style={styles.directionColumnCenter}>
+                            <Animatable.Text animation="fadeInUp" duration={1400} style={[styles.type , styles.termsText ,{color:COLORS.boldgray }]}>{ i18n.t('fullName') }</Animatable.Text>
+                            <Animatable.View animation="fadeInUp" duration={1800}>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('editProfile')} style={styles.directionRowCenter}>
+                                    <Image source={require('../../assets/images/edit_profile.png')} style={[styles.headerMenu , styles.transform , {marginRight:7}]} resizeMode={'contain'} />
+                                    <Text style={[styles.type ,{color:COLORS.darkRed , marginVertical:10}]}>{ i18n.t('editProfile') }</Text>
+                                </TouchableOpacity>
+                            </Animatable.View>
                         </View>
 
                         <View style={[styles.line , {borderColor:'#cfcfcf'}]}/>
 
-                        <View style={{flexDirection:'row' , paddingHorizontal:20}}>
-                            <Image source={require('../../assets/images/smartphone.png')} style={[styles.headerMenu , {marginRight:10}]} resizeMode={'contain'} />
+                        <Animatable.View animation={I18nManager.isRTL ? "fadeInRight" : "fadeInLeft"} duration={2000} style={[ styles.directionRow , styles.ph23]}>
+                            <Image source={require('../../assets/images/smartphone.png')} style={[styles.headerMenu ,styles.mr10]} resizeMode={'contain'} />
                             <Text style={[styles.type ,{color:COLORS.mediumgray}]}>12365478945</Text>
-                        </View>
+                        </Animatable.View>
 
-                        <View style={{flexDirection:'row' , paddingHorizontal:20 , marginTop:15}}>
-                            <Image source={require('../../assets/images/marker_gray.png')} style={[styles.headerMenu , {marginRight:10}]} resizeMode={'contain'} />
+                        <Animatable.View animation={I18nManager.isRTL ? "fadeInRight" : "fadeInLeft"} duration={2000} style={[ styles.directionRow , styles.ph23 , styles.mt15]}>
+                            <Image source={require('../../assets/images/marker_gray.png')} style={[styles.headerMenu ,styles.mr10]} resizeMode={'contain'} />
                             <Text style={[styles.type ,{color:COLORS.mediumgray}]}>الرياض - جدة</Text>
-                        </View>
+                        </Animatable.View>
 
                         <View style={[styles.line , {borderColor:'#cfcfcf'}]}/>
 
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('changeOldPass')} style={{flexDirection:'row' , justifyContent:'center' , alignItems:'center' ,alignSelf:'center'}}>
-                            <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>تغيير كلمة المرور</Text>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('changeOldPass')} style={[ styles.directionRowCenter , {alignSelf:'center'}]}>
+                            <Animatable.Text animation="fadeInUp" duration={2400} style={[styles.headerText ,{color:COLORS.labelBackground}]}>{ i18n.t('changePass') }</Animatable.Text>
                         </TouchableOpacity>
 
                     </ImageBackground>
                 </Content>
 
                 <FooterSection routeName={'profile'} navigation={this.props.navigation}/>
+                {/*drawer content*/}
+                <RBSheet
+                    ref={ref => {
+                        this.RBSheet = ref;
+                    }}
+                    height={400}
+                    duration={350}
+                    customStyles={{
+                        container: styles.drawerCont
+                    }}
+                >
+                    <DrawerCustomization onClose={() => this.closeDrawer()} navigation={this.props.navigation}/>
+                </RBSheet>
             </Container>
 
         );

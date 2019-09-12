@@ -215,20 +215,20 @@ class PaymentSteps extends Component {
 
         return (
             <Container>
-                <Header style={[styles.header , {marginTop:Platform.OS === 'ios' ? 10 : 40}]} noShadow>
-                    <Animated.View style={[styles.headerView , { backgroundColor: backgroundColor, height: 80 , marginTop:-50 , alignItems:'center'}]}>
-                        <Right style={{flex:0 }}>
+                <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
+                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
+                        <Right style={styles.flex0}>
                             <Button transparent onPress={() => this.props.navigation.goBack()} style={styles.headerBtn}>
                                 <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
                             </Button>
                         </Right>
-                        <Text style={[styles.headerText , {top:10  , right:15}]}>{ i18n.t('finishOrder') }</Text>
-                        <Left style={{flex:0 , backgroundColor:'#000'}}/>
+                        <Text style={[styles.headerText , styles.headerTitle]}>{ i18n.t('finishOrder') }</Text>
+                        <Left style={styles.flex0}/>
                     </Animated.View>
                 </Header>
-                <Content  contentContainerStyle={{ flexGrow: 1 }} style={[styles.homecontent , {} ]}  onScroll={e => this.headerScrollingAnimation(e) }>
-                    <KeyboardAvoidingView behavior={'padding'} style={styles.keyboardAvoid}>
-                        <ImageBackground source={require('../../assets/images/bg_blue.png')} resizeMode={'cover'} style={styles.imageBackground}>
+
+                <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
+                        <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue.png') : require('../../assets/images/bg_blue2.png')} resizeMode={'cover'} style={styles.imageBackground}>
                             <View style={[styles.finishOrder]}>
                                 <Swiper scrollEnabled={false} horizontal={true} dotStyle={styles.orderdoteStyle} activeDotStyle={styles.orderactiveDot}
                                         containerStyle={{width:'100%'}} showsButtons={true}
@@ -237,15 +237,16 @@ class PaymentSteps extends Component {
                                         nextButton={this.nextBtn()}
                                         loop={false} autoplay={false}
                                 >
-                                    <View style={{flexDirection:'column'}}>
+                                    <View style={styles.directionColumn}>
+                                        <KeyboardAvoidingView behavior={'padding'} style={styles.w100}>
                                         <View style={[styles.tklfa , { borderColor:COLORS.yellowBorder}]}>
-                                            <Text style={[styles.type ,{color:COLORS.boldgray}]}>تكلفة الطلبية كاملة : </Text>
+                                            <Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('fullOrderCost') } : </Text>
                                             <Text style={[styles.type ,{color:COLORS.darkRed}]}>116</Text>
                                         </View>
                                         <View style={[styles.line , {marginVertical:0}]}/>
 
-                                        <View style={{paddingVertical:20 , paddingHorizontal:10 , alignItems:'center'}}>
-                                            <Image source={require('../../assets/images/pic_promocode.png')} resizeMode={'contain'} style={{width:'100%' , height:200 , marginBottom:45}} />
+                                        <View style={[styles.pv20 , styles.ph10 ,{ alignItems:'center'}]}>
+                                            <Image source={require('../../assets/images/pic_promocode.png')} resizeMode={'contain'} style={styles.paymentImg} />
                                             <View style={[styles.itemView ,{borderColor: COLORS.mediumgray , width:'90%'}]}>
                                                 <Item floatingLabel style={[styles.loginItem,{width:'100%'}]} bordered>
                                                     <Label style={[styles.label , {backgroundColor: '#fff' , color:COLORS.mediumgray , top:15 , left:12}]}>{ i18n.t('disCode') }</Label>
@@ -260,31 +261,34 @@ class PaymentSteps extends Component {
                                                 </Button>
                                              : <Text />
                                         }
+                                        </KeyboardAvoidingView>
                                     </View>
-                                    <View style={{flexDirection:'column'}}>
+                                    <View style={styles.directionColumn}>
+
+                                        <KeyboardAvoidingView behavior={'padding'} style={styles.w100}>
                                         <ScrollView>
 
                                             <View style={[styles.tklfa , { borderColor:COLORS.yellowBorder}]}>
-                                                <Text style={[styles.type ,{color:COLORS.boldgray}]}>تكلفة الطلبية كاملة : </Text>
+                                                <Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('fullOrderCost') } : </Text>
                                                 <Text style={[styles.type ,{color:COLORS.darkRed}]}>116</Text>
                                             </View>
+
                                             <View style={[styles.line , {marginVertical:0}]}/>
 
-                                            <View style={{paddingVertical:10 , paddingHorizontal:25 }}>
-                                                <Text style={[styles.type ,{color:COLORS.labelBackground}]}>مكان توصيل الطلب</Text>
+                                            <View style={[ styles.pv10 ,styles.ph25]}>
+                                                <Text style={[styles.type , styles.aSFS ,{color:COLORS.labelBackground}]}>{ i18n.t('deliveryPlace') }</Text>
                                                 <View>
                                                     <Item style={styles.itemPicker} regular >
                                                         <Label style={[styles.labelItem , {top:-18 , left:15 , position:'absolute'}]}>{ i18n.t('city') }</Label>
                                                         <Picker
                                                             mode="dropdown"
-                                                            iosIcon={<Icon name="arrow-down" />}
                                                             style={styles.picker}
                                                             placeholderStyle={{ color: "#acabae" }}
                                                             placeholderIconColor="#acabae"
                                                             selectedValue={this.state.selectedCountry}
                                                             onValueChange={(value) => this.setState({ selectedCountry: value })}
                                                         >
-                                                            <Picker.Item label={'اختر المدينة'} value={null} />
+                                                            <Picker.Item label={ i18n.t('selectCity') } value={null} />
                                                             <Picker.Item label={'الرياض'} value={"1"} />
                                                             <Picker.Item label={'الامارات'} value={"2"} />
                                                             <Picker.Item label={'مصر'} value={"3"} />
@@ -297,34 +301,32 @@ class PaymentSteps extends Component {
                                                         <Label style={[styles.labelItem , {top:-18 , left:15 , position:'absolute'}]}>{ i18n.t('region') }</Label>
                                                         <Picker
                                                             mode="dropdown"
-                                                            iosIcon={<Icon name="arrow-down" />}
                                                             style={styles.picker}
                                                             placeholderStyle={{ color: "#acabae" }}
                                                             placeholderIconColor="#acabae"
                                                             selectedValue={this.state.selectedRegion}
                                                             onValueChange={(value) => this.setState({ selectedRegion: value })}
                                                         >
-                                                            <Picker.Item label={'اختر المنطقة'} value={null} />
+                                                            <Picker.Item label={ i18n.t('selectRegion') } value={null} />
                                                             <Picker.Item label={'المنصوره'} value={"1"} />
                                                             <Picker.Item label={'القاهره'} value={"2"} />
                                                         </Picker>
                                                         <Image source={require('../../assets/images/right_arrow_drop.png')} style={styles.pickerImg} resizeMode={'contain'} />
                                                     </Item>
                                                 </View>
-                                                <Text style={[styles.type ,{color:COLORS.labelBackground , marginTop:15}]}>طلبات اضافية</Text>
+                                                <Text style={[styles.type , styles.aSFS ,{color:COLORS.labelBackground , marginTop:15}]}>{ i18n.t('additionalOrders') }</Text>
                                                 <View>
                                                     <Item style={styles.itemPicker} regular >
                                                         <Label style={[styles.labelItem , {top:-18 , left:15 , position:'absolute'}]}>{ i18n.t('packingMethod') }</Label>
                                                         <Picker
                                                             mode="dropdown"
-                                                            iosIcon={<Icon name="arrow-down" />}
                                                             style={styles.picker}
                                                             placeholderStyle={{ color: "#acabae" }}
                                                             placeholderIconColor="#acabae"
                                                             selectedValue={this.state.selectedPacking}
                                                             onValueChange={(value) => this.setState({ selectedPacking: value })}
                                                         >
-                                                            <Picker.Item label={'اختر الطريقة المناسبة'} value={null} />
+                                                            <Picker.Item label={ i18n.t('chooseMethod') } value={null} />
                                                             <Picker.Item label={'1 الطريقة'} value={"1"} />
                                                             <Picker.Item label={'2 الطريقة'} value={"2"} />
                                                             <Picker.Item label={'3 الطريقة'} value={"3"} />
@@ -333,9 +335,9 @@ class PaymentSteps extends Component {
                                                     </Item>
                                                 </View>
                                                 <View >
-                                                    <Label style={[styles.labelItem , {top:8 , left:20 , zIndex:1}]}>تفاصيل اكثر</Label>
+                                                    <Label style={[styles.labelItem , {top:8 , left:20 , zIndex:1}]}>{ i18n.t('moreDetails') }</Label>
                                                     <Textarea
-                                                        placeholder={'ادخل وصف بالتفصيل بالطريقة المراد التغليف بها'}
+                                                        placeholder={ i18n.t('howToPack') }
                                                         value={this.state.msg} onChangeText={(msg) => this.setState({msg})}
                                                         autoCapitalize='none'
                                                         style={[styles.textArea]}
@@ -344,23 +346,26 @@ class PaymentSteps extends Component {
                                                 </View>
                                             </View>
                                         </ScrollView>
+                                        </KeyboardAvoidingView>
                                     </View>
                                     <View style={{flexDirection:'column'}}>
+
+                                        <KeyboardAvoidingView behavior={'padding'} style={styles.w100}>
                                         <ScrollView>
 
                                             <View style={[styles.tklfa , { borderColor:COLORS.yellowBorder}]}>
-                                                <Text style={[styles.type ,{color:COLORS.boldgray}]}>تكلفة الطلبية كاملة : </Text>
+                                                <Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('fullOrderCost') } : </Text>
                                                 <Text style={[styles.type ,{color:COLORS.darkRed}]}>116</Text>
                                             </View>
                                             <View style={[styles.line , {marginVertical:0}]}/>
                                             <View style={[styles.tklfa , { borderColor:COLORS.purpleBorder}]}>
-                                                <Text style={[styles.type ,{color:COLORS.boldgray}]}>سعر التوصيل : </Text>
+                                                <Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('deliveryPrice') } : </Text>
                                                 <Text style={[styles.type ,{color:COLORS.darkRed}]}>116</Text>
                                             </View>
                                             <View style={[styles.line , {marginVertical:0}]}/>
 
                                             <View style={{paddingVertical:10 , paddingHorizontal:25 }}>
-                                                <Text style={[styles.type ,{color:COLORS.labelBackground}]}>معلومات اساسية</Text>
+                                                <Text style={[styles.type , styles.aSFS ,{color:COLORS.labelBackground}]}>{ i18n.t('basicInfo') }</Text>
                                                 <View style={[styles.itemView ,{borderColor: COLORS.mediumgray , marginTop:25 }]}>
                                                     <Item floatingLabel style={[styles.loginItem,{width:'100%'}]} bordered>
                                                         <Label style={[styles.label , {backgroundColor: '#fff' , color:COLORS.mediumgray , top:15 , left:12}]}>{ i18n.t('name') }</Label>
@@ -373,47 +378,47 @@ class PaymentSteps extends Component {
                                                         <Input onChangeText={(phone) => this.setState({phone})} keyboardType={'number-pad'} style={[styles.input ,{color:COLORS.mediumgray}]}  />
                                                     </Item>
                                                 </View>
-                                                <View style={[ styles.itemView , {borderColor: COLORS.mediumgray , marginTop:25} ]}>
+                                                <View onPress={() =>this._toggleModal()} style={[ styles.itemView , {borderColor: COLORS.mediumgray , marginTop:25} ]}>
                                                     <Item floatingLabel style={[styles.loginItem ,{width:'100%'}]} bordered onPress={() =>this._toggleModal()}>
-                                                        <Label style={[styles.label , {backgroundColor: '#fff' , color:COLORS.mediumgray , top:15 , left:12}]}>مكان التسليم</Label>
+                                                        <Label style={[styles.label , {backgroundColor: '#fff' , color:COLORS.mediumgray , top:15 , left:12}]}>{ i18n.t('deliveryPlace') }</Label>
                                                         <Input autoCapitalize='none'  disabled value={this.state.city}  style={[styles.input ,{color:COLORS.mediumgray}]}  />
                                                     </Item>
-                                                    <Image source={require('../../assets/images/marker_gray.png')} style={{width:20 , height:20 , position:'absolute' , right:5 , zIndex:1 , top:'40%'}} resizeMode={'contain'} />
+                                                    <Image onPress={() =>this._toggleModal()} source={require('../../assets/images/marker_gray.png')} style={{width:20 , height:20 , position:'absolute' , right:5 , zIndex:1 , top:'40%'}} resizeMode={'contain'} />
                                                 </View>
                                                 <View>
                                                     <Item style={styles.itemPicker} regular >
                                                         <Label style={[styles.labelItem , {top:-18 , left:15 , position:'absolute'}]}>{ i18n.t('paymentMethod') }</Label>
                                                         <Picker
                                                             mode="dropdown"
-                                                            iosIcon={<Icon name="arrow-down" />}
                                                             style={styles.picker}
                                                             placeholderStyle={{ color: "#acabae" }}
                                                             placeholderIconColor="#acabae"
                                                             selectedValue={this.state.selectedPayment}
                                                             onValueChange={(value) => this.setState({ selectedPayment: value })}
                                                         >
-                                                            <Picker.Item label={'اختر الطريقة المناسبة'} value={null} />
-                                                            <Picker.Item label={'مدي'} value={"1"} />
-                                                            <Picker.Item label={'فيزا'} value={"2"} />
-                                                            <Picker.Item label={'عند الاستلام'} value={"3"} />
-                                                            <Picker.Item label={'دفع أبل'} value={"4"} />
+                                                            <Picker.Item label={ i18n.t('chooseMethod') } value={null} />
+                                                            <Picker.Item label={ i18n.t('mada') } value={"1"} />
+                                                            <Picker.Item label={ i18n.t('Visa') } value={"2"} />
+                                                            <Picker.Item label={ i18n.t('uponReceipt') } value={"3"} />
+                                                            <Picker.Item label={ i18n.t('applePay') } value={"4"} />
                                                         </Picker>
                                                         <Image source={require('../../assets/images/right_arrow_drop.png')} style={styles.pickerImg} resizeMode={'contain'} />
                                                     </Item>
                                                 </View>
                                                 <Button onPress={() => this.props.navigation.navigate('payment')} style={[styles.loginBtn ,{marginTop:85 , width:180 }]}>
-                                                    <Text style={styles.btnTxt}>اتمام الطلب</Text>
+                                                    <Text style={styles.btnTxt}>{ i18n.t('completionOfOrder') }</Text>
                                                 </Button>
                                             </View>
                                         </ScrollView>
+                                        </KeyboardAvoidingView>
                                     </View>
                                 </Swiper>
                                 <Modal onBackdropPress={()=> this.setState({ isModalVisible : false })} isVisible={this.state.isModalVisible}>
-                                    <View style={[styles.modalStyle , {padding:10}]}>
+                                    <View style={[styles.modalStyle , styles.p10 ]}>
                                         {
                                             !this.state.initMap ? (
                                                 <MapView
-                                                    style={{ flex: 1 , width:'100%' , height:350 }}
+                                                    style={styles.mapView}
                                                     initialRegion={{
                                                         latitude: this.state.mapRegion.latitude,
                                                         longitude: this.state.mapRegion.longitude,
@@ -425,19 +430,18 @@ class PaymentSteps extends Component {
                                                                     coordinate={this.state.mapRegion}
                                                                     onDragEnd={(e) =>  this._handleMapRegionChange(e.nativeEvent.coordinate)}
                                                     >
-                                                        <Image source={require('../../assets/images/location_map.png')} resizeMode={'contain'} style={{ width: 35, height: 35 }}/>
+                                                        <Image source={require('../../assets/images/location_map.png')} resizeMode={'contain'} style={styles.mapMarker}/>
                                                     </MapView.Marker>
                                                 </MapView>
                                             ) : (<View />)
                                         }
-                                        <Button onPress={() => this.confirmLocation()} style={[styles.loginBtn ,{marginTop:10}]}>
+                                        <Button onPress={() => this.confirmLocation()} style={[styles.loginBtn , styles.mt10]}>
                                             <Text style={styles.btnTxt}>{ i18n.t('confirm') }</Text>
                                         </Button>
                                     </View>
                                 </Modal>
                             </View>
                         </ImageBackground>
-                    </KeyboardAvoidingView>
                 </Content>
 
             </Container>

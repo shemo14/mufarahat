@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {View, Text, Image, Dimensions} from "react-native";
+import {View, Text, Image, Dimensions, Animated} from "react-native";
 import {
     Icon,
     CheckBox
@@ -15,7 +15,13 @@ const IS_IPHONE_X = height === 812 || height === 896;
 
 
 class CartHeaderItem extends Component {
+    constructor(props){
+        super(props);
 
+        this.state={
+            checked:false
+        }
+    }
 
     render() {
 
@@ -35,7 +41,7 @@ class CartHeaderItem extends Component {
                         ? <Icon style={styles.arrowIcon} type={'FontAwesome'} name="angle-up" />
                         : <Icon style={styles.arrowIcon} type={'FontAwesome'} name="angle-down" />}
                     {
-                        this.props.hideCheck ? <CheckBox checked={true}  color={COLORS.labelBackground} style={[styles.quesCheckBox,styles.headerCheck]} /> : <View />
+                        this.props.hideCheck ? <CheckBox onPress={() => this.setState({checked:!this.state.checked})} checked={this.state.checked}  color={COLORS.labelBackground} style={[styles.quesCheckBox,styles.headerCheck]} /> : <View />
                     }
                 </View>
             </View>

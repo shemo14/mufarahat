@@ -28,6 +28,7 @@ import COLORS from '../../src/consts/colors'
 import { DoubleBounce } from 'react-native-loader';
 import StarRating from 'react-native-star-rating';
 import CartHeaderItem from './CartHeaderItem'
+import CartBodyItem from './CartBodyItem'
 import * as Animatable from 'react-native-animatable';
 
 
@@ -51,7 +52,7 @@ class Cart extends Component {
             status: null,
             backgroundColor: new Animated.Value(0),
             availabel: 0,
-            value:0,
+            value:1,
             search:'',
             hideCheck:false,
             checkAll:false
@@ -78,60 +79,9 @@ class Cart extends Component {
     }
 
     _renderContent(item , value) {
-        return (
-            <View style={styles.acorrContent}>
-                <View style={styles.directionRowSpace}>
-                    <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{item.category}</Text>
-                    <StarRating
-                        disabled={false}
-                        maxStars={5}
-                        rating={5}
-                        fullStarColor={'#f0aa0c'}
-                        starSize={20}
-                        starStyle={{color: '#f0aa0c', marginLeft: 5}}
-                    />
-                </View>
-                <Text style={[styles.type , styles.mv10 , styles.aSFS ,{color:COLORS.boldgray }]}>{ i18n.t('itemSpecification') }</Text>
-                <Text style={[styles.type , styles.aSFS ,{color:COLORS.mediumgray}]}>مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة</Text>
-
-                <View style={[styles.line ]}/>
-
-                <View style={styles.directionRowSpace}>
-                    <View style={styles.directionRowCenter}>
-                        <TouchableOpacity onPress={() => this.increment()} style={styles.touchPlus}>
-                            <Icon type={'Entypo'} name={'plus'} style={styles.plus} />
-                        </TouchableOpacity>
-                        <Text style={[styles.countText ]}>{value}</Text>
-                        <TouchableOpacity onPress={() => this.decrement()} style={styles.touchMinus}>
-                            <Icon type={'Entypo'} name={'minus'} style={styles.minus} />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.directionRowSpace}>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('paymentSteps')} >
-                            <Image source={require('../../assets/images/credit_card.png')} style={[styles.headerMenu , styles.mr20]} resizeMode={'contain'} />
-                        </TouchableOpacity>
-                        <TouchableOpacity >
-                            <Image source={require('../../assets/images/dustbin.png')} style={styles.headerMenu} resizeMode={'contain'} />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-
-            </View>
-        );
+        return <CartBodyItem item={item}  value={value}  />;
     }
 
-
-    increment(){
-        this.setState({value: this.state.value + 1 })
-    }
-
-    decrement(){
-        if (this.state.value === 0){
-            this.setState({value: 0})
-        } else {
-            this.setState({value: this.state.value - 1})
-        }
-    }
 
     setAnimate(availabel){
         if (availabel === 0){

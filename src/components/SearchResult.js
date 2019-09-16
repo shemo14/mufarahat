@@ -6,20 +6,16 @@ import i18n from '../../locale/i18n'
 import COLORS from '../../src/consts/colors'
 import { DoubleBounce } from 'react-native-loader';
 import * as Animatable from 'react-native-animatable';
+import {getSearchResult} from "../actions";
+import {connect} from "react-redux";
+import searchResult from "../reducers/SearchReducer";
 
 
 
 const height = Dimensions.get('window').height;
 const IS_IPHONE_X = height === 812 || height === 896;
 
-const products=[
-    {id:1 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_of_sweet.png') , price:'12 ريال', oldPrice:'30 ريال'},
-    {id:2 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_two-1.png') , price:'12 ريال', oldPrice:'30 ريال'},
-    {id:3 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_of_sweet.png') , price:'12 ريال', oldPrice:'30 ريال'},
-    {id:4 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_two-1.png') , price:'12 ريال', oldPrice:'30 ريال'},
-    {id:5 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_of_sweet.png') , price:'12 ريال', oldPrice:'30 ريال'},
-    {id:6 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_two-1.png') , price:'12 ريال', oldPrice:'30 ريال'},
-]
+
 
 
 class SearchResult extends Component {
@@ -27,7 +23,6 @@ class SearchResult extends Component {
         super(props);
 
         this.state={
-            products,
             status: null,
             backgroundColor: new Animated.Value(0),
             availabel: 0,
@@ -42,18 +37,33 @@ class SearchResult extends Component {
     });
 
 
+    componentWillMount() {
+        this.props.getSearchResult( this.props.lang , this.props.navigation.state.params.search )
+    }
+
+    renderLoader(){
+        if (this.props.loader){
+            return(
+                <View style={{ alignItems: 'center', justifyContent: 'center', height: height , alignSelf:'center' , backgroundColor:'#fff' , width:'100%' , position:'absolute' , zIndex:1  }}>
+                    <DoubleBounce size={20} color={COLORS.labelBackground} />
+                </View>
+            );
+        }
+    }
+
+
     _keyExtractor = (item, index) => item.id;
 
     renderItems = (item) => {
         return(
-            <Animatable.View animation="zoomIn" duration={1000}>
+            <Animatable.View animation="zoomIn" duration={1000} style={[ styles.touchProduct]}>
                 <TouchableOpacity onPress={() => this.props.navigation.navigate('product')} style={[styles.scrollParent2 , styles.touchProduct]}>
-                    <Image source={item.image} style={styles.scrollImg2} resizeMode={'contain'} />
+                    <Image source={{ uri: item.image }} style={styles.scrollImg2} resizeMode={'cover'} />
                     <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
                     <Text style={[styles.type ,{color:COLORS.boldgray}]}>{item.name}</Text>
                     <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{item.category}</Text>
                     <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>{item.price}</Text>
-                    <Text style={[styles.type ,{color:COLORS.mediumgray , fontSize:14 , textDecorationLine: 'line-through'}]}>{item.oldPrice}</Text>
+                    <Text style={[styles.type ,{color:COLORS.mediumgray , fontSize:14 , textDecorationLine: 'line-through'}]}>{item.old_price}</Text>
                 </TouchableOpacity>
             </Animatable.View>
         );
@@ -120,6 +130,7 @@ class SearchResult extends Component {
                 </Header>
                 <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
                     <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground}>
+                        { this.renderLoader() }
                         <View style={Platform.OS === 'ios' ? styles.mt90 : styles.mT70}>
                             <View style={styles.inputView}>
                                 <Item  style={styles.inputItem} bordered>
@@ -129,7 +140,7 @@ class SearchResult extends Component {
                             </View>
                             <View style={styles.flatContainer}>
                                 <FlatList
-                                    data={this.state.products}
+                                    data={this.props.searchResult}
                                     renderItem={({item}) => this.renderItems(item)}
                                     numColumns={2}
                                     keyExtractor={this._keyExtractor}
@@ -144,5 +155,11 @@ class SearchResult extends Component {
         );
     }
 }
-
-export default SearchResult;
+const mapStateToProps = ({ lang  , searchResult}) => {
+    return {
+        lang: lang.lang,
+        searchResult: searchResult.searchResult,
+        loader: searchResult.loader
+    };
+};
+export default connect(mapStateToProps, {getSearchResult})(SearchResult);

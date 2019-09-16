@@ -15,23 +15,16 @@ import styles from '../../assets/styles'
 import i18n from '../../locale/i18n'
 import { DoubleBounce } from 'react-native-loader';
 import * as Animatable from 'react-native-animatable';
+import COLORS from "../consts/colors";
+import {getSweet} from "../actions";
+import {connect} from "react-redux";
 
 
 
 const height = Dimensions.get('window').height;
 const IS_IPHONE_X = height === 812 || height === 896;
 
-const categories=[
-    {id:1 , name:'غريبة', image:require('../../assets/images/pic_one.png')},
-    {id:2 , name:'شرقية', image:require('../../assets/images/pic_two.png')},
-    {id:3 , name:'شامية', image:require('../../assets/images/pic_three.png')},
-    {id:4 , name:'غريبة', image:require('../../assets/images/pic_one.png')},
-    {id:5 , name:'شرقية', image:require('../../assets/images/pic_two.png')},
-    {id:6 , name:'شامية', image:require('../../assets/images/pic_three.png')},
-    {id:7 , name:'غريبة', image:require('../../assets/images/pic_one.png')},
-    {id:8 , name:'شرقية', image:require('../../assets/images/pic_two.png')},
-    {id:9 , name:'شامية', image:require('../../assets/images/pic_three.png')},
-]
+
 
 
 class Categories extends Component {
@@ -39,7 +32,6 @@ class Categories extends Component {
         super(props);
 
         this.state={
-            categories,
             status: null,
             backgroundColor: new Animated.Value(0),
             availabel: 0,
@@ -48,13 +40,27 @@ class Categories extends Component {
 
 
 
+    componentWillMount() {
+        this.props.getSweet( this.props.lang )
+    }
+
+    renderLoader(){
+        if (this.props.loader){
+            return(
+                <View style={{ alignItems: 'center', justifyContent: 'center', height: height , alignSelf:'center' , backgroundColor:'#fff' , width:'100%' , position:'absolute' , zIndex:1  }}>
+                    <DoubleBounce size={20} color={COLORS.labelBackground} />
+                </View>
+            );
+        }
+    }
+
     _keyExtractor = (item, index) => item.id;
 
     renderItems = (item) => {
         return(
-            <TouchableOpacity onPress={() => this.props.navigation.navigate('products')} style={[styles.scrollParent , styles.touchProduct]}>
+            <TouchableOpacity onPress={() => this.props.navigation.navigate('products' , { category_id: item.id })} style={[styles.scrollParent , styles.touchProduct]}>
                 <Animatable.View animation="zoomIn" duration={1000}>
-                    <Image source={item.image} style={[styles.scrollImg , styles.w100]} resizeMode={'cover'} />
+                    <Image source={{ uri: item.image }} style={[styles.scrollImg , styles.w100]} resizeMode={'cover'} />
                     <View style={styles.scrollText}>
                         <Text style={[styles.type]}>{item.name}</Text>
                     </View>
@@ -119,11 +125,12 @@ class Categories extends Component {
                     </Animated.View>
                 </Header>
                 <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
+                    { this.renderLoader() }
                     <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground}>
                         <View style={Platform.OS === 'ios' ? styles.mt90 : styles.mT70}>
                             <View style={styles.flatContainer}>
                                 <FlatList
-                                    data={this.state.categories}
+                                    data={this.props.sweets}
                                     renderItem={({item}) => this.renderItems(item)}
                                     numColumns={2}
                                     keyExtractor={this._keyExtractor}
@@ -139,4 +146,12 @@ class Categories extends Component {
     }
 }
 
-export default Categories;
+
+const mapStateToProps = ({ lang , sweet }) => {
+    return {
+        lang: lang.lang,
+        sweets: sweet.sweets,
+        loader: sweet.loader
+    };
+};
+export default connect(mapStateToProps, {getSweet})(Categories);

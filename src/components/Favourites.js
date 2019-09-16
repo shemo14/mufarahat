@@ -9,28 +9,19 @@ import FooterSection from './FooterSection';
 import RBSheet from "react-native-raw-bottom-sheet";
 import DrawerCustomization from '../routes/DrawerCustomization';
 import * as Animatable from 'react-native-animatable';
-
-
+import FavProduct from './FavProduct';
+import {getFavs,  profile} from "../actions";
+import {connect} from "react-redux";
+import {NavigationEvents} from "react-navigation";
 
 const height = Dimensions.get('window').height;
 const IS_IPHONE_X = height === 812 || height === 896;
-
-const favs=[
-    {id:1 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_of_sweet.png') , price:'12 ريال', oldPrice:'30 ريال'},
-    {id:2 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_two-1.png') , price:'12 ريال', oldPrice:'30 ريال'},
-    {id:3 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_of_sweet.png') , price:'12 ريال', oldPrice:'30 ريال'},
-    {id:4 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_two-1.png') , price:'12 ريال', oldPrice:'30 ريال'},
-    {id:5 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_of_sweet.png') , price:'12 ريال', oldPrice:'30 ريال'},
-    {id:6 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_two-1.png') , price:'12 ريال', oldPrice:'30 ريال'},
-]
-
 
 class Favourites extends Component {
     constructor(props){
         super(props);
 
         this.state={
-            favs,
             status: null,
             backgroundColor: new Animated.Value(0),
             availabel: 0,
@@ -44,29 +35,30 @@ class Favourites extends Component {
     static navigationOptions = () => ({
         drawerLabel: () => null
     });
-    onFavPress(){
-        this.setState({fav: !this.state.fav , refreshed:!this.state.refreshed})
+
+    componentWillMount() {
+        this.setState({ refreshed: true })
+        const token =  this.props.user ?  this.props.user.token : null;
+        this.props.getFavs( this.props.lang ,  token )
+    }
+
+    renderLoader(){
+        if (this.props.loader){
+            return(
+                <View style={{ alignItems: 'center', justifyContent: 'center', height: height , alignSelf:'center' , backgroundColor:'#fff' , width:'100%' , position:'absolute' , zIndex:1  }}>
+                    <DoubleBounce size={20} color={COLORS.labelBackground} />
+                </View>
+            );
+        }
     }
 
     _keyExtractor = (item, index) => item.id;
 
     renderItems = (item) => {
         return(
-            <Animatable.View animation="zoomIn" duration={1000} style={[styles.scrollParent2 , styles.touchProduct]}>
-                <TouchableOpacity onPress={() => this.props.navigation.navigate('product')}>
-                    <Image source={item.image} style={styles.scrollImg2} resizeMode={'contain'} />
-                </TouchableOpacity>
-                <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
-                <TouchableOpacity onPress={() => this.props.navigation.navigate('product')}>
-                    <Text style={[styles.type ,{color:COLORS.boldgray}]}>{item.name}</Text>
-                </TouchableOpacity>
-                <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{item.category}</Text>
-                <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>{item.price}</Text>
-                <Text style={styles.oldPrice}>{item.oldPrice}</Text>
-                <TouchableOpacity onPress={() => this.onFavPress()} style={{alignSelf:'flex-end'}}>
-                    <Icon type={'FontAwesome'} name={'heart'} style={{ fontSize: 20, color: this.state.fav? '#ff5252' : COLORS.lightgray }} />
-                </TouchableOpacity>
-            </Animatable.View>
+
+            <FavProduct data={item} navigation={this.props.navigation} />
+
         );
     }
 
@@ -106,13 +98,17 @@ class Favourites extends Component {
     closeDrawer(){
         this.RBSheet.close()
     }
-    render() {
 
+    onFocus(payload){
+        this.setState({ status: null });
+        this.componentWillMount()
+    }
+
+    render() {
         const backgroundColor = this.state.backgroundColor.interpolate({
             inputRange: [0, 1],
             outputRange: ['rgba(0, 0, 0, 0)', '#00000099']
         });
-
 
         return (
             <Container>
@@ -128,11 +124,13 @@ class Favourites extends Component {
                     </Animated.View>
                 </Header>
                 <Content  contentContainerStyle={styles.flexGrow} style={styles.homecontent}  onScroll={e => this.headerScrollingAnimation(e) }>
+                    <NavigationEvents onWillFocus={payload => this.onFocus(payload)} />
+                    { this.renderLoader() }
                     <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground}>
                         <View style={Platform.OS === 'ios' ? styles.mt90 : styles.mT70}>
                             <View style={styles.flatContainer}>
                                 <FlatList
-                                    data={this.state.favs}
+                                    data={this.props.favs}
                                     renderItem={({item}) => this.renderItems(item)}
                                     numColumns={2}
                                     keyExtractor={this._keyExtractor}
@@ -163,4 +161,12 @@ class Favourites extends Component {
     }
 }
 
-export default Favourites;
+const mapStateToProps = ({ lang , favs ,  profile}) => {
+    return {
+        lang: lang.lang,
+        favs: favs.favs,
+        loader: favs.loader,
+        user: profile.user,
+    };
+};
+export default connect(mapStateToProps, { profile , getFavs})(Favourites);

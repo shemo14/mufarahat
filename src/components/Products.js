@@ -34,6 +34,7 @@ class Products extends Component {
     });
 
     componentWillMount() {
+        console.log('loader__', this.props.loader);
         this.props.getProducts( this.props.lang , this.props.navigation.state.params.category_id )
     }
 
@@ -116,7 +117,7 @@ class Products extends Component {
                                 <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
                             </Button>
                         </Right>
-                        <Text style={[styles.headerText , styles.headerTitle]}>{i18n.t('products')}</Text>
+                        <Text style={[styles.headerText , styles.headerTitle]}>{this.props.navigation.state.params.category_name}</Text>
                         <Left style={styles.flex0}/>
                     </Animated.View>
                 </Header>

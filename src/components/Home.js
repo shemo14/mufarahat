@@ -20,9 +20,8 @@ import CountDown from 'react-native-countdown-component';
 import RBSheet from "react-native-raw-bottom-sheet";
 import DrawerCustomization from '../routes/DrawerCustomization';
 import * as Animatable from 'react-native-animatable';
-import {getSweet , getNewlyAdded} from "../actions";
+import {getSweet , getNewlyAdded , getRecentOffers} from "../actions";
 import {connect} from "react-redux";
-import newlyAdded from "../reducers/NewlyAddedReducer";
 
 
 const height = Dimensions.get('window').height;
@@ -42,6 +41,7 @@ class Home extends Component {
     componentWillMount() {
         this.props.getSweet( this.props.lang )
         this.props.getNewlyAdded( this.props.lang )
+        this.props.getRecentOffers( this.props.lang )
     }
 
     renderLoader(){
@@ -139,7 +139,7 @@ class Home extends Component {
 
                                         this.props.sweets.map((sweet, i) => (
 
-                                            <TouchableOpacity key={i} onPress={() => this.props.navigation.navigate('products' , { category_id: sweet.id })}
+                                            <TouchableOpacity key={i} onPress={() => this.props.navigation.navigate('products' , { category_id: sweet.id , category_name: sweet.name})}
                                                               style={styles.scrollParent}>
                                                 <Image source={{ uri: sweet.image }}
                                                        style={styles.scrollImg} resizeMode={'cover'}/>
@@ -156,106 +156,37 @@ class Home extends Component {
 
                                 <Text style={[styles.type , styles.aSFS ,{color:COLORS.boldgray}]}>{ i18n.t('todayDeal') }</Text>
                                 <ScrollView style={styles.mv10} horizontal={true} showsHorizontalScrollIndicator={false}>
-                                    <Animatable.View animation="zoomIn" duration={1000} style={styles.scrollParent2}>
-                                        <Image source={require('../../assets/images/pic_of_sweet.png')} style={styles.scrollImg2} resizeMode={'contain'} />
-                                        <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
-                                        <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم الحلويات</Text>
-                                        <Text style={[styles.type ,{color:COLORS.mediumgray}]}>التصنيف</Text>
-                                        <CountDown
-                                            size={12}
-                                            until={120}
-                                            onFinish={() => alert('Finished')}
-                                            style={styles.count}
-                                            digitStyle={{backgroundColor: 'transparent'}}
-                                            digitTxtStyle={styles.counterStyle}
-                                            separatorStyle={styles.counterStyle}
-                                            timeToShow={['H', 'M']}
-                                            timeLabels={{H: null, M: null}}
-                                            showSeparator
-                                        />
-                                        <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>12 ريال</Text>
-                                        <Text style={styles.oldPrice }>30 ريال</Text>
-                                    </Animatable.View>
-                                    <Animatable.View animation="zoomIn" duration={1100} style={styles.scrollParent2}>
-                                        <Image source={require('../../assets/images/pic_two-1.png')} style={styles.scrollImg2} resizeMode={'contain'} />
-                                        <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
-                                        <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم الحلويات</Text>
-                                        <Text style={[styles.type ,{color:COLORS.mediumgray}]}>التصنيف</Text>
-                                        <CountDown
-                                            size={12}
-                                            until={1000}
-                                            onFinish={() => alert('Finished')}
-                                            style={styles.count}
-                                            digitStyle={{backgroundColor: 'transparent'}}
-                                            digitTxtStyle={styles.counterStyle}
-                                            separatorStyle={styles.counterStyle}
-                                            timeToShow={['H', 'M']}
-                                            timeLabels={{H: null, M: null}}
-                                            showSeparator
-                                        />
-                                        <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>12 ريال</Text>
-                                        <Text style={styles.oldPrice }>30 ريال</Text>
-                                    </Animatable.View>
-                                    <Animatable.View animation="zoomIn" duration={1200} style={styles.scrollParent2}>
-                                        <Image source={require('../../assets/images/pic_of_sweet.png')} style={styles.scrollImg2} resizeMode={'contain'} />
-                                        <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
-                                        <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم الحلويات</Text>
-                                        <Text style={[styles.type ,{color:COLORS.mediumgray}]}>التصنيف</Text>
-                                        <CountDown
-                                            size={12}
-                                            until={1000}
-                                            onFinish={() => alert('Finished')}
-                                            style={styles.count}
-                                            digitStyle={{backgroundColor: 'transparent'}}
-                                            digitTxtStyle={styles.counterStyle}
-                                            separatorStyle={styles.counterStyle}
-                                            timeToShow={['H', 'M']}
-                                            timeLabels={{H: null, M: null}}
-                                            showSeparator
-                                        />
-                                        <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>12 ريال</Text>
-                                        <Text style={styles.oldPrice }>30 ريال</Text>
-                                    </Animatable.View>
-                                    <Animatable.View animation="zoomIn" duration={1300} style={styles.scrollParent2}>
-                                        <Image source={require('../../assets/images/pic_two-1.png')} style={styles.scrollImg2} resizeMode={'contain'} />
-                                        <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
-                                        <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم الحلويات</Text>
-                                        <Text style={[styles.type ,{color:COLORS.mediumgray}]}>التصنيف</Text>
-                                        <CountDown
-                                            size={12}
-                                            until={1000}
-                                            onFinish={() => alert('Finished')}
-                                            style={styles.count}
-                                            digitStyle={{backgroundColor: 'transparent'}}
-                                            digitTxtStyle={styles.counterStyle}
-                                            separatorStyle={styles.counterStyle}
-                                            timeToShow={['H', 'M']}
-                                            timeLabels={{H: null, M: null}}
-                                            showSeparator
-                                        />
-                                        <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>12 ريال</Text>
-                                        <Text style={styles.oldPrice }>30 ريال</Text>
-                                    </Animatable.View>
-                                    <Animatable.View animation="zoomIn" duration={1400} style={styles.scrollParent2}>
-                                        <Image source={require('../../assets/images/pic_of_sweet.png')} style={styles.scrollImg2} resizeMode={'contain'} />
-                                        <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
-                                        <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم الحلويات</Text>
-                                        <Text style={[styles.type ,{color:COLORS.mediumgray}]}>التصنيف</Text>
-                                        <CountDown
-                                            size={12}
-                                            until={1000}
-                                            onFinish={() => alert('Finished')}
-                                            style={styles.count}
-                                            digitStyle={{backgroundColor: 'transparent'}}
-                                            digitTxtStyle={styles.counterStyle}
-                                            separatorStyle={styles.counterStyle}
-                                            timeToShow={['H', 'M']}
-                                            timeLabels={{H: null, M: null}}
-                                            showSeparator
-                                        />
-                                        <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>12 ريال</Text>
-                                        <Text style={styles.oldPrice }>30 ريال</Text>
-                                    </Animatable.View>
+
+                                    {
+
+                                        this.props.recentOffers.map((offer, i) => (
+
+                                            <Animatable.View key={i} animation="zoomIn" duration={1000}
+                                                             style={styles.scrollParent2}>
+                                                <Image  source={{ uri: offer.image }}
+                                                       style={styles.scrollImg2} resizeMode={'cover'}/>
+                                                <Image source={require('../../assets/images/orange_circle.png')}
+                                                       style={styles.orangeCircle} resizeMode={'contain'}/>
+                                                <Text style={[styles.type, {color: COLORS.boldgray}]}>{offer.name}</Text>
+                                                <Text style={[styles.type, {color: COLORS.mediumgray}]}>{offer.category}</Text>
+                                                <CountDown
+                                                    size={12}
+                                                    until={offer.seconds}
+                                                    onFinish={() => alert('Finished')}
+                                                    style={styles.count}
+                                                    digitStyle={{backgroundColor: 'transparent'}}
+                                                    digitTxtStyle={styles.counterStyle}
+                                                    separatorStyle={styles.counterStyle}
+                                                    timeToShow={['H', 'M']}
+                                                    timeLabels={{H: null, M: null}}
+                                                    showSeparator
+                                                />
+                                                <Text style={[styles.headerText, {color: COLORS.labelBackground}]}>{offer.price}</Text>
+                                                <Text style={styles.oldPrice}>{offer.old_price}</Text>
+                                            </Animatable.View>
+                                        ))
+                                    }
+
                                 </ScrollView>
 
                                 <Text style={[styles.type, styles.aSFS ,{color:COLORS.boldgray}]}>{ i18n.t('newlyAdded') }</Text>
@@ -265,9 +196,9 @@ class Home extends Component {
 
                                         this.props.newlyAdded.map((newly, i) => (
 
-                                            <Animatable.View animation="zoomIn" duration={1000}>
+                                            <Animatable.View key={i} animation="zoomIn" duration={1000}>
                                                 <TouchableOpacity
-                                                    onPress={() => this.props.navigation.navigate('product')}
+                                                    onPress={() => this.props.navigation.navigate('product', { id: newly.id })}
                                                     style={styles.scrollParent2}>
                                                     <Image source={{ uri: newly.image }}
                                                            style={styles.scrollImg2} resizeMode={'cover'}/>
@@ -310,12 +241,13 @@ class Home extends Component {
     }
 }
 
-const mapStateToProps = ({ lang , sweet , newlyAdded}) => {
+const mapStateToProps = ({ lang , sweet , newlyAdded , recentOffers}) => {
     return {
         lang: lang.lang,
         sweets: sweet.sweets,
         newlyAdded: newlyAdded.newlyAdded,
+        recentOffers: recentOffers.recentOffers,
         loader: sweet.loader
     };
 };
-export default connect(mapStateToProps, {getSweet , getNewlyAdded})(Home);
+export default connect(mapStateToProps, {getSweet , getNewlyAdded , getRecentOffers})(Home);

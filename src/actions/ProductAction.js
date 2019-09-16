@@ -1,18 +1,21 @@
 import axios from "axios";
 import CONST from "../consts";
+import {AsyncStorage} from "react-native";
 
 
-export const getProduct = (lang , id ) => {
+export const getProduct = (lang , id , token ) => {
     return (dispatch) => {
 
-        axios({
-            url: CONST.url + 'product_details',
-            method: 'POST',
-            // headers: this.props.user != null ? {Authorization: this.props.user.token} : null,
-            headers:null,
-            data: {lang , id , device_id:111111}
-        }).then(response => {
-            dispatch({type: 'getProduct', payload: response.data})
+        AsyncStorage.getItem('deviceID').then(device_id => {
+            axios({
+                url: CONST.url + 'product_details',
+                method: 'POST',
+                headers: token != null ? {Authorization: token} : null,
+                data: {id, device_id, lang}
+            }).then(response => {
+                dispatch({type: 'getProduct', payload: response.data})
+            })
         })
+
     }
 };

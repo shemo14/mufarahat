@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {View, Text, Image, TouchableOpacity, I18nManager, FlatList, Platform, Dimensions, ImageBackground, Animated,ScrollView} from "react-native";
+import {View, Text, Image, TouchableOpacity, I18nManager, Platform, Dimensions, ImageBackground, Animated,ScrollView} from "react-native";
 import {Container, Content, Icon, Header, List, ListItem, Left, Button, Item, Input} from 'native-base'
 import styles from '../../assets/styles'
 import i18n from '../../locale/i18n'
@@ -8,8 +8,9 @@ import { DoubleBounce } from 'react-native-loader';
 import Swiper from 'react-native-swiper';
 import StarRating from 'react-native-star-rating';
 import * as Animatable from 'react-native-animatable';
-import {getProduct} from "../actions";
+import {getProduct , getSetFav , getRate, profile} from "../actions";
 import {connect} from "react-redux";
+import {NavigationEvents} from "react-navigation";
 
 
 
@@ -24,9 +25,9 @@ class Product extends Component {
             status: null,
             backgroundColor: new Animated.Value(0),
             availabel: 0,
-            fav:true,
-            starCount:3,
-            value:0
+            fav:false,
+            starCount:0,
+            value:1
         }
     }
 
@@ -36,7 +37,15 @@ class Product extends Component {
     });
 
     componentWillMount() {
-        this.props.getProduct( this.props.lang , this.props.navigation.state.params.id )
+        const token =  this.props.user ?  this.props.user.token : null;
+        this.props.getProduct( this.props.lang , this.props.navigation.state.params.id , token )
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({ fav: nextProps.product.isLiked, starCount: nextProps.product.rate });
+
+
+        console.log('product lll', nextProps);
     }
 
     renderLoader(){
@@ -49,10 +58,11 @@ class Product extends Component {
         }
     }
     onStarRatingPress(rating) {
-        this.setState({
-            starCount: rating
-        });
+        this.setState({starCount: rating});
+        const token =  this.props.user ?  this.props.user.token : null;
+        this.props.getRate( this.props.lang , this.props.navigation.state.params.id , rating , token )
     }
+
 
 
     setAnimate(availabel){
@@ -91,6 +101,8 @@ class Product extends Component {
 
     onFavPress(){
         this.setState({fav: !this.state.fav })
+        const token =  this.props.user ?  this.props.user.token : null;
+        this.props.getSetFav( this.props.lang , this.props.navigation.state.params.id , token )
     }
 
     increment(){
@@ -98,13 +110,14 @@ class Product extends Component {
     }
 
     decrement(){
-        if (this.state.value === 0){
-            this.setState({value: 0})
-        } else {
+        if (this.state.value > 1)
             this.setState({value: this.state.value - 1})
-        }
     }
 
+    onFocus(payload){
+        this.setState({ status: null });
+        this.componentWillMount()
+    }
     render() {
 
         const backgroundColor = this.state.backgroundColor.interpolate({
@@ -126,29 +139,27 @@ class Product extends Component {
                     </Animated.View>
                 </Header>
                 <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
+                    <NavigationEvents onWillFocus={payload => this.onFocus(payload)} />
                     { this.renderLoader() }
-                    <Swiper horizontal={Platform.OS === 'ios' ? true :false} dotStyle={styles.eventdoteStyle} activeDotStyle={styles.eventactiveDot}
+                    <Swiper key={this.props.product.images.length} horizontal={Platform.OS === 'ios' ? true :false} dotStyle={styles.eventdoteStyle} activeDotStyle={styles.eventactiveDot}
                             containerStyle={styles.eventswiper} showsButtons={false} autoplay={true}>
-
                         {
                             this.props.product.images.map((img, i) =>{
                                 console.log('imageeee' , img)
                                 return (
                                     <View key={i} style={styles.swiperimageEvent}>
-                                        <Image source={{ uri: img }} resizeMode={'cover'}/>
+                                        <Image source={{ uri: img }} style={{ width: '100%', height: '100%' }} resizeMode={'cover'}/>
                                     </View>
                                 )
-                            }
-                            )
+                            })
                         }
-
                     </Swiper>
 
                     <View style={styles.productContainer}>
-                        <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>12 ريال</Text>
-                        <Text style={[styles.type ,{color:COLORS.mediumgray , fontSize:14 , textDecorationLine: 'line-through'}]}>30 ريال</Text>
-                        <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم المنتج</Text>
-                        <Text style={[styles.type ,{color:COLORS.mediumgray}]}>تصنيفات حلويات شرقية</Text>
+                        <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>{this.props.product.price}</Text>
+                        <Text style={[styles.type ,{color:COLORS.mediumgray , fontSize:14 , textDecorationLine: 'line-through'}]}>{this.props.product.old_price}</Text>
+                        <Text style={[styles.type ,{color:COLORS.boldgray}]}>{this.props.product.name}</Text>
+                        <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{this.props.product.category}</Text>
                         <Animatable.View animation="zoomIn" duration={1000} style={styles.mv5}>
                             <StarRating
                                 disabled={false}
@@ -161,8 +172,8 @@ class Product extends Component {
                             />
                         </Animatable.View>
                         <View style={styles.availableProduct}>
-                            <Text style={[styles.type ,{color:COLORS.boldgray}]}>{i18n.t('existingQuantity')} : </Text>
-                            <Text style={[styles.type ,{color:COLORS.labelBackground}]}>50 منتج</Text>
+                            <Text style={[styles.type ,{color:COLORS.boldgray}]}>{i18n.t('total')} : </Text>
+                            <Text style={[styles.type ,{color:COLORS.labelBackground}]}>{ this.state.value * this.props.product.price }</Text>
                         </View>
                         <View style={styles.counterParent}>
                             <TouchableOpacity onPress={() => this.increment()} style={styles.touchPlus}>
@@ -176,7 +187,7 @@ class Product extends Component {
 
 
                         <Animatable.View animation="flash" duration={1400}>
-                            <Button style={styles.cartBtn}>
+                            <Button onPress={() => this.props.navigation.navigate('cart')} style={styles.cartBtn}>
                                 <Image source={require('../../assets/images/shopping_cart.png')} style={[styles.btnImg , styles.transform]} resizeMode={'contain'}/>
                                 <Text style={styles.btnTxt}> {i18n.t('addToCart')}</Text>
                             </Button>
@@ -185,7 +196,7 @@ class Product extends Component {
                         <View style={styles.line}/>
                         <View style={styles.desc}>
                             <Text style={[styles.type , styles.aSFS , styles.mb10 , {color:COLORS.boldgray}]}>{i18n.t('itemSpecification')}</Text>
-                            <Text style={[styles.type , styles.aSFS ,{color:COLORS.mediumgray , writingDirection: I18nManager.isRTL ? 'rtl' : ' ltr'}]}>مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة</Text>
+                            <Text style={[styles.type , styles.aSFS ,{color:COLORS.mediumgray , writingDirection: I18nManager.isRTL ? 'rtl' : ' ltr'}]}>{this.props.product.desc}</Text>
                         </View>
                     </View>
 
@@ -197,11 +208,14 @@ class Product extends Component {
 }
 
 
-const mapStateToProps = ({ lang , product}) => {
+const mapStateToProps = ({ lang , product , setFav , rate , profile}) => {
     return {
         lang: lang.lang,
         product: product.product,
-        loader: product.loader
+        setFav: setFav.fav,
+        rate: rate.rate,
+        loader: product.loader,
+        user: profile.user,
     };
 };
-export default connect(mapStateToProps, {getProduct})(Product);
+export default connect(mapStateToProps, {getProduct , getSetFav , getRate , profile})(Product);

@@ -16,20 +16,14 @@ import i18n from '../../locale/i18n'
 import COLORS from '../../src/consts/colors'
 import { DoubleBounce } from 'react-native-loader';
 import * as Animatable from 'react-native-animatable';
+import {connect} from "react-redux";
+import {getBoxes} from "../actions";
+import boxes from "../reducers/BoxesReducer";
 
 
 
 const height = Dimensions.get('window').height;
 const IS_IPHONE_X = height === 812 || height === 896;
-
-const products=[
-    {id:1 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_of_sweet.png') , price:'12 ريال', oldPrice:'30 ريال'},
-    {id:2 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_two-1.png') , price:'12 ريال', oldPrice:'30 ريال'},
-    {id:3 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_of_sweet.png') , price:'12 ريال', oldPrice:'30 ريال'},
-    {id:4 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_two-1.png') , price:'12 ريال', oldPrice:'30 ريال'},
-    {id:5 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_of_sweet.png') , price:'12 ريال', oldPrice:'30 ريال'},
-    {id:6 , name:'اسم الحلويات' , category:'التصنيف', image:require('../../assets/images/pic_two-1.png') , price:'12 ريال', oldPrice:'30 ريال'},
-]
 
 
 class Boxes extends Component {
@@ -37,7 +31,6 @@ class Boxes extends Component {
         super(props);
 
         this.state={
-            products,
             status: null,
             backgroundColor: new Animated.Value(0),
             availabel: 0,
@@ -45,20 +38,33 @@ class Boxes extends Component {
     }
 
 
+
+    componentWillMount() {
+        this.props.getBoxes( this.props.lang )
+    }
+
+    renderLoader(){
+        if (this.props.loader){
+            return(
+                <View style={{ alignItems: 'center', justifyContent: 'center', height: height , alignSelf:'center' , backgroundColor:'#fff' , width:'100%' , position:'absolute' , zIndex:1  }}>
+                    <DoubleBounce size={20} color={COLORS.labelBackground} />
+                </View>
+            );
+        }
+    }
+
     _keyExtractor = (item, index) => item.id;
 
     renderItems = (item) => {
         return(
-            <Animatable.View animation="zoomIn" duration={1000}>
-                <TouchableOpacity onPress={() => this.props.navigation.navigate('boxProduct')} style={[styles.scrollParent2 , styles.touchProduct]}>
-                    <Image source={item.image} style={styles.scrollImg2} resizeMode={'contain'} />
-                    <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
-                    <Text style={[styles.type ,{color:COLORS.boldgray}]}>{item.name}</Text>
-                    <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{item.category}</Text>
-                    <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>{item.price}</Text>
-                    <Text style={styles.oldPrice }>{item.oldPrice}</Text>
-                </TouchableOpacity>
-            </Animatable.View>
+            <TouchableOpacity onPress={() => this.props.navigation.navigate('boxProducts' , { box_id: item.id })} style={[styles.scrollParent , styles.touchProduct]}>
+                <Animatable.View animation="zoomIn" duration={1000}>
+                    <Image source={{ uri: item.image }} style={[styles.scrollImg , styles.w100]} resizeMode={'cover'} />
+                    <View style={styles.scrollText}>
+                        <Text style={[styles.type]}>{item.name}</Text>
+                    </View>
+                </Animatable.View>
+            </TouchableOpacity>
         );
     }
 
@@ -118,11 +124,12 @@ class Boxes extends Component {
                     </Animated.View>
                 </Header>
                 <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
+                    { this.renderLoader() }
                     <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground}>
                         <View style={Platform.OS === 'ios' ? styles.mt90 : styles.mT70}>
                             <View style={styles.flatContainer}>
                                 <FlatList
-                                    data={this.state.products}
+                                    data={this.props.boxes}
                                     renderItem={({item}) => this.renderItems(item)}
                                     numColumns={2}
                                     keyExtractor={this._keyExtractor}
@@ -138,4 +145,11 @@ class Boxes extends Component {
     }
 }
 
-export default Boxes;
+const mapStateToProps = ({ lang , sweet , boxes }) => {
+    return {
+        lang: lang.lang,
+        boxes: boxes.boxes,
+        loader: sweet.loader
+    };
+};
+export default connect(mapStateToProps, {getBoxes})(Boxes);

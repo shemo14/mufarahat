@@ -6,7 +6,7 @@ import i18n from '../../locale/i18n'
 import COLORS from '../../src/consts/colors'
 import { DoubleBounce } from 'react-native-loader';
 import * as Animatable from 'react-native-animatable';
-import {getNewlyAdded, getRecentOffers, getSweet} from "../actions";
+import {getBoxProducts} from "../actions";
 import {connect} from "react-redux";
 
 
@@ -15,7 +15,8 @@ const height = Dimensions.get('window').height;
 const IS_IPHONE_X = height === 812 || height === 896;
 
 
-class Offers extends Component {
+
+class BoxProducts extends Component {
     constructor(props){
         super(props);
 
@@ -26,8 +27,14 @@ class Offers extends Component {
         }
     }
 
+
+
+    static navigationOptions = () => ({
+        drawerLabel: () => null
+    });
+
     componentWillMount() {
-        this.props.getRecentOffers( this.props.lang )
+        this.props.getBoxProducts( this.props.lang , this.props.navigation.state.params.box_id )
     }
 
     renderLoader(){
@@ -46,14 +53,13 @@ class Offers extends Component {
     renderItems = (item) => {
         return(
             <Animatable.View animation="zoomIn" duration={1000} style={[ styles.touchProduct]}>
-                <TouchableOpacity onPress={() => this.props.navigation.navigate('product', { id: item.id })} style={[styles.scrollParent2 ,styles.touchProduct]}>
-                    <Image source={require('../../assets/images/discount.png')} style={styles.discount} resizeMode={'contain'} />
+                <TouchableOpacity onPress={() => this.props.navigation.navigate('product', { id: item.id })} style={[styles.scrollParent2 , styles.touchProduct]}>
                     <Image source={{ uri: item.image }} style={styles.scrollImg2} resizeMode={'cover'} />
                     <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
                     <Text style={[styles.type ,{color:COLORS.boldgray}]}>{item.name}</Text>
                     <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{item.category}</Text>
                     <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>{item.price}</Text>
-                    <Text style={[styles.type ,styles.oldPrice]}>{item.old_price}</Text>
+                    <Text style={styles.oldPrice}>{item.old_price}</Text>
                 </TouchableOpacity>
             </Animatable.View>
         );
@@ -110,7 +116,7 @@ class Offers extends Component {
                                 <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
                             </Button>
                         </Right>
-                        <Text style={[styles.headerText , styles.headerTitle]}>{ i18n.t('offers') }</Text>
+                        <Text style={[styles.headerText , styles.headerTitle]}>{i18n.t('products')}</Text>
                         <Left style={styles.flex0}/>
                     </Animated.View>
                 </Header>
@@ -118,22 +124,9 @@ class Offers extends Component {
                     { this.renderLoader() }
                     <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground}>
                         <View style={Platform.OS === 'ios' ? styles.mt90 : styles.mT70}>
-
-                            <View style={[styles.scrollParent2 , styles.offer]}>
-                                <Text style={[styles.type , styles.aSFS ,{color:'#f44336' , fontSize: 14}]}>خصومات تصل الي 50٪</Text>
-                                <View style={[styles.directionRowSpace ]}>
-                                    <View style={[styles.directionColumn , styles.flex1]}>
-                                        <Text style={[styles.type ,{color:COLORS.boldgray   , fontSize: 14 , textAlign: 'center' , left:-13  }]}>هذا النص هو مثال لنص هذا النص هو مثال لنص </Text>
-                                        <Text style={[styles.type ,{color:COLORS.mediumgray , fontSize: 14 , writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr' }]}>هذا النص هو مثال لنص هذا النص هو مثال لنص </Text>
-                                        <Text style={[styles.type ,{color:COLORS.mediumgray , fontSize: 14 ,  writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr'}]}>هذا النص هو مثال لنص هذا النص هو مثال لنص </Text>
-                                    </View>
-                                    <Image source={require('../../assets/images/sweet.png')} resizeMode={'contain'} style={styles.sweetImg}/>
-                                </View>
-                            </View>
-
                             <View style={styles.flatContainer}>
                                 <FlatList
-                                    data={this.props.recentOffers}
+                                    data={this.props.boxProducts}
                                     renderItem={({item}) => this.renderItems(item)}
                                     numColumns={2}
                                     keyExtractor={this._keyExtractor}
@@ -149,11 +142,12 @@ class Offers extends Component {
     }
 }
 
-const mapStateToProps = ({ lang , recentOffers}) => {
+
+const mapStateToProps = ({ lang  , boxProducts}) => {
     return {
         lang: lang.lang,
-        recentOffers: recentOffers.recentOffers,
-        loader: recentOffers.loader
+        boxProducts: boxProducts.boxProducts,
+        loader: boxProducts.loader
     };
 };
-export default connect(mapStateToProps, {getRecentOffers})(Offers);
+export default connect(mapStateToProps, {getBoxProducts})(BoxProducts);

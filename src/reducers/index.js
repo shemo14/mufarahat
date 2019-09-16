@@ -10,6 +10,13 @@ import sweet from './SweetReducer';
 import newlyAdded from './NewlyAddedReducer';
 import products from './ProductsReducer';
 import product from './ProductReducer';
+import recentOffers from './RecentOffersReducer';
+import boxes from './BoxesReducer';
+import boxProducts from './BoxProductsReducer';
+import searchResult from './SearchReducer';
+import setFav from './SetFavReducer';
+import favs from './FavsReducer';
+import rate from './RateReducer';
 
 export default combineReducers({
     lang,
@@ -23,5 +30,12 @@ export default combineReducers({
     newlyAdded,
     products,
     product,
+    recentOffers,
+    boxes,
+    boxProducts,
+    searchResult,
+    setFav,
+    favs,
+    rate,
 });
 

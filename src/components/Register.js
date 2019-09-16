@@ -18,6 +18,7 @@ class Register extends Component {
         this.state = {
             fullName: '',
             phone: '',
+            email: '',
             password: '',
             rePassword: '',
             token: '',
@@ -169,6 +170,14 @@ class Register extends Component {
                                             <Item floatingLabel style={styles.loginItem} bordered>
                                                 <Label style={styles.label}>{ i18n.t('phoneNumber') }</Label>
                                                 <Input onChangeText={(phone) => this.setState({phone})} keyboardType={'number-pad'} style={styles.input}  />
+                                            </Item>
+                                        </View>
+
+
+                                        <View style={[ styles.itemView , styles.inputMarginTop ]}>
+                                            <Item floatingLabel style={styles.loginItem} bordered>
+                                                <Label style={styles.label}>{ i18n.t('email') }</Label>
+                                                <Input onChangeText={(email) => this.setState({email})} keyboardType={'email-address'} style={styles.input}  />
                                             </Item>
                                         </View>
 

@@ -19,21 +19,37 @@ class CartHeaderItem extends Component {
         super(props);
 
         this.state={
-            checked:false
+            checked: this.props.checkAll ? true : false
         }
     }
 
+    checkedFunc(isChecked , price){
+        this.setState({checked:isChecked});
+
+        if(isChecked){
+            this.props.pushSelectedChecks(this.props.item.cart_id, price);
+        }else{
+            this.props.pullSelectedChecks(this.props.item.cart_id, price);
+        }
+
+    }
+
+
+    componentWillReceiveProps(nextProps) {
+        console.log('after push', nextProps);
+        this.setState({ checked: nextProps.checkAll && this.props.hideCheck ? true : false })
+    }
+
     render() {
-
-
+        console.log('is checked', this.props.checkAll, this.state.checked )
         return (
             <View style={[ styles.acorrHeader , {borderBottomRightRadius: this.props.expanded ? 0 : 20 }]}>
                 <View style={styles.directionRow}>
                     <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircleItem} resizeMode={'contain'} />
-                    <Image source={this.props.item.image} style={[styles.scrollImg2 , styles.mh10]} resizeMode={'contain'} />
+                    <Image source={{ uri :this.props.item.image}} style={[styles.scrollImg2 , styles.mh10]} resizeMode={'cover'} />
                     <View>
-                        <Text style={[styles.type ,{color:COLORS.boldgray}]}>{this.props.item.title}</Text>
-                        <Text style={[styles.type ,{color:COLORS.labelBackground}]}>{this.props.item.price}</Text>
+                        <Text style={[styles.type ,{color:COLORS.boldgray}]}>{this.props.item.name}</Text>
+                        <Text style={[styles.type , styles.aSFS ,{color:COLORS.labelBackground}]}>{this.props.item.price}</Text>
                     </View>
                 </View>
                 <View style={styles.h100}>
@@ -41,7 +57,7 @@ class CartHeaderItem extends Component {
                         ? <Icon style={styles.arrowIcon} type={'FontAwesome'} name="angle-up" />
                         : <Icon style={styles.arrowIcon} type={'FontAwesome'} name="angle-down" />}
                     {
-                        this.props.hideCheck ? <CheckBox onPress={() => this.setState({checked:!this.state.checked})} checked={this.state.checked}  color={COLORS.labelBackground} style={[styles.quesCheckBox,styles.headerCheck]} /> : <View />
+                        this.props.hideCheck ? <CheckBox onPress={() => this.checkedFunc(!this.state.checked , this.props.item.price)} checked={this.state.checked}  color={COLORS.labelBackground} style={[styles.quesCheckBox,styles.headerCheck]} /> : <View />
                     }
                 </View>
             </View>

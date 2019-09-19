@@ -16,3 +16,8 @@ export * from './SearchAction';
 export * from './SetFavAction';
 export * from './FavsAction';
 export * from './RateAction';
+export * from './AddToCartAction';
+export * from './CartAction';
+export * from './PaymentAction';
+export * from './PackagesAction';
+export * from './CompleteOrderAction';

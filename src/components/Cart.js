@@ -30,6 +30,8 @@ import StarRating from 'react-native-star-rating';
 import CartHeaderItem from './CartHeaderItem'
 import CartBodyItem from './CartBodyItem'
 import * as Animatable from 'react-native-animatable';
+import {getCart , profile , deleteCart , cartSearch , cartQuantity} from "../actions";
+import {connect} from "react-redux";
 
 
 
@@ -38,12 +40,8 @@ const IS_IPHONE_X = height === 812 || height === 896;
 
 
 
-const dataArray = [
-    { title: "اسم المنتج", price: '12 ريال', image:require('../../assets/images/pic_of_sweet.png') ,content: "Lorem ipsum dolor sit amet" , category:'تصنيفات حلويات شرقية'},
-    { title: "اسم المنتج ٢", price: '12 ريال', image:require('../../assets/images/pic_two-1.png') ,content: "Lorem ipsum dolor sit amet" , category:'تصنيفات حلويات شرقية'},
-    { title: "اسم المنتج ٣", price: '12 ريال', image:require('../../assets/images/pic_of_sweet.png') ,content: "Lorem ipsum dolor sit amet" , category:'تصنيفات حلويات شرقية'}
-];
-
+let selectedItems = [];
+let totalPrice= 0
 class Cart extends Component {
     constructor(props){
         super(props);
@@ -55,7 +53,7 @@ class Cart extends Component {
             value:1,
             search:'',
             hideCheck:false,
-            checkAll:false
+            checkAll:false,
         }
     }
 
@@ -63,8 +61,44 @@ class Cart extends Component {
         drawerLabel: () => null
     });
 
+
+    componentWillMount() {
+        const token =  this.props.user ?  this.props.user.token : null;
+        this.props.getCart( this.props.lang  , token )
+    }
+
+
+    componentWillReceiveProps(nextProps) {
+        console.log('nextProps............' , nextProps)
+    }
+
+
+    pushSelectedChecks(cart_id , price){
+        if (selectedItems.includes(cart_id) === false) {
+            selectedItems.push(cart_id);
+            totalPrice = totalPrice + Number(price)
+        }
+
+        console.log('selected items_', selectedItems , 'current total price ' , totalPrice);
+
+    }
+
+    pullSelectedChecks(cart_id , price){
+
+        for( var i = 0; i < selectedItems.length; i++){
+            if ( selectedItems[i] === cart_id) {
+                selectedItems.splice(i, 1);
+                totalPrice = totalPrice - Number(price)
+            }
+        }
+        console.log('selected items_', selectedItems , 'current total price ' ,totalPrice );
+
+    }
+
     showCheckBox(){
         this.setState({hideCheck: !this.state.hideCheck})
+        if (!this.state.hideCheck)
+            this.setState({ checkAll: false })
     }
 
     checkAll(){
@@ -74,12 +108,27 @@ class Cart extends Component {
             this.setState({hideCheck: !this.state.hideCheck , checkAll: !this.state.checkAll})
     }
 
+    deleteCart(cart_id){
+        const token =  this.props.user ?  this.props.user.token : null;
+        this.props.deleteCart( this.props.lang  , cart_id , token)
+    }
+
+    cartQuantity(cart_id , quantity){
+        const token =  this.props.user ?  this.props.user.token : null;
+        this.props.cartQuantity( this.props.lang  , cart_id , token , quantity)
+    }
+
+
+
+
     _renderHeader(item, expanded, hideCheck) {
-        return <CartHeaderItem item={item}  expanded={expanded} hideCheck={hideCheck} />;
+        return <CartHeaderItem item={item} navigation={this.props.navigation} expanded={expanded} hideCheck={hideCheck} checkAll={this.state.checkAll}
+                   pushSelectedChecks={(cart_id , price) => this.pushSelectedChecks(cart_id , price)} pullSelectedChecks={(cart_id , price) => this.pullSelectedChecks(cart_id , price)}/>;
     }
 
     _renderContent(item , value) {
-        return <CartBodyItem item={item}  value={value}  />;
+        return <CartBodyItem item={item} navigation={this.props.navigation} value={value} quantity={this.props.cart.quantity}
+                     deleteCart={(cart_id) => this.deleteCart(cart_id)}  cartQuantity={(cart_id , quantity) => this.cartQuantity(cart_id , quantity)}  />;
     }
 
 
@@ -117,7 +166,8 @@ class Cart extends Component {
     }
 
     submitSearch(){
-        this.props.navigation.navigate('searchResult', { search : this.state.search } );
+        const token =  this.props.user ?  this.props.user.token : null;
+       this.props.cartSearch(this.props.lang  , token , this.state.search)
     }
 
     render() {
@@ -158,12 +208,12 @@ class Cart extends Component {
                                     </TouchableOpacity>
                                     <View style={styles.verticalLine}/>
                                     <TouchableOpacity  onPress={() => this.checkAll()}>
-                                        <Text style={styles.type}>{ i18n.t('selectAll') }</Text>
+                                        <Text style={styles.type}>{  this.state.checkAll && this.state.hideCheck  ? i18n.t('removeSelected') : i18n.t('selectAll') }</Text>
                                     </TouchableOpacity>
                                 </View>
                                 {
                                     this.state.hideCheck ?
-                                        <TouchableOpacity onPress={() => this.props.navigation.navigate('paymentSteps')} style={styles.doneStyle}>
+                                        <TouchableOpacity onPress={() => this.props.navigation.navigate('paymentSteps' , {selectedItems , totalPrice})} style={styles.doneStyle}>
                                             <Text style={[styles.type , {color:COLORS.labelBackground}]}>{ i18n.t('done') }</Text>
                                         </TouchableOpacity> : <View />
                                 }
@@ -171,7 +221,7 @@ class Cart extends Component {
 
                             <View style={styles.flatContainer}>
                                 <Accordion
-                                    dataArray={dataArray}
+                                    dataArray={this.props.cart}
                                     animation={true}
                                     expanded={true}
                                     renderHeader={(item, expanded) => this._renderHeader(item, expanded , this.state.hideCheck)}
@@ -189,4 +239,16 @@ class Cart extends Component {
     }
 }
 
-export default Cart;
+
+
+const mapStateToProps = ({ lang , cart , profile  }) => {
+    return {
+        lang: lang.lang,
+        cart: cart.cart,
+        deleteCart: cart.deleteCart,
+        cartQuantity: cart.cartQuantity,
+        loader: cart.loader,
+        user: profile.user,
+    };
+};
+export default connect(mapStateToProps, {getCart , profile , deleteCart , cartQuantity , cartSearch })(Cart);

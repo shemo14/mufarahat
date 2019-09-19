@@ -39,7 +39,7 @@ class CartBodyItem extends Component {
         super(props);
 
         this.state={
-            value:this.props.value,
+            value:this.props.item.quantity,
         }
     }
 
@@ -52,12 +52,14 @@ class CartBodyItem extends Component {
 
     increment(){
         if(this.state.value < 5)
-        this.setState({value: this.state.value + 1 })
+            this.setState({value: this.state.value + 1 })
+        this.props.cartQuantity(this.props.item.cart_id , this.state.value +1)
     }
 
     decrement(){
         if (this.state.value > 1)
             this.setState({value: this.state.value - 1})
+        this.props.cartQuantity(this.props.item.cart_id , this.state.value -1)
     }
 
 
@@ -67,16 +69,16 @@ class CartBodyItem extends Component {
                 <View style={styles.directionRowSpace}>
                     <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{this.props.item.category}</Text>
                     <StarRating
-                        disabled={false}
+                        disabled={true}
                         maxStars={5}
-                        rating={5}
+                        rating={this.props.item.rate}
                         fullStarColor={'#f0aa0c'}
                         starSize={20}
                         starStyle={{color: '#f0aa0c', marginLeft: 5}}
                     />
                 </View>
                 <Text style={[styles.type , styles.mv10 , styles.aSFS ,{color:COLORS.boldgray }]}>{ i18n.t('itemSpecification') }</Text>
-                <Text style={[styles.type , styles.aSFS ,{color:COLORS.mediumgray}]}>مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة</Text>
+                <Text style={[styles.type , styles.aSFS ,{color:COLORS.mediumgray}]}>{this.props.item.desc}</Text>
 
                 <View style={[styles.line ]}/>
 
@@ -94,7 +96,7 @@ class CartBodyItem extends Component {
                         <TouchableOpacity onPress={() => this.props.navigation.navigate('paymentSteps')} >
                             <Image source={require('../../assets/images/credit_card.png')} style={[styles.headerMenu , styles.mr20]} resizeMode={'contain'} />
                         </TouchableOpacity>
-                        <TouchableOpacity >
+                        <TouchableOpacity onPress={() => this.props.deleteCart(this.props.item.cart_id)} >
                             <Image source={require('../../assets/images/dustbin.png')} style={styles.headerMenu} resizeMode={'contain'} />
                         </TouchableOpacity>
                     </View>

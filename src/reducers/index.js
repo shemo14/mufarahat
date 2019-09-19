@@ -17,6 +17,11 @@ import searchResult from './SearchReducer';
 import setFav from './SetFavReducer';
 import favs from './FavsReducer';
 import rate from './RateReducer';
+import addCart from './AddToCartReducer';
+import cart from './CartReducer';
+import cities from './PaymentReducer';
+import packages from './PackagesReducer';
+import completeOrder from './CompleteOrderReducer';
 
 export default combineReducers({
     lang,
@@ -37,5 +42,10 @@ export default combineReducers({
     setFav,
     favs,
     rate,
+    addCart,
+    cart,
+    cities,
+    packages,
+    completeOrder,
 });
 

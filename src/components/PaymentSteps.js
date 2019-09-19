@@ -37,6 +37,8 @@ import * as Permissions from 'expo-permissions';
 import MapView from 'react-native-maps';
 import * as Location from 'expo-location';
 import axios from 'axios';
+import {getCities , getPackages, profile , getCompleteOrder} from "../actions";
+import {connect} from "react-redux";
 
 
 
@@ -54,8 +56,8 @@ class PaymentSteps extends Component {
             availabel: 0,
             disCode:'',
             selectedCountry: null,
-            selectedRegion: null,
-            selectedPayment: null,
+            // selectedRegion: null,
+            selectedPayment: 1,
             selectedPacking: null,
             msg:'',
             name:'',
@@ -66,7 +68,11 @@ class PaymentSteps extends Component {
             mapRegion: null,
             hasLocationPermissions: false,
             initMap: true,
-            isSwiped: false
+            isSwiped: false,
+            selectedItems: this.props.navigation.state.params.selectedItems,
+            totalPrice: this.props.navigation.state.params.totalPrice,
+            shippingPrice:0,
+            cityId:null
         }
     }
 
@@ -83,6 +89,10 @@ class PaymentSteps extends Component {
 
     async componentWillMount() {
 
+        this.props.getCities( this.props.lang )
+        this.props.getPackages( this.props.lang )
+
+        console.log('selectedItems......' , this.state.selectedItems , totalPrice)
 
         let { status } = await Permissions.askAsync(Permissions.LOCATION);
         if (status !== 'granted') {
@@ -109,7 +119,14 @@ class PaymentSteps extends Component {
         }
     }
 
-
+    selectedCity(value){
+        this.setState({selectedCountry : value})
+        for(let i =0 ; i < (this.props.cities).length ; i++){
+            if((this.props.cities)[i].id == value ){
+                this.setState({ shippingPrice: (this.props.cities)[i].shipping , cityId: (this.props.cities)[i].id})
+            }
+        }
+    }
 
     async componentDidMount(){
         await Permissions.askAsync(Permissions.CAMERA);
@@ -164,6 +181,24 @@ class PaymentSteps extends Component {
     }
 
 
+
+    completeOrder(){
+        const token =  this.props.user ?  this.props.user.token : null;
+        const city_id = this.state.cityId ;
+        const coupon_id = this.state.disCode ;
+        const notes = this.state.msg ;
+        const payment_type = this.state.selectedPayment;
+        const packaging_id = this.state.selectedPacking;
+        const cart_items = this.props.navigation.state.params.selectedItems;
+        const price = Number(this.state.shippingPrice) + Number(this.state.totalPrice) ;
+        const lat = this.state.mapRegion.latitude;
+        const long= this.state.mapRegion.longitude;
+        this.props.getCompleteOrder( this.props.lang , city_id , coupon_id, lat , long, payment_type , packaging_id ,cart_items,
+            price ,  notes , token ,this.props)
+    }
+
+
+
     setAnimate(availabel){
         if (availabel === 0){
             Animated.timing(
@@ -198,12 +233,19 @@ class PaymentSteps extends Component {
     }
 
     nextBtn(){
-        if (this.state.isSwiped){
+        if (true){
             return <Text style={[styles.loginBtn , styles.btnTxt ,{lineHeight:45 , width:120 , textAlign: 'center'}]}>{ i18n.t('next') }</Text>
         }
 
 
         return <Text />
+    }
+
+
+    enterCode(disCode){
+        this.setState({ disCode })
+        if(disCode != '' && disCode != ' ')
+            this.setState({ isSwiped: true })
     }
 
     render() {
@@ -230,7 +272,7 @@ class PaymentSteps extends Component {
                 <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
                         <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue.png') : require('../../assets/images/bg_blue2.png')} resizeMode={'cover'} style={styles.imageBackground}>
                             <View style={[styles.finishOrder]}>
-                                <Swiper scrollEnabled={false} horizontal={true} dotStyle={styles.orderdoteStyle} activeDotStyle={styles.orderactiveDot}
+                                <Swiper scrollEnabled={true} horizontal={true} dotStyle={styles.orderdoteStyle} activeDotStyle={styles.orderactiveDot}
                                         containerStyle={{width:'100%'}} showsButtons={true}
                                         buttonWrapperStyle={[styles.directionRowCenter , { position:'absolute' , top:'37%' }]}
                                         prevButton={<Text></Text>}
@@ -241,7 +283,7 @@ class PaymentSteps extends Component {
                                         <KeyboardAvoidingView behavior={'padding'} style={styles.w100}>
                                         <View style={[styles.tklfa , { borderColor:COLORS.yellowBorder}]}>
                                             <Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('fullOrderCost') } : </Text>
-                                            <Text style={[styles.type ,{color:COLORS.darkRed}]}>116</Text>
+                                            <Text style={[styles.type ,{color:COLORS.darkRed}]}>{this.state.totalPrice}</Text>
                                         </View>
                                         <View style={[styles.line , {marginVertical:0}]}/>
 
@@ -250,17 +292,11 @@ class PaymentSteps extends Component {
                                             <View style={[styles.itemView ,{borderColor: COLORS.mediumgray , width:'90%'}]}>
                                                 <Item floatingLabel style={[styles.loginItem,{width:'100%'}]} bordered>
                                                     <Label style={[styles.label , {backgroundColor: '#fff' , color:COLORS.mediumgray , top:15 , left:12}]}>{ i18n.t('disCode') }</Label>
-                                                    <Input onChangeText={(disCode) => this.setState({disCode})} keyboardType={'number-pad'} style={[styles.input ,{color:COLORS.mediumgray}]}  />
+                                                    <Input onChangeText={(disCode) => this.enterCode(disCode)} keyboardType={'number-pad'} style={[styles.input ,{color:COLORS.mediumgray}]}  />
                                                 </Item>
                                             </View>
 
                                         </View>
-                                        { !this.state.isSwiped ?
-                                                <Button disabled style={[styles.loginBtn ,{marginTop:85 , width:120, backgroundColor:'#eee' }]}>
-                                                    <Text style={styles.btnTxt}>{ i18n.t('next') }</Text>
-                                                </Button>
-                                             : <Text />
-                                        }
                                         </KeyboardAvoidingView>
                                     </View>
                                     <View style={styles.directionColumn}>
@@ -270,7 +306,7 @@ class PaymentSteps extends Component {
 
                                             <View style={[styles.tklfa , { borderColor:COLORS.yellowBorder}]}>
                                                 <Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('fullOrderCost') } : </Text>
-                                                <Text style={[styles.type ,{color:COLORS.darkRed}]}>116</Text>
+                                                <Text style={[styles.type ,{color:COLORS.darkRed}]}>{this.state.totalPrice}</Text>
                                             </View>
 
                                             <View style={[styles.line , {marginVertical:0}]}/>
@@ -286,34 +322,37 @@ class PaymentSteps extends Component {
                                                             placeholderStyle={{ color: "#acabae" }}
                                                             placeholderIconColor="#acabae"
                                                             selectedValue={this.state.selectedCountry}
-                                                            onValueChange={(value) => this.setState({ selectedCountry: value })}
+                                                            onValueChange={(value) => this.selectedCity(value)}
                                                         >
                                                             <Picker.Item label={ i18n.t('selectCity') } value={null} />
-                                                            <Picker.Item label={'الرياض'} value={"1"} />
-                                                            <Picker.Item label={'الامارات'} value={"2"} />
-                                                            <Picker.Item label={'مصر'} value={"3"} />
+
+                                                            {
+                                                                this.props.cities.map((city, i) => (
+                                                                    <Picker.Item key={i} label={city.name} value={city.id} />
+                                                                ))
+                                                            }
                                                         </Picker>
                                                         <Image source={require('../../assets/images/right_arrow_drop.png')} style={styles.pickerImg} resizeMode={'contain'} />
                                                     </Item>
                                                 </View>
-                                                <View>
-                                                    <Item style={styles.itemPicker} regular >
-                                                        <Label style={[styles.labelItem , {top:-18 , left:15 , position:'absolute'}]}>{ i18n.t('region') }</Label>
-                                                        <Picker
-                                                            mode="dropdown"
-                                                            style={styles.picker}
-                                                            placeholderStyle={{ color: "#acabae" }}
-                                                            placeholderIconColor="#acabae"
-                                                            selectedValue={this.state.selectedRegion}
-                                                            onValueChange={(value) => this.setState({ selectedRegion: value })}
-                                                        >
-                                                            <Picker.Item label={ i18n.t('selectRegion') } value={null} />
-                                                            <Picker.Item label={'المنصوره'} value={"1"} />
-                                                            <Picker.Item label={'القاهره'} value={"2"} />
-                                                        </Picker>
-                                                        <Image source={require('../../assets/images/right_arrow_drop.png')} style={styles.pickerImg} resizeMode={'contain'} />
-                                                    </Item>
-                                                </View>
+                                                {/*<View>*/}
+                                                    {/*<Item style={styles.itemPicker} regular >*/}
+                                                        {/*<Label style={[styles.labelItem , {top:-18 , left:15 , position:'absolute'}]}>{ i18n.t('region') }</Label>*/}
+                                                        {/*<Picker*/}
+                                                            {/*mode="dropdown"*/}
+                                                            {/*style={styles.picker}*/}
+                                                            {/*placeholderStyle={{ color: "#acabae" }}*/}
+                                                            {/*placeholderIconColor="#acabae"*/}
+                                                            {/*selectedValue={this.state.selectedRegion}*/}
+                                                            {/*onValueChange={(value) => this.setState({ selectedRegion: value })}*/}
+                                                        {/*>*/}
+                                                            {/*<Picker.Item label={ i18n.t('selectRegion') } value={null} />*/}
+                                                            {/*<Picker.Item label={'المنصوره'} value={"1"} />*/}
+                                                            {/*<Picker.Item label={'القاهره'} value={"2"} />*/}
+                                                        {/*</Picker>*/}
+                                                        {/*<Image source={require('../../assets/images/right_arrow_drop.png')} style={styles.pickerImg} resizeMode={'contain'} />*/}
+                                                    {/*</Item>*/}
+                                                {/*</View>*/}
                                                 <Text style={[styles.type , styles.aSFS ,{color:COLORS.labelBackground , marginTop:15}]}>{ i18n.t('additionalOrders') }</Text>
                                                 <View>
                                                     <Item style={styles.itemPicker} regular >
@@ -327,9 +366,15 @@ class PaymentSteps extends Component {
                                                             onValueChange={(value) => this.setState({ selectedPacking: value })}
                                                         >
                                                             <Picker.Item label={ i18n.t('chooseMethod') } value={null} />
-                                                            <Picker.Item label={'1 الطريقة'} value={"1"} />
-                                                            <Picker.Item label={'2 الطريقة'} value={"2"} />
-                                                            <Picker.Item label={'3 الطريقة'} value={"3"} />
+
+
+                                                            {
+                                                                this.props.packages.map((pack, i) => (
+                                                                    <Picker.Item key={i} label={pack.name} value={pack.id} />
+                                                                ))
+
+                                                            }
+
                                                         </Picker>
                                                         <Image source={require('../../assets/images/right_arrow_drop.png')} style={styles.pickerImg} resizeMode={'contain'} />
                                                     </Item>
@@ -355,12 +400,12 @@ class PaymentSteps extends Component {
 
                                             <View style={[styles.tklfa , { borderColor:COLORS.yellowBorder}]}>
                                                 <Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('fullOrderCost') } : </Text>
-                                                <Text style={[styles.type ,{color:COLORS.darkRed}]}>116</Text>
+                                                <Text style={[styles.type ,{color:COLORS.darkRed}]}>{this.state.totalPrice}</Text>
                                             </View>
                                             <View style={[styles.line , {marginVertical:0}]}/>
                                             <View style={[styles.tklfa , { borderColor:COLORS.purpleBorder}]}>
                                                 <Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('deliveryPrice') } : </Text>
-                                                <Text style={[styles.type ,{color:COLORS.darkRed}]}>116</Text>
+                                                <Text style={[styles.type ,{color:COLORS.darkRed}]}>{this.state.shippingPrice}</Text>
                                             </View>
                                             <View style={[styles.line , {marginVertical:0}]}/>
 
@@ -396,16 +441,15 @@ class PaymentSteps extends Component {
                                                             selectedValue={this.state.selectedPayment}
                                                             onValueChange={(value) => this.setState({ selectedPayment: value })}
                                                         >
-                                                            <Picker.Item label={ i18n.t('chooseMethod') } value={null} />
-                                                            <Picker.Item label={ i18n.t('mada') } value={"1"} />
-                                                            <Picker.Item label={ i18n.t('Visa') } value={"2"} />
-                                                            <Picker.Item label={ i18n.t('uponReceipt') } value={"3"} />
-                                                            <Picker.Item label={ i18n.t('applePay') } value={"4"} />
+                                                            <Picker.Item label={ i18n.t('mada') } value={0} />
+                                                            <Picker.Item label={ i18n.t('visa') } value={1} />
+                                                            <Picker.Item label={ i18n.t('uponReceipt') } value={2} />
+                                                            <Picker.Item label={ i18n.t('applePay') } value={3} />
                                                         </Picker>
                                                         <Image source={require('../../assets/images/right_arrow_drop.png')} style={styles.pickerImg} resizeMode={'contain'} />
                                                     </Item>
                                                 </View>
-                                                <Button onPress={() => this.props.navigation.navigate('payment')} style={[styles.loginBtn ,{marginTop:85 , width:180 }]}>
+                                                <Button onPress={() => this.completeOrder()} style={[styles.loginBtn ,{marginTop:85 , width:180 }]}>
                                                     <Text style={styles.btnTxt}>{ i18n.t('completionOfOrder') }</Text>
                                                 </Button>
                                             </View>
@@ -450,4 +494,14 @@ class PaymentSteps extends Component {
     }
 }
 
-export default PaymentSteps;
+
+const mapStateToProps = ({ lang , cities , packages , profile }) => {
+    return {
+        lang: lang.lang,
+        cities: cities.cities,
+        packages: packages.packages,
+        loader: cities.loader,
+        user: profile.user,
+    };
+};
+export default connect(mapStateToProps, {getCities , getPackages , profile , getCompleteOrder})(PaymentSteps);

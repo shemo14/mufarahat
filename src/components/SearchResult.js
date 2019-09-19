@@ -104,7 +104,7 @@ class SearchResult extends Component {
     }
 
     submitSearch(){
-        this.props.navigation.navigate('searchResult', { search : this.state.search } );
+        this.props.getSearchResult( this.props.lang , this.state.search )
     }
 
     render() {

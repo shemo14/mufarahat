@@ -8,9 +8,10 @@ import { DoubleBounce } from 'react-native-loader';
 import Swiper from 'react-native-swiper';
 import StarRating from 'react-native-star-rating';
 import * as Animatable from 'react-native-animatable';
-import {getProduct , getSetFav , getRate, profile} from "../actions";
+import {getProduct , getSetFav , getRate, profile , setCart} from "../actions";
 import {connect} from "react-redux";
 import {NavigationEvents} from "react-navigation";
+import addCart from "../reducers/AddToCartReducer";
 
 
 
@@ -41,11 +42,13 @@ class Product extends Component {
         this.props.getProduct( this.props.lang , this.props.navigation.state.params.id , token )
     }
 
+
+
     componentWillReceiveProps(nextProps) {
         this.setState({ fav: nextProps.product.isLiked, starCount: nextProps.product.rate });
 
 
-        console.log('product lll', nextProps);
+        console.log('producthhh', nextProps);
     }
 
     renderLoader(){
@@ -104,6 +107,13 @@ class Product extends Component {
         const token =  this.props.user ?  this.props.user.token : null;
         this.props.getSetFav( this.props.lang , this.props.navigation.state.params.id , token )
     }
+
+    addToCart(){
+        const token =  this.props.user ?  this.props.user.token : null;
+        const quantity = this.state.value ;
+        this.props.setCart( this.props.lang , this.props.navigation.state.params.id , quantity , token , this.props)
+    }
+
 
     increment(){
         this.setState({value: this.state.value + 1 })
@@ -187,7 +197,7 @@ class Product extends Component {
 
 
                         <Animatable.View animation="flash" duration={1400}>
-                            <Button onPress={() => this.props.navigation.navigate('cart')} style={styles.cartBtn}>
+                            <Button onPress={() => this.addToCart()} style={styles.cartBtn}>
                                 <Image source={require('../../assets/images/shopping_cart.png')} style={[styles.btnImg , styles.transform]} resizeMode={'contain'}/>
                                 <Text style={styles.btnTxt}> {i18n.t('addToCart')}</Text>
                             </Button>
@@ -208,14 +218,15 @@ class Product extends Component {
 }
 
 
-const mapStateToProps = ({ lang , product , setFav , rate , profile}) => {
+const mapStateToProps = ({ lang , product , setFav , rate , profile , addCart}) => {
     return {
         lang: lang.lang,
         product: product.product,
         setFav: setFav.fav,
         rate: rate.rate,
+        addCart: addCart.addCart,
         loader: product.loader,
         user: profile.user,
     };
 };
-export default connect(mapStateToProps, {getProduct , getSetFav , getRate , profile})(Product);
+export default connect(mapStateToProps, {getProduct , getSetFav , getRate , profile , setCart})(Product);

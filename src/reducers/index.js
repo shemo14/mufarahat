@@ -22,6 +22,7 @@ import cart from './CartReducer';
 import cities from './PaymentReducer';
 import packages from './PackagesReducer';
 import completeOrder from './CompleteOrderReducer';
+import myOrders from './MyOrdersReducer';
 
 export default combineReducers({
     lang,
@@ -47,5 +48,6 @@ export default combineReducers({
     cities,
     packages,
     completeOrder,
+    myOrders,
 });
 

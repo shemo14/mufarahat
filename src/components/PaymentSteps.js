@@ -54,7 +54,7 @@ class PaymentSteps extends Component {
             status: null,
             backgroundColor: new Animated.Value(0),
             availabel: 0,
-            disCode:'',
+            disCode:null,
             selectedCountry: null,
             // selectedRegion: null,
             selectedPayment: 1,
@@ -189,7 +189,7 @@ class PaymentSteps extends Component {
         const notes = this.state.msg ;
         const payment_type = this.state.selectedPayment;
         const packaging_id = this.state.selectedPacking;
-        const cart_items = this.props.navigation.state.params.selectedItems;
+        const cart_items = JSON.stringify(this.props.navigation.state.params.selectedItems) ;
         const price = Number(this.state.shippingPrice) + Number(this.state.totalPrice) ;
         const lat = this.state.mapRegion.latitude;
         const long= this.state.mapRegion.longitude;

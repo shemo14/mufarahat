@@ -1,5 +1,6 @@
 import axios from "axios";
 import CONST from "../consts";
+import {Toast} from "native-base";
 
 export const getCompleteOrder = (lang , city_id , coupon_id, lat , long, payment_type , packaging_id ,cart_items,
                                  price ,  notes , token , props) => {
@@ -11,8 +12,13 @@ export const getCompleteOrder = (lang , city_id , coupon_id, lat , long, payment
                 data: {city_id , coupon_id, lat , long, payment_type , packaging_id ,cart_items,
                     price ,  notes , lang}
             }).then(response => {
-                dispatch({type: 'getCompleteOrder', payload: response.data})
-                props.navigation.navigate('payment')
+                dispatch({type: 'getCompleteOrder', payload: response.data});
+                Toast.show({
+                    text: response.data.msg,
+                    type: response.data.status == 200 ? "success" : "danger",
+                    duration: 3000
+                });
+                props.navigation.navigate('myOrders')
             })
 
     }

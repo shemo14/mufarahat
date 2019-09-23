@@ -23,6 +23,8 @@ import cities from './PaymentReducer';
 import packages from './PackagesReducer';
 import completeOrder from './CompleteOrderReducer';
 import myOrders from './MyOrdersReducer';
+import newOrder from './NewOrderReducer';
+import finishOrder from './FinishOrderReducer';
 
 export default combineReducers({
     lang,
@@ -49,5 +51,7 @@ export default combineReducers({
     packages,
     completeOrder,
     myOrders,
+    newOrder,
+    finishOrder,
 });
 

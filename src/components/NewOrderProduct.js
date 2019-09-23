@@ -10,34 +10,15 @@ import ImageViewer from 'react-native-image-zoom-viewer';
 import Modal from "react-native-modal";
 import Communications from "react-native-communications";
 import * as Animatable from 'react-native-animatable';
+import {getNewOrder, profile , finishOrder } from "../actions";
+import {connect} from "react-redux";
+import {NavigationEvents} from "react-navigation";
 
 
 
 const height = Dimensions.get('window').height;
 const IS_IPHONE_X = height === 812 || height === 896;
 
-const images = [
-    {
-        props: {
-            source: require('../../assets/images/pic_two.png')
-        }
-    },
-    {
-        props: {
-            source: require('../../assets/images/product_pic.png')
-        }
-    },
-    {
-        props: {
-            source: require('../../assets/images/pic_two.png')
-        }
-    },
-    {
-        props: {
-            source: require('../../assets/images/product_pic.png')
-        }
-    },
-]
 
 class NewOrderProduct extends Component {
     constructor(props){
@@ -48,7 +29,6 @@ class NewOrderProduct extends Component {
             backgroundColor: new Animated.Value(0),
             availabel: 0,
             value:0,
-            images,
             fancyModal: false,
             evaluateModal:false,
             rangeValue: 20,
@@ -62,6 +42,24 @@ class NewOrderProduct extends Component {
     static navigationOptions = () => ({
         drawerLabel: () => null
     });
+
+
+
+    componentWillMount() {
+        const token =  this.props.user ?  this.props.user.token : null;
+        this.props.getNewOrder( this.props.lang , this.props.navigation.state.params.id , token )
+    }
+
+
+    renderLoader(){
+        if (this.props.loader){
+            return(
+                <View style={{ alignItems: 'center', justifyContent: 'center', height: height , alignSelf:'center' , backgroundColor:'#fff' , width:'100%' , position:'absolute' , zIndex:1  }}>
+                    <DoubleBounce size={20} color={COLORS.labelBackground} />
+                </View>
+            );
+        }
+    }
 
     renderInputImage(rangeValue){
         let source ='';
@@ -122,6 +120,9 @@ class NewOrderProduct extends Component {
     };
 
     evaluateModal = () => {
+
+        const token =  this.props.user ?  this.props.user.token : null;
+        this.props.finishOrder( this.props.lang , this.props.navigation.state.params.id , token )
         this.setState({ evaluateModal: !this.state.evaluateModal });
     };
 
@@ -129,6 +130,12 @@ class NewOrderProduct extends Component {
         this.props.navigation.navigate('home');
         this.setState({ evaluateModal: !this.state.evaluateModal });
     };
+
+
+    onFocus(payload){
+        this.setState({ status: null });
+        this.componentWillMount()
+    }
 
     render() {
 
@@ -151,33 +158,35 @@ class NewOrderProduct extends Component {
                     </Animated.View>
                 </Header>
                 <Content  contentContainerStyle={styles.flexGrow} style={styles.homecontent}  onScroll={e => this.headerScrollingAnimation(e) }>
+                    <NavigationEvents onWillFocus={payload => this.onFocus(payload)} />
+                    { this.renderLoader() }
                     <Swiper horizontal={Platform.OS === 'ios' ? true :false} dotStyle={styles.eventdoteStyle2} activeDotStyle={styles.eventactiveDot2}
                             containerStyle={styles.eventswiper2} showsButtons={false} autoplay={true}>
                         {
-                            this.state.images.map((img,i) => (
+                            this.props.newOrder.items.map((item,i) => (
                                 <View style={styles.directionColumn}>
                                     <View style={styles.swiperimageEvent2}>
-                                        <Image source={ img.props.source } resizeMode={'cover'}/>
+                                        <Image source={ {uri:item.url} } style={{width:'100%' , height:'100%'}} resizeMode={'cover'}/>
                                     </View>
                                     <View style={styles.prodDet}>
-                                        <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم المنتج</Text>
-                                        <Text style={[styles.type ,{color:COLORS.mediumgray}]}>تصنيفات حلويات شرقية</Text>
-                                        <Text style={[styles.type ,{color:COLORS.labelBackground}]}>{ i18n.t('NumberOfItems') } 4</Text>
+                                        <Text style={[styles.type ,{color:COLORS.boldgray}]}>{item.name}</Text>
+                                        <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{item.category}</Text>
+                                        <Text style={[styles.type ,{color:COLORS.labelBackground}]}>{ i18n.t('NumberOfItems') } {item.quantity}</Text>
                                         <Animatable.View animation="zoomIn" duration={1000} style={[ styles.availableProduct,styles.pack]}>
                                             <View style={styles.directionRow}>
                                                 <Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('productPrice') } : </Text>
-                                                <Text style={[styles.type ,{color:COLORS.labelBackground}]}>116</Text>
+                                                <Text style={[styles.type ,{color:COLORS.labelBackground}]}>{item.price}</Text>
                                             </View>
                                             <View style={styles.directionRow}>
                                                 <Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('packagingPrice') } : </Text>
-                                                <Text style={[styles.type ,{color:COLORS.labelBackground}]}>116</Text>
+                                                <Text style={[styles.type ,{color:COLORS.labelBackground}]}>{item.package_price}</Text>
                                             </View>
                                         </Animatable.View>
 
                                         <View style={[styles.desc , styles.mb25 , styles.mt10 ]}>
                                             <Text style={[styles.type , styles.aSFS ,{color:COLORS.boldgray}]}>{ i18n.t('orderSpecification') }</Text>
-                                            <Text style={[styles.type , styles.aSFS ,{color:COLORS.mediumgray}]}>{ i18n.t('packingMethod') } : تغليف هدايا</Text>
-                                            <Text style={[styles.type , styles.aSFS ,{color:COLORS.mediumgray,  writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr'}]}>مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة مواصفات السلعة</Text>
+                                            <Text style={[styles.type , styles.aSFS ,{color:COLORS.mediumgray}]}>{ i18n.t('packingMethod') } : {item.package_name}</Text>
+                                            <Text style={[styles.type , styles.aSFS ,{color:COLORS.mediumgray,  writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr'}]}>{item.desc}</Text>
                                         </View>
 
                                     </View>
@@ -191,64 +200,92 @@ class NewOrderProduct extends Component {
                         <View style={[styles.line , {marginVertical:0}]}/>
                         <View style={[styles.tklfa , { borderColor:COLORS.yellowBorder}]}>
                             <Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('fullOrderCost') } : </Text>
-                            <Text style={[styles.type ,{color:COLORS.labelBackground}]}>116</Text>
+                            <Text style={[styles.type ,{color:COLORS.labelBackground}]}>{this.props.newOrder.total}</Text>
                         </View>
 
                         <View style={[styles.line , {marginVertical:0}]}/>
                         <View style={[styles.tklfa , { borderColor:COLORS.purpleBorder}]}>
                             <Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('deliveryPrice') } : </Text>
-                            <Text style={[styles.type ,{color:COLORS.labelBackground}]}>116</Text>
+                            <Text style={[styles.type ,{color:COLORS.labelBackground}]}>{this.props.newOrder.shaping_price}</Text>
                         </View>
                         <View style={[styles.line , {marginVertical:0}]}/>
 
-                        <Animatable.View animation="flash" duration={1400}>
-                            <Button  onPress={() => this.evaluateModal()} style={[styles.cartBtn , styles.mv35 ]}>
-                                <Image source={require('../../assets/images/tick_white.png')} style={[styles.btnImg , styles.transform]} resizeMode={'contain'}/>
-                                <Text style={styles.btnTxt}> { i18n.t('finishOrder') }</Text>
-                            </Button>
-                        </Animatable.View>
+                        {
+                            this.props.newOrder.status !=2?
+                               <View style={[styles.directionColumnCenter , styles.w100]}>
+                                   <Animatable.View animation="flash" duration={1400}>
+                                       <Button  onPress={() => this.evaluateModal()} style={[styles.cartBtn , styles.mv35 ]}>
+                                           <Image source={require('../../assets/images/tick_white.png')} style={[styles.btnImg , styles.transform]} resizeMode={'contain'}/>
+                                           <Text style={styles.btnTxt}> { i18n.t('finishOrder') }</Text>
+                                       </Button>
+                                   </Animatable.View>
 
-                        <View style={[styles.line , {marginVertical:0}]}/>
+                                   <View style={[styles.line , {marginVertical:0}]}/>
+
+                                   {this.props.newOrder.delegated.length === 0 ?
+                                       <View/> :
+                                       <View style={[styles.desc, styles.mt10]}>
+                                           <Text
+                                               style={[styles.type, styles.aSFS, {color: COLORS.boldgray}]}>{i18n.t('specOfDele')}</Text>
+                                           <View style={[styles.directionRowSpace, styles.w100, styles.mb20]}>
+                                               <View style={styles.directionRowCenter}>
+                                                   <View style={styles.mandob}>
+                                                       <Image source={require('../../assets/images/profile.png')}
+                                                              style={[styles.profileImg, {height: 50}]}
+                                                              resizeMode={'cover'}/>
+                                                   </View>
+                                                   <Text style={[styles.type, {color: COLORS.labelBackground}]}>اسم
+                                                       المندوب</Text>
+                                               </View>
+                                               <TouchableOpacity
+                                                   onPress={() => Communications.phonecall('0123456789', true)}
+                                                   style={styles.directionRowCenter}>
+                                                   <Text
+                                                       style={[styles.type, styles.mr10, {color: COLORS.darkRed}]}>{i18n.t('call')}</Text>
+                                                   <Image source={require('../../assets/images/call.png')}
+                                                          style={[{width: 20, height: 20}, styles.transform]}
+                                                          resizeMode={'contain'}/>
+                                               </TouchableOpacity>
+                                           </View>
+                                           <View style={[styles.directionRow, styles.mb15]}>
+                                               <Image source={require('../../assets/images/smartphone.png')}
+                                                      style={[styles.headerMenu, styles.mr10]} resizeMode={'contain'}/>
+                                               <Text style={[styles.type, {color: COLORS.mediumgray}]}>0123456789</Text>
+                                           </View>
+                                           <View style={[styles.directionRow, styles.mb15]}>
+                                               <Image source={require('../../assets/images/ride_gray.png')}
+                                                      style={[styles.headerMenu, styles.mr10]} resizeMode={'contain'}/>
+                                               <Text style={[styles.type, {color: COLORS.mediumgray}]}>4568 س م ع</Text>
+                                           </View>
+                                       </View>
+                                   }
+
+                                   <View style={[styles.line , {marginVertical:0}]}/>
+
+                                   <View style={[styles.desc , styles.mb25 , styles.mt15 ]}>
+                                       <Text style={[styles.type , styles.aSFS,{color:COLORS.boldgray }]}>{ i18n.t('deliveryPlace') }</Text>
+                                       <View  style={[ styles.directionRow , styles.mt15]} >
+                                           <Image source={require('../../assets/images/marker_gray.png')} style={[styles.headerMenu , styles.mr10]} resizeMode={'contain'} />
+                                           <Text style={[styles.type ,{color:COLORS.mediumgray ,  writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr' }]}>{this.props.newOrder.location.address}</Text>
+                                       </View>
+                                   </View>
+                               </View>
+                                    :
+                                <Animatable.View animation="flash" duration={1400}>
+                                    <Button onPress={() => this.props.navigation.navigate('cart')} style={[styles.cartBtn , styles.mv35 ]}>
+                                        <Image source={require('../../assets/images/shopping_cart.png')} style={[styles.btnImg , styles.transform]} resizeMode={'contain'}/>
+                                        <Text style={styles.btnTxt}> { i18n.t('addToCart') }</Text>
+                                    </Button>
+                                </Animatable.View>
 
 
-                        <View style={[styles.desc , styles.mt10 ]}>
-                            <Text style={[styles.type , styles.aSFS ,{color:COLORS.boldgray }]}>{ i18n.t('specOfDele') }</Text>
-                            <View style={[styles.directionRowSpace , styles.w100 , styles.mb20 ]}>
-                                <View style={styles.directionRowCenter}>
-                                    <View style={styles.mandob}>
-                                        <Image source={require('../../assets/images/profile.png')} style={[styles.profileImg , {height:50}]} resizeMode={'cover'} />
-                                    </View>
-                                    <Text style={[styles.type ,{color:COLORS.labelBackground  }]}>اسم المندوب</Text>
-                                </View>
-                                <TouchableOpacity onPress={() => Communications.phonecall('0123456789', true)} style={styles.directionRowCenter}>
-                                    <Text style={[styles.type , styles.mr10 ,{color:COLORS.darkRed }]}>{ i18n.t('call') }</Text>
-                                    <Image source={require('../../assets/images/call.png')} style={[{width:20 , height:20} , styles.transform ]} resizeMode={'contain'} />
-                                </TouchableOpacity>
-                            </View>
-                            <View style={[ styles.directionRow , styles.mb15]} >
-                                <Image source={require('../../assets/images/smartphone.png')} style={[styles.headerMenu , styles.mr10]} resizeMode={'contain'} />
-                                <Text style={[styles.type ,{color:COLORS.mediumgray }]}>0123456789</Text>
-                            </View>
-                            <View style={[ styles.directionRow , styles.mb15]} >
-                                <Image source={require('../../assets/images/ride_gray.png')} style={[styles.headerMenu , styles.mr10]} resizeMode={'contain'} />
-                                <Text style={[styles.type ,{color:COLORS.mediumgray  }]}>4568 س م ع</Text>
-                            </View>
-                        </View>
 
-                        <View style={[styles.line , {marginVertical:0}]}/>
-
-                        <View style={[styles.desc , styles.mb25 , styles.mt15 ]}>
-                            <Text style={[styles.type , styles.aSFS,{color:COLORS.boldgray }]}>{ i18n.t('deliveryPlace') }</Text>
-                            <View  style={[ styles.directionRow , styles.mt15]} >
-                                <Image source={require('../../assets/images/marker_gray.png')} style={[styles.headerMenu , styles.mr10]} resizeMode={'contain'} />
-                                <Text style={[styles.type ,{color:COLORS.mediumgray ,  writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr' }]}>العنوان بالتفصيل بالمدينة و المنطقة</Text>
-                            </View>
-                        </View>
+                        }
 
                     </View>
 
                     <Modal style={{}} isVisible={this.state.fancyModal} onBackdropPress={() => this.fancyModal()}>
-                        <ImageViewer enableImageZoom={true} onSwipeDown={() => this.fancyModal()} enableSwipeDown={true} imageUrls={this.state.images}/>
+                        <ImageViewer enableImageZoom={true} onSwipeDown={() => this.fancyModal()} enableSwipeDown={true} imageUrls={this.props.newOrder.items}/>
                     </Modal>
 
                     <Modal style={{}} isVisible={this.state.evaluateModal} onBackdropPress={() => this.evaluateModal()}>
@@ -362,4 +399,13 @@ class NewOrderProduct extends Component {
     }
 }
 
-export default NewOrderProduct;
+
+const mapStateToProps = ({ lang , newOrder, profile }) => {
+    return {
+        lang: lang.lang,
+        newOrder: newOrder.newOrder,
+        loader: newOrder.loader,
+        user: profile.user,
+    };
+};
+export default connect(mapStateToProps, {getNewOrder , profile , finishOrder })(NewOrderProduct);

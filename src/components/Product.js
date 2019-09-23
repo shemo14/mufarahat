@@ -11,7 +11,6 @@ import * as Animatable from 'react-native-animatable';
 import {getProduct , getSetFav , getRate, profile , setCart} from "../actions";
 import {connect} from "react-redux";
 import {NavigationEvents} from "react-navigation";
-import addCart from "../reducers/AddToCartReducer";
 
 
 

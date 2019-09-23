@@ -193,8 +193,9 @@ class PaymentSteps extends Component {
         const price = Number(this.state.shippingPrice) + Number(this.state.totalPrice) ;
         const lat = this.state.mapRegion.latitude;
         const long= this.state.mapRegion.longitude;
+        const address= this.state.city;
         this.props.getCompleteOrder( this.props.lang , city_id , coupon_id, lat , long, payment_type , packaging_id ,cart_items,
-            price ,  notes , token ,this.props)
+            price ,  notes , address ,token ,this.props)
     }
 
 

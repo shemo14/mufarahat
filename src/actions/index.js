@@ -22,3 +22,5 @@ export * from './PaymentAction';
 export * from './PackagesAction';
 export * from './CompleteOrderAction';
 export * from './MyOrdersAction';
+export * from './NewOrderAction';
+export * from './FinishOrderAction';

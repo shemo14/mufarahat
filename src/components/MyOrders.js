@@ -96,6 +96,51 @@ class MyOrders extends Component {
             this.setAnimate(1)
         }
     }
+
+
+    renderImages(images){
+        let view = ( <View /> );
+        if(images[0]){
+            view = (
+                <View>
+                    <Image source={{ uri: images[0] }}
+                           style={[styles.scrollImg2]}
+                           resizeMode={'cover'}/>
+                </View>
+            )
+        }
+
+        if(images[1]){
+            view = (
+                <View>
+                    <Image source={{ uri: images[0] }}
+                           style={[styles.scrollImg2, {position: 'absolute', left: 10}]}
+                           resizeMode={'cover'}/>
+                    <Image source={{ uri: images[1] }}
+                           style={styles.scrollImg2} resizeMode={'cover'}/>
+                </View>
+            )
+        }
+
+        if(images[2]){
+            view = (
+                <View>
+                    <Image source={{ uri: images[0] }}
+                           style={[styles.scrollImg2, {position: 'absolute', left: 10}]}
+                           resizeMode={'cover'}/>
+                    <Image source={{ uri: images[1] }}
+                           style={styles.scrollImg2} resizeMode={'cover'}/>
+                    <Image ssource={{ uri: images[2] }}
+                           style={[styles.scrollImg2, {position: 'absolute', right: 10}]}
+                           resizeMode={'cover'}/>
+                </View>
+            )
+        }
+
+        return view;
+    }
+
+
     closeDrawer(){
         this.RBSheet.close()
     }
@@ -115,19 +160,12 @@ class MyOrders extends Component {
 
                             <Animatable.View key={i} animation="zoomIn" duration={1000}
                                              style={[styles.scrollParent2, styles.orderProduct]}>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('orderProduct')}>
-                                    <Image source={{ uri: myOrder.images[0] }}
-                                           style={[styles.scrollImg2, {position: 'absolute', left: 10}]}
-                                           resizeMode={'cover'}/>
-                                    <Image source={{ uri: myOrder.images[1] }}
-                                           style={styles.scrollImg2} resizeMode={'cover'}/>
-                                    <Image ssource={{ uri: myOrder.images[2] }}
-                                           style={[styles.scrollImg2, {position: 'absolute', right: 10}]}
-                                           resizeMode={'cover'}/>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct', { id: myOrder.id })}>
+                                    { this.renderImages(myOrder.images) }
                                 </TouchableOpacity>
                                 <Image source={require('../../assets/images/orange_circle.png')}
                                        style={styles.orangeCircle} resizeMode={'contain'}/>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('orderProduct')}>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct', { id: myOrder.id })}>
                                     <Text style={[styles.type, {color: COLORS.boldgray}]}>{myOrder.order_no}</Text>
                                 </TouchableOpacity>
                                 <Text style={[styles.headerText, {color: COLORS.labelBackground}]}>{myOrder.price}</Text>
@@ -150,18 +188,11 @@ class MyOrders extends Component {
 
                         this.props.myOrders.map((myOrder, i) => (
                     <Animatable.View key={i} animation="zoomIn" duration={1000} style={[styles.scrollParent2 , styles.orderProduct ]}>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct')}>
-                            <Image source={{ uri: myOrder.images[0] }}
-                                   style={[styles.scrollImg2, {position: 'absolute', left: 10}]}
-                                   resizeMode={'cover'}/>
-                            <Image source={{ uri: myOrder.images[1] }}
-                                   style={styles.scrollImg2} resizeMode={'cover'}/>
-                            <Image ssource={{ uri: myOrder.images[2] }}
-                                   style={[styles.scrollImg2, {position: 'absolute', right: 10}]}
-                                   resizeMode={'cover'}/>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct', { id: myOrder.id })}>
+                            { this.renderImages(myOrder.images) }
                         </TouchableOpacity>
                         <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct')}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct', { id: myOrder.id })}>
                             <Text style={[styles.type ,{color:COLORS.boldgray}]}>{myOrder.order_no}</Text>
                         </TouchableOpacity>
                         <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>{myOrder.price}</Text>

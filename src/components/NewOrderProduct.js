@@ -230,15 +230,14 @@ class NewOrderProduct extends Component {
                                            <View style={[styles.directionRowSpace, styles.w100, styles.mb20]}>
                                                <View style={styles.directionRowCenter}>
                                                    <View style={styles.mandob}>
-                                                       <Image source={require('../../assets/images/profile.png')}
+                                                       <Image source={{uri:this.props.newOrder.delegated.avatar}}
                                                               style={[styles.profileImg, {height: 50}]}
                                                               resizeMode={'cover'}/>
                                                    </View>
-                                                   <Text style={[styles.type, {color: COLORS.labelBackground}]}>اسم
-                                                       المندوب</Text>
+                                                   <Text style={[styles.type, {color: COLORS.labelBackground}]}>{this.props.newOrder.delegated.name}</Text>
                                                </View>
                                                <TouchableOpacity
-                                                   onPress={() => Communications.phonecall('0123456789', true)}
+                                                   onPress={() => Communications.phonecall(this.props.newOrder.delegated.phone, true)}
                                                    style={styles.directionRowCenter}>
                                                    <Text
                                                        style={[styles.type, styles.mr10, {color: COLORS.darkRed}]}>{i18n.t('call')}</Text>

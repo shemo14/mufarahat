@@ -1,12 +1,14 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View , I18nManager , AsyncStorage} from 'react-native';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import { AppLoading } from 'expo';
 import AppNavigator from './src/routes';
 import { Root } from "native-base";
 import './ReactotronConfig';
-
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistedStore } from './src/store';
 
 
 export default class App extends React.Component {
@@ -16,6 +18,8 @@ export default class App extends React.Component {
 		this.state = {
 			isReady: false,
 		};
+
+		// I18nManager.forceRTL(true)
 	}
 
 	async componentDidMount() {
@@ -37,9 +41,13 @@ export default class App extends React.Component {
 		}
 
 		return (
-			<Root>
-				<AppNavigator />
-			</Root>
+			<Provider store={store}>
+				<PersistGate persistor={persistedStore}>
+					<Root>
+						<AppNavigator />
+					</Root>
+				</PersistGate>
+			</Provider>
 		);
 	}
 }

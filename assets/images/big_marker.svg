@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="86" height="172.668" viewBox="0 0 86 172.668">
-  <g id="big_marker" transform="translate(-540 -1020.332)">
-    <circle id="Ellipse_119" data-name="Ellipse 119" cx="43" cy="43" r="43" transform="translate(540 1107)" fill="#b7264b" opacity="0.262"/>
-    <circle id="Ellipse_118" data-name="Ellipse 118" cx="24.122" cy="24.122" r="24.122" transform="translate(558.879 1125.878)" fill="#b7264b"/>
-    <g id="map-marker_1_" data-name="map-marker (1)" transform="translate(479.35 1020.332)">
-      <path id="Path_1417" data-name="Path 1417" d="M103.607,0A42.958,42.958,0,0,0,69.223,68.706l34.384,45.843,34.384-45.843A42.958,42.958,0,0,0,103.607,0Zm0,71.593a28.637,28.637,0,1,1,28.637-28.637A28.638,28.638,0,0,1,103.607,71.593Z" fill="#b7264b"/>
-    </g>
-  </g>
-</svg>

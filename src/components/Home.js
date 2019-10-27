@@ -213,7 +213,6 @@ class Home extends Component {
 
                                         ))
                                     }
-
                                 </ScrollView>
                             </View>
                         </View>

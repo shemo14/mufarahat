@@ -9,6 +9,8 @@ import './ReactotronConfig';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistedStore } from './src/store';
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
 
 
 export default class App extends React.Component {
@@ -20,6 +22,36 @@ export default class App extends React.Component {
 		};
 
 		// I18nManager.forceRTL(true)
+	}
+
+	async componentWillMount() {
+		const { status: existingStatus } = await Permissions.getAsync(
+			Permissions.NOTIFICATIONS
+		);
+		let finalStatus = existingStatus;
+
+		if (existingStatus !== 'granted') {
+			const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+			finalStatus = status;
+		}
+
+		if (finalStatus !== 'granted') {
+			return;
+		}
+
+		let token = await Notifications.getExpoPushTokenAsync();
+
+		// AsyncStorage.clear()
+	}
+
+	componentDidMount(){
+		Notifications.addListener(this.handleNotification);
+	}
+
+	handleNotification = (notification) => {
+		if (notification && notification.origin !== 'received') {
+			this.props.navigation.navigate('notifications');
+		}
 	}
 
 	async componentDidMount() {

@@ -4,6 +4,7 @@ import {  Button, Footer, Icon, FooterTab } from 'native-base'
 import styles from '../../assets/styles'
 import COLORS from "../consts/colors";
 import i18n from '../../locale/i18n'
+import {connect} from "react-redux";
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
@@ -13,7 +14,6 @@ class FooterSection extends Component {
     constructor(props){
         super(props);
     }
-
 
     renderFooterTabs(tabName){
         // is Active
@@ -53,7 +53,6 @@ class FooterSection extends Component {
             );
         }
 
-
         let path = '';
         switch (tabName) {
             case 'home': path = require('../../assets/images/home_gray.png');
@@ -67,32 +66,35 @@ class FooterSection extends Component {
             case 'notifications': path = require('../../assets/images/notifcation.png');
                 break;
         }
-        return(
 
-            <Button transparent onPress={() => this.props.navigation.navigate(tabName)} >
-                <Image style={styles.footImg} resizeMode={'contain'} source={path}/>
-            </Button>
-        );
+
+        if(tabName == 'favourites' || tabName == 'home'){
+            return(
+                <Button transparent onPress={() => this.props.navigation.navigate(tabName)} >
+                    <Image style={styles.footImg} resizeMode={'contain'} source={path}/>
+                </Button>
+            );
+        }else{
+            return(
+                <Button transparent onPress={() => this.props.navigation.navigate( this.props.user ? tabName : 'login')} >
+                    <Image style={styles.footImg} resizeMode={'contain'} source={path}/>
+                </Button>
+            );
+        }
     }
 
-
     render() {
-
         return (
             <Footer style={styles.footer}>
                 <FooterTab style={styles.footerTab}>
 
                     {  this.renderFooterTabs('home') }
 
-
                     {  this.renderFooterTabs('profile') }
-
 
                     {  this.renderFooterTabs('favourites') }
 
-
                     {  this.renderFooterTabs('myOrders') }
-
 
                     {  this.renderFooterTabs('notifications') }
 
@@ -102,12 +104,10 @@ class FooterSection extends Component {
     }
 }
 
-//
-// const mapStateToProps = ({ profile }) => {
-//     return {
-//         user: profile.user,
-//     };
-// };
-//
-// export default connect(mapStateToProps, {})(FooterSection);
-export default FooterSection;
+const mapStateToProps = ({ profile }) => {
+    return {
+        user: profile.user,
+    };
+};
+
+export default connect(mapStateToProps, {})(FooterSection);

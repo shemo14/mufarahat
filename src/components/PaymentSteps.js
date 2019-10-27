@@ -104,7 +104,7 @@ class PaymentSteps extends Component {
 
         let getCity = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
         getCity += this.state.mapRegion.latitude + ',' + this.state.mapRegion.longitude;
-        getCity += '&key=AIzaSyDYjCVA8YFhqN2pGiW4I8BCwhlxThs1Lc0&language=ar&sensor=true';
+        getCity += '&key=AIzaSyCJTSwkdcdRpIXp2yG7DfSRKFWxKhQdYhQ&language=ar&sensor=true';
 
         try {
             const { data } = await axios.get(getCity);

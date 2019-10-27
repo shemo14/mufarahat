@@ -14,11 +14,8 @@ import {getNewOrder, profile , finishOrder } from "../actions";
 import {connect} from "react-redux";
 import {NavigationEvents} from "react-navigation";
 
-
-
 const height = Dimensions.get('window').height;
 const IS_IPHONE_X = height === 812 || height === 896;
-
 
 class NewOrderProduct extends Component {
     constructor(props){
@@ -35,24 +32,21 @@ class NewOrderProduct extends Component {
             max: 100,
             step: 20,
             min: 20,
+            loader: true
         }
     }
-
 
     static navigationOptions = () => ({
         drawerLabel: () => null
     });
-
-
 
     componentWillMount() {
         const token =  this.props.user ?  this.props.user.token : null;
         this.props.getNewOrder( this.props.lang , this.props.navigation.state.params.id , token )
     }
 
-
     renderLoader(){
-        if (this.props.loader){
+        if (this.state.loader){
             return(
                 <View style={{ alignItems: 'center', justifyContent: 'center', height: height , alignSelf:'center' , backgroundColor:'#fff' , width:'100%' , position:'absolute' , zIndex:1  }}>
                     <DoubleBounce size={20} color={COLORS.labelBackground} />
@@ -81,6 +75,7 @@ class NewOrderProduct extends Component {
     change(rangeValue){
         this.setState({rangeValue})
     }
+
     setAnimate(availabel){
         if (availabel === 0){
             Animated.timing(
@@ -103,6 +98,10 @@ class NewOrderProduct extends Component {
         }
 
         console.log(availabel);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({ loader: nextProps.loader });
     }
 
     headerScrollingAnimation(e){
@@ -282,8 +281,6 @@ class NewOrderProduct extends Component {
                                     </Button>
                                 </Animatable.View>
 
-
-
                         }
 
                     </View>
@@ -402,7 +399,6 @@ class NewOrderProduct extends Component {
         );
     }
 }
-
 
 const mapStateToProps = ({ lang , newOrder, profile }) => {
     return {

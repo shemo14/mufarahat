@@ -35,9 +35,8 @@ import {connect} from "react-redux";
 import Reactotron from '../../ReactotronConfig'
 
 const height = Dimensions.get('window').height;
+const width  = Dimensions.get('window').width;
 const IS_IPHONE_X = height === 812 || height === 896;
-
-
 
 let selectedItems = [];
 let totalPrice= 0
@@ -53,6 +52,7 @@ class Cart extends Component {
             search:'',
             hideCheck:false,
             checkAll:false,
+            loader: true
         }
     }
 
@@ -60,10 +60,13 @@ class Cart extends Component {
         drawerLabel: () => null
     });
 
-
     componentWillMount() {
         const token =  this.props.user ?  this.props.user.token : null;
         this.props.getCart( this.props.lang  , token )
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({ loader: nextProps.loader });
     }
 
     pushSelectedChecks(cart_id , price){
@@ -76,7 +79,6 @@ class Cart extends Component {
     }
 
     pullSelectedChecks(cart_id , price){
-
         for( var i = 0; i < selectedItems.length; i++){
             if ( selectedItems[i] === cart_id) {
                 selectedItems.splice(i, 1);
@@ -84,13 +86,22 @@ class Cart extends Component {
             }
         }
         console.log('selected items_', selectedItems , 'current total price ' ,totalPrice );
-
     }
 
     showCheckBox(){
         this.setState({hideCheck: !this.state.hideCheck})
         if (!this.state.hideCheck)
             this.setState({ checkAll: false })
+    }
+
+    renderLoader(){
+        if (this.state.loader){
+            return(
+                <View style={{ alignItems: 'center', justifyContent: 'center', height: height , alignSelf:'center' , backgroundColor:'#fff' , width:'100%' , position:'absolute' , zIndex:1  }}>
+                    <DoubleBounce size={20} color={COLORS.labelBackground} />
+                </View>
+            );
+        }
     }
 
     checkAll(){
@@ -112,9 +123,6 @@ class Cart extends Component {
         this.props.cartQuantity( this.props.lang  , cart_id , token , quantity)
     }
 
-
-
-
     _renderHeader(item, expanded, hideCheck) {
         return <CartHeaderItem item={item} navigation={this.props.navigation} expanded={expanded} hideCheck={hideCheck} checkAll={this.state.checkAll}
                    pushSelectedChecks={(cart_id , price) => this.pushSelectedChecks(cart_id , price)} pullSelectedChecks={(cart_id , price) => this.pullSelectedChecks(cart_id , price)}/>;
@@ -124,7 +132,6 @@ class Cart extends Component {
         return <CartBodyItem item={item} navigation={this.props.navigation} value={value} quantity={this.props.cart.quantity}
                      deleteCart={(cart_id) => this.deleteCart(cart_id)}  cartQuantity={(cart_id , quantity) => this.cartQuantity(cart_id , quantity)}  />;
     }
-
 
     setAnimate(availabel){
         if (availabel === 0){
@@ -164,13 +171,27 @@ class Cart extends Component {
        this.props.cartSearch(this.props.lang  , token , this.state.search)
     }
 
-    render() {
+    renderNoData(){
+        if ((this.props.cart).length <= 0){
+            return(
+                <View style={{ width: width - 50, backgroundColor: '#fff', alignSelf: 'center', alignItems: 'center', justifyContent: 'center', marginTop: 10, height: (80*height)/100 , borderColor: '#ddd', borderWidth: 1 }}>
+                    <Image source={require('../../assets/images/empty.png')} resizeMode={'contain'} style={{ justifyContent: 'center', alignSelf: 'center', width: 200, height: 200 }} />
+                    <View style={{ flexDirection: 'row', marginTop: 15 }}>
+                        <Text style={[styles.type ,{color:COLORS.labelBackground, fontSize: 16, fontWeight: 'bold', fontFamily: I18nManager.isRTL ? 'cairo' : 'openSans' }]}>{i18n.t('noData')}</Text>
+                        <Image source={require('../../assets/images/sad-emoji-png.png')} style={{ height: 25, width: 25, marginHorizontal: 5 }} resizeMode={'contain'}/>
+                    </View>
+                </View>
+            );
+        }
 
+        return <View />
+    }
+
+    render() {
         const backgroundColor = this.state.backgroundColor.interpolate({
             inputRange: [0, 1],
             outputRange: ['rgba(0, 0, 0, 0)', '#00000099']
         });
-
 
         return (
             <Container>
@@ -186,14 +207,18 @@ class Cart extends Component {
                     </Animated.View>
                 </Header>
                 <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
+                    { this.renderLoader() }
                     <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground}>
                         <View style={Platform.OS === 'ios' ? styles.mt90 : styles.mT70}>
-                            <View style={[styles.inputView ,styles.mb15]}>
-                                <Item  style={styles.inputItem} bordered>
-                                    <Input autoCapitalize='none' onSubmitEditing={() => this.submitSearch() } onChangeText={(search) => this.setState({ search })} placeholder={ i18n.t('searchPlaceholder') } placeholderTextColor={'#acabae'} style={styles.modalInput}   />
-                                </Item>
-                                <Image source={require('../../assets/images/search.png')} style={[styles.searchImg , styles.transform]} resizeMode={'contain'}/>
-                            </View>
+                            { this.renderNoData() }
+                            { (this.props.cart).length > 0 ? (
+                                <View style={[styles.inputView ,styles.mb15]}>
+                                    <Item  style={styles.inputItem} bordered>
+                                        <Input autoCapitalize='none' onSubmitEditing={() => this.submitSearch() } onChangeText={(search) => this.setState({ search })} placeholder={ i18n.t('searchPlaceholder') } placeholderTextColor={'#acabae'} style={styles.modalInput}   />
+                                    </Item>
+                                    <Image source={require('../../assets/images/search.png')} style={[styles.searchImg , styles.transform]} resizeMode={'contain'}/>
+                                </View>
+                            ) : ( <View /> ) }
 
                             <View style={[styles.directionRowSpace , styles.ph23 ]}>
                                 <View style={styles.directionRow}>
@@ -232,8 +257,6 @@ class Cart extends Component {
         );
     }
 }
-
-
 
 const mapStateToProps = ({ lang , cart , profile  }) => {
     return {

@@ -27,6 +27,7 @@ export const updateProfile = (data) => {
             data: {
                 name: data.name,
                 phone: data.phone,
+                city_id: data.cityId,
                 image: data.image,
                 email: data.email,
                 lang: data.lang,
@@ -50,7 +51,6 @@ export const updateProfile = (data) => {
     }
 }
 
-
 export const logout = (data) => {
     return (dispatch) => {
         axios({
@@ -58,7 +58,7 @@ export const logout = (data) => {
             method: 'POST',
             headers: {Authorization: data.token },
         }).then(response => {
-                AsyncStorage.clear()
+                AsyncStorage.multiRemove(['token', 'auth', 'profile'])
                 dispatch({type: 'logout'})
             }
         )

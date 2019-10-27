@@ -17,8 +17,9 @@ export const register = (data, props) => {
 					phone: data.phone,
 					password: data.password,
 					address: data.city,
+					city_id: data.selectedCity,
 					device_id,
-					lang: 'ar',
+					lang: data.lang,
 					lat: data.mapRegion.latitude,
 					lng: data.mapRegion.longitude,
 				}

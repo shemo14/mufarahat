@@ -7,7 +7,6 @@ import {logout, tempAuth} from "../actions";
 import {connect} from "react-redux";
 
 const height = Dimensions.get('window').height;
-
 class DrawerCustomization extends Component {
     constructor(props){
         super(props);
@@ -16,12 +15,16 @@ class DrawerCustomization extends Component {
     }
 
     tabEvent(tabName){
-		if (tabName == 'login'){
+		if (tabName == 'login' && this.props.user){
 			this.props.logout(this.props.user.token);
 			this.props.tempAuth();
 		}
 
         this.props.onClose();
+		if (tabName == 'settings'){
+            return this.props.navigation.navigate(this.props.user ? tabName : 'login')
+        }
+
         this.props.navigation.navigate(tabName)
     }
 
@@ -114,7 +117,7 @@ class DrawerCustomization extends Component {
                 disabledText =  i18n.t('terms') ;
                 break;
             case 'login': path = require('../../assets/images/sign_out.png');
-                disabledText =  i18n.t('logout') ;
+                disabledText =  this.props.user ? i18n.t('logout') : i18n.t('loginButton') ;
                 break;
         }
         return(
@@ -137,7 +140,7 @@ class DrawerCustomization extends Component {
 
         return (
             <View style={[styles.drawerParent]}>
-                <TouchableOpacity onPress={() => [this.props.navigation.navigate('profile') , this.props.onClose()]} style={styles.directionRowCenter}>
+                <TouchableOpacity onPress={() => [this.props.navigation.navigate(this.props.user ? 'profile' : 'login') , this.props.onClose()]} style={styles.directionRowCenter}>
                     <View style={styles.mandob}>
                         <Image source={{ uri: user.avatar }} style={[styles.profileImg , {height:50}]} resizeMode={'cover'} />
                     </View>

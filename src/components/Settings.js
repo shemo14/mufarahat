@@ -11,8 +11,6 @@ import CONST from "../consts";
 import {updateProfile , chooseLang} from "../actions";
 import * as Animatable from 'react-native-animatable';
 
-
-
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
 const IS_IPHONE_X = height === 812 || height === 896;
@@ -135,13 +133,11 @@ class Settings extends Component {
                                 </Item>
                             </Animatable.View>
 
-                            <Animatable.View animation="fadeInUp" duration={1700}>
-                                <TouchableOpacity  onPress={() => this.props.navigation.navigate('login')} style={styles.delAcc}>
-                                    <Text style={[styles.type ,{color:'#ff3c3c'}]}>{ i18n.t('deleteAcc') }</Text>
-                                </TouchableOpacity>
-                            </Animatable.View>
-
-
+                            {/*<Animatable.View animation="fadeInUp" duration={1700}>*/}
+                            {/*    <TouchableOpacity  onPress={() => this.props.navigation.navigate('login')} style={styles.delAcc}>*/}
+                            {/*        <Text style={[styles.type ,{color:'#ff3c3c'}]}>{ i18n.t('deleteAcc') }</Text>*/}
+                            {/*    </TouchableOpacity>*/}
+                            {/*</Animatable.View>*/}
 
                         </View>
                     </ImageBackground>

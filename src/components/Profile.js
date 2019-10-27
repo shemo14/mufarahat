@@ -111,10 +111,14 @@ class Profile extends Component {
                             <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{ this.props.user.phone }</Text>
                         </Animatable.View>
 
-                        <Animatable.View animation={I18nManager.isRTL ? "fadeInRight" : "fadeInLeft"} duration={2000} style={[ styles.directionRow , styles.ph23 , styles.mt15]}>
-                            <Image source={require('../../assets/images/marker_gray.png')} style={[styles.headerMenu ,styles.mr10]} resizeMode={'contain'} />
-                            <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{ this.props.user.address }</Text>
-                        </Animatable.View>
+                        {
+                            this.props.user.city ? (
+                                <Animatable.View animation={I18nManager.isRTL ? "fadeInRight" : "fadeInLeft"} duration={2000} style={[ styles.directionRow , styles.ph23 , styles.mt15]}>
+                                    <Image source={require('../../assets/images/marker_gray.png')} style={[styles.headerMenu ,styles.mr10]} resizeMode={'contain'} />
+                                    <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{ this.props.user.city }</Text>
+                                </Animatable.View>
+                            ) : ( <View /> )
+                        }
 
                         <View style={[styles.line , {borderColor:'#cfcfcf'}]}/>
 

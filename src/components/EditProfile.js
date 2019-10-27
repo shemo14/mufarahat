@@ -1,33 +1,8 @@
 import React, { Component } from "react";
-import {
-    View,
-    Text,
-    Image,
-    TouchableOpacity,
-    I18nManager,
-    FlatList,
-    Platform,
-    Dimensions,
-    ImageBackground,
-    Animated,
-    ScrollView,
+import { View, Text, Image, TouchableOpacity, I18nManager, FlatList, Platform, Dimensions, ImageBackground, Animated, ScrollView,
     KeyboardAvoidingView
 } from "react-native";
-import {
-	Container,
-	Content,
-	Icon,
-	Header,
-	List,
-	Right,
-	Left,
-	Button,
-	Item,
-	Input,
-	Form,
-	Label,
-	Picker
-} from 'native-base'
+import { Container, Content, Icon, Header, List, Right, Left, Button, Item, Input, Form, Label, Picker } from 'native-base'
 import styles from '../../assets/styles'
 import i18n from '../../locale/i18n'
 import COLORS from '../../src/consts/colors'
@@ -74,7 +49,6 @@ class EditProfile extends Component {
         drawerLabel: () => null
     });
 
-
     askPermissionsAsync = async () => {
         await Permissions.askAsync(Permissions.CAMERA);
         await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -110,6 +84,22 @@ class EditProfile extends Component {
 		}
 	}
 
+	onUpdateProfile(){
+		const data = {
+			name: this.state.fullName,
+			phone: this.state.phone,
+			image: this.state.base64,
+			email: this.state.mail,
+			cityId: this.state.selectedCountry,
+			device_id: null,
+			lang: this.props.lang,
+			token: this.props.user.token
+		};
+
+		this.setState({ isSubmitted: true, profileType: 0 });
+		this.props.updateProfile(data);
+	}
+
 	renderEditProfile(){
 		if (this.state.fullName == '' || this.state.mail == '' || this.state.phone == ''|| this.state.selectedCountry == null ){
 			return (
@@ -128,7 +118,7 @@ class EditProfile extends Component {
 		}
 
 		return (
-			<Animatable.View animation="flash" duration={2200}>
+			<Animatable.View animation="fadeIn" duration={2200}>
 				<Button onPress={() => this.onUpdateProfile()} style={[styles.loginBtn , styles.mt30]}>
 					<Text style={styles.btnTxt}>{ i18n.t('save') }</Text>
 				</Button>
@@ -159,22 +149,18 @@ class EditProfile extends Component {
     };
 
 	_handleMapRegionChange  = async (mapRegion) =>  {
-
 		let getCity = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
 		getCity += mapRegion.latitude + ',' + mapRegion.longitude;
 		getCity += '&key=AIzaSyDYjCVA8YFhqN2pGiW4I8BCwhlxThs1Lc0&language=' + this.props.lang + '&sensor=true';
-
 
 		try {
 			const { data } = await axios.get(getCity);
 			console.log(data);
 			this.setState({ city: data.results[0].formatted_address });
-
 		} catch (e) {
 			console.log(e);
 		}
 	}
-
 
     setAnimate(availabel){
         if (availabel === 0){
@@ -196,7 +182,6 @@ class EditProfile extends Component {
             ).start();
             this.setState({ availabel: 0 });
         }
-
         console.log(availabel);
     }
 
@@ -209,6 +194,12 @@ class EditProfile extends Component {
         }
     }
 
+	componentWillReceiveProps(nextProps) {
+		this.setState({ isSubmitted: false })
+		if (nextProps.cities)
+			this.setState({ loader: false })
+	}
+
     render() {
         let image = this.state.userImage;
         const backgroundColor = this.state.backgroundColor.interpolate({
@@ -217,7 +208,6 @@ class EditProfile extends Component {
         });
 
         Reactotron.log(this.state.city);
-
         return (
 			<Container>
 				<Header style={[styles.header , styles.plateformMarginTop]} noShadow>
@@ -233,7 +223,6 @@ class EditProfile extends Component {
 				</Header>
 				<Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent, {backgroundColor: '#fff'} ]}  onScroll={e => this.headerScrollingAnimation(e) }>
 					<ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue.png') : require('../../assets/images/bg_blue2.png')} resizeMode={'cover'} style={styles.imageBackground}>
-
 						{image != null?
 							<TouchableOpacity onPress={this._pickImage}  style={[styles.profileImgParent , styles.mtt50]}>
 								<Image source={{ uri: image }} style={[styles.profileImg]} resizeMode={'cover'} />
@@ -241,7 +230,7 @@ class EditProfile extends Component {
 							:
 							<Animatable.View animation="zoomIn" duration={1000}>
 								<TouchableOpacity onPress={this._pickImage}  style={[styles.profileImgParent , styles.mtt50]}>
-									<Image source={require('../../assets/images/profile.png')} style={[styles.profileImg]} resizeMode={'cover'} />
+									<Image source={{ uri: this.props.user.avatar }} style={[styles.profileImg]} resizeMode={'cover'} />
 									<View style={styles.opacityView}/>
 									<Image source={require('../../assets/images/upload.png')} style={styles.upload} resizeMode={'contain'} />
 								</TouchableOpacity>
@@ -265,9 +254,16 @@ class EditProfile extends Component {
 										</Item>
 									</Animatable.View>
 
+									<Animatable.View animation="fadeInUp" duration={1800} style={[ styles.itemView , styles.inputMarginTop ,{borderColor: COLORS.mediumgray}]}>
+										<Item floatingLabel style={styles.loginItem} bordered>
+											<Label style={[styles.label , {backgroundColor: '#EAEAEA' , color:COLORS.mediumgray , top:17}]}>{ i18n.t('email') }</Label>
+											<Input value={this.state.mail} onChangeText={(mail) => this.setState({mail})}  style={[styles.input ,{color:COLORS.mediumgray}]}  />
+										</Item>
+									</Animatable.View>
+
 									<View>
 										<Item style={styles.itemPicker} regular >
-											<Label style={[styles.labelItem , {top:-18 , left:15 , position:'absolute'}]}>{ i18n.t('city') }</Label>
+											<Label style={[styles.labelItem , {top:-18 , left:15 , position:'absolute', backgroundColor: '#EAEAEA'}]}>{ i18n.t('city') }</Label>
 											<Picker
 												mode="dropdown"
 												style={styles.picker}
@@ -286,15 +282,6 @@ class EditProfile extends Component {
 											<Image source={require('../../assets/images/right_arrow_drop.png')} style={styles.pickerImg} resizeMode={'contain'} />
 										</Item>
 									</View>
-
-									<View style={[ styles.itemView , styles.inputMarginTop ,{borderColor: COLORS.mediumgray}]}>
-										<Item floatingLabel style={[styles.loginItem , { top:0 , height:50 , width:'100%'}]} bordered onPress={() =>this._toggleModal()}>
-											<Label style={[styles.label , {backgroundColor: '#fff' , color:COLORS.mediumgray ,top:-5}]}>{ i18n.t('location') }</Label>
-											<Input autoCapitalize='none'  disabled value={this.state.city}  style={[styles.input , { height:30 , lineHeight:23 , top:3, color:COLORS.mediumgray, paddingRight:15}]}  />
-										</Item>
-										<Image source={require('../../assets/images/marker_gray.png')} style={styles.regMarker} resizeMode={'contain'} />
-									</View>
-
                                     { this.renderEditProfile() }
 								</Form>
 							</KeyboardAvoidingView>

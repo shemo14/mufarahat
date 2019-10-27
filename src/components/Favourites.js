@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {View, Text, Image, TouchableOpacity, I18nManager, FlatList, Platform, Dimensions, ImageBackground, Animated,ScrollView} from "react-native";
+import {View, Text, Image, AsyncStorage, I18nManager, FlatList, Platform, Dimensions, ImageBackground, Animated,ScrollView} from "react-native";
 import {Container, Content, Icon, Header, List, Right, Left, Button, Item, Input} from 'native-base'
 import styles from '../../assets/styles'
 import i18n from '../../locale/i18n'
@@ -38,8 +38,10 @@ class Favourites extends Component {
 
     componentWillMount() {
         this.setState({ refreshed: true })
-        const token =  this.props.user ?  this.props.user.token : null;
-        this.props.getFavs( this.props.lang ,  token )
+        AsyncStorage.getItem('deviceID').then(deviceID => {
+            const token =  this.props.user ?  this.props.user.token : null;
+            this.props.getFavs( this.props.lang, token, deviceID )
+        })
     }
 
     renderLoader(){
@@ -65,7 +67,7 @@ class Favourites extends Component {
     }
 
     renderNoData(){
-        if ((this.props.favs).length <= 0){
+        if (this.props.favs && (this.props.favs).length <= 0){
             return(
                 <View style={{ width: width - 50, backgroundColor: '#fff', alignSelf: 'center', alignItems: 'center', justifyContent: 'center', marginTop: 10, height: (80*height)/100 , borderColor: '#ddd', borderWidth: 1 }}>
                     <Image source={require('../../assets/images/empty.png')} resizeMode={'contain'} style={{ justifyContent: 'center', alignSelf: 'center', width: 200, height: 200 }} />

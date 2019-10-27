@@ -1,38 +1,14 @@
 import React, { Component } from "react";
-import {
-    View,
-    Text,
-    Image,
-    TouchableOpacity,
-    Dimensions,
-    ImageBackground,
-    Animated,
-    I18nManager,
-    Platform
-} from "react-native";
-import {
-    Container,
-    Content,
-    Icon,
-    Header,
-    Right,
-    Left,
-    Button,
-    Item,
-    Input,
-    Accordion,
-} from 'native-base'
+import { View, Text, Image, TouchableOpacity, Dimensions, } from "react-native";
+import { Icon, } from 'native-base'
 import styles from '../../assets/styles'
 import i18n from '../../locale/i18n'
 import COLORS from '../../src/consts/colors'
-import { DoubleBounce } from 'react-native-loader';
 import StarRating from 'react-native-star-rating';
-
-
+import {connect} from "react-redux";
 
 const height = Dimensions.get('window').height;
 const IS_IPHONE_X = height === 812 || height === 896;
-
 
 class CartBodyItem extends Component {
     constructor(props){
@@ -94,7 +70,7 @@ class CartBodyItem extends Component {
                         </TouchableOpacity>
                     </View>
                     <View style={styles.directionRowSpace}>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('paymentSteps', {selectedItems: [ this.props.item.cart_id ] , totalPrice })} >
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate( this.props.user ? 'paymentSteps' : 'login' , {selectedItems: [ this.props.item.cart_id ] , totalPrice })} >
                             <Image source={require('../../assets/images/credit_card.png')} style={[styles.headerMenu , styles.mr20]} resizeMode={'contain'} />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => this.props.deleteCart(this.props.item.cart_id)} >
@@ -109,4 +85,11 @@ class CartBodyItem extends Component {
     }
 }
 
-export default CartBodyItem;
+
+const mapStateToProps = ({ lang , profile  }) => {
+    return {
+        lang: lang.lang,
+        user: profile.user,
+    };
+};
+export default connect(mapStateToProps, {})(CartBodyItem);

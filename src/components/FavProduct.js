@@ -45,7 +45,7 @@ class FavProduct extends Component {
                 </TouchableOpacity>
                 <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{this.props.data.category}</Text>
                 <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>{this.props.data.price} { i18n.t('RS') }</Text>
-                <Text style={styles.oldPrice}>{this.props.data.old_price} { i18n.t('RS') }</Text>
+                <Text style={styles.oldPrice}>{ this.props.data.old_price != this.props.data.price ? this.props.data.old_price + ' ' + i18n.t('RS') : '' }</Text>
                 <TouchableOpacity onPress={() => this.onFavPress()} style={{alignSelf:'flex-end'}}>
                     <Icon type={'FontAwesome'} name={'heart'} style={{ fontSize: 20, color: this.state.fav? '#ff5252' : COLORS.lightgray }} />
                 </TouchableOpacity>

@@ -38,15 +38,13 @@ class Register extends Component {
     }
 
 
-
-
 	renderSubmit(){
 		if (this.state.fullName == ''
 			|| this.state.email == ''
 			|| this.state.phone == ''
 			|| this.state.password == ''
 			|| this.state.rePassword == ''
-			|| this.state.city == ''
+			// || this.state.city == ''
 			|| this.state.selectedCity == null
 			|| this.state.checked == false ){
 			return (
@@ -70,7 +68,6 @@ class Register extends Component {
 			</Button>
 		);
 	}
-
 
 	validate = () => {
 		let isError = false;
@@ -116,6 +113,7 @@ class Register extends Component {
 				password,
 				token,
 				location,
+				lang: this.props.lang,
 				city,
 				selectedCity,
 				mapRegion,
@@ -289,13 +287,13 @@ class Register extends Component {
 
 									</View>
 
-									<View style={[ styles.itemView , styles.inputMarginTop ]}>
-										<Item floatingLabel style={[styles.loginItem , { top:0 , height:50}]} bordered onPress={() =>this._toggleModal()}>
-											<Label style={[styles.label , {top:-5}]}>{ i18n.t('location') }</Label>
-											<Input autoCapitalize='none'  disabled value={this.state.city}  style={[styles.input , { height:30 , lineHeight:23 , top:0}]}  />
-										</Item>
-										<Image source={require('../../assets/images/map_marker_white.png')} style={styles.regMarker} resizeMode={'contain'} />
-									</View>
+									{/*<View style={[ styles.itemView , styles.inputMarginTop ]}>*/}
+									{/*	<Item floatingLabel style={[styles.loginItem , { top:0 , height:50}]} bordered onPress={() =>this._toggleModal()}>*/}
+									{/*		<Label style={[styles.label , {top:-5}]}>{ i18n.t('location') }</Label>*/}
+									{/*		<Input autoCapitalize='none'  disabled value={this.state.city}  style={[styles.input , { height:30 , lineHeight:23 , top:0}]}  />*/}
+									{/*	</Item>*/}
+									{/*	<Image source={require('../../assets/images/map_marker_white.png')} style={styles.regMarker} resizeMode={'contain'} />*/}
+									{/*</View>*/}
 
 									<TouchableOpacity onPress={() => this.setState({ checked: !this.state.checked })} style={[ styles.inputMarginTop ,styles.directionRow]}>
 										<CheckBox onPress={() => this.setState({ checked: !this.state.checked })} checked={this.state.checked} color={'transparent'} style={styles.checkBox} />

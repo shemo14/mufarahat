@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View , I18nManager , AsyncStorage} from 'react-native';
+import { StyleSheet, Text, Platform , I18nManager , AsyncStorage} from 'react-native';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import { AppLoading } from 'expo';
@@ -44,9 +44,6 @@ export default class App extends React.Component {
 		// AsyncStorage.clear()
 	}
 
-	componentDidMount(){
-		Notifications.addListener(this.handleNotification);
-	}
 
 	handleNotification = (notification) => {
 		if (notification && notification.origin !== 'received') {
@@ -55,6 +52,15 @@ export default class App extends React.Component {
 	}
 
 	async componentDidMount() {
+		if (Platform.OS === 'android') {
+			Notifications.createChannelAndroidAsync('orders', {
+				name: 'Chat messages',
+				sound: true,
+			});
+		}
+
+		Notifications.addListener(this.handleNotification);
+
 		await Font.loadAsync({
 			cairo: require('./assets/fonts/Cairo-Regular.ttf'),
 			cairoBold: require('./assets/fonts/Cairo-Bold.ttf'),

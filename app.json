@@ -9,7 +9,7 @@
       "android",
       "web"
     ],
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -29,7 +29,7 @@
     },
     "android": {
       "package": "com.aait.mofrehatclient",
-      "versionCode": 3,
+      "versionCode": 4,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyDDGCkEv3jHUzSA1FVI26h_OadsG297Pe8"

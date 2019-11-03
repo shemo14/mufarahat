@@ -13,10 +13,15 @@ import * as Animatable from 'react-native-animatable';
 import {getNewOrder, profile , finishOrder } from "../actions";
 import {connect} from "react-redux";
 import {NavigationEvents} from "react-navigation";
+import axios from 'axios';
+import CONST from '../consts'
+import Question from './Question'
+import _ from 'lodash'
 
 const height = Dimensions.get('window').height;
 const IS_IPHONE_X = height === 812 || height === 896;
 
+let questions = [];
 class NewOrderProduct extends Component {
     constructor(props){
         super(props);
@@ -32,7 +37,9 @@ class NewOrderProduct extends Component {
             max: 100,
             step: 20,
             min: 20,
-            loader: true
+            loader: true,
+            isSubmitted: false,
+            questions: []
         }
     }
 
@@ -43,6 +50,9 @@ class NewOrderProduct extends Component {
     componentWillMount() {
         const token =  this.props.user ?  this.props.user.token : null;
         this.props.getNewOrder( this.props.lang , this.props.navigation.state.params.id , token )
+        axios.post(CONST.url + 'questions', { lang: this.props.lang }).then(response => {
+            this.setState({ questions: response.data.data })
+        })
     }
 
     renderLoader(){
@@ -70,6 +80,19 @@ class NewOrderProduct extends Component {
         }
 
         return source;
+    }
+
+    pushQuestions(quAns){
+        console.log('is find.......', _.find(questions, { id: quAns.id }));
+        if (_.find(questions, { id: quAns.id })){
+           const index = questions.findIndex(() => { return quAns });
+            questions.splice(index, 1);
+
+            console.log('after push', questions);
+        }
+        questions.push(quAns);
+
+        console.log(questions);
     }
 
     change(rangeValue){
@@ -113,13 +136,11 @@ class NewOrderProduct extends Component {
         }
     }
 
-
     fancyModal = () => {
         this.setState({ fancyModal: !this.state.fancyModal });
     };
 
     evaluateModal = () => {
-
         const token =  this.props.user ?  this.props.user.token : null;
         this.props.finishOrder( this.props.lang , this.props.navigation.state.params.id , token )
         this.setState({ evaluateModal: !this.state.evaluateModal });
@@ -129,6 +150,36 @@ class NewOrderProduct extends Component {
         this.props.navigation.navigate('home');
         this.setState({ evaluateModal: !this.state.evaluateModal });
     };
+
+    setCart(){
+        this.setState({ isSubmitted: true });
+        const order_id = this.props.navigation.state.params.id;
+        axios.post(CONST.url + 'reset_cart', { order_id }).then(response => {
+           if (response.data.status == 200){
+               this.setState({ isSubmitted: false });
+                this.props.navigation.navigate('cart')
+           }
+        });
+    }
+
+    renderSubmit(){
+        if (this.state.isSubmitted){
+            return(
+                <View style={{ alignSelf: 'center', justifyContent: 'center' }}>
+                    <DoubleBounce size={20} color="#B7264B" style={{ alignSelf: 'center' }} />
+                </View>
+            )
+        }
+
+        return (
+            <Animatable.View animation="flash" duration={1400}>
+                <Button onPress={() => this.setCart()} style={[styles.cartBtn , styles.mv35 ]}>
+                    <Image source={require('../../assets/images/shopping_cart.png')} style={[styles.btnImg , styles.transform]} resizeMode={'contain'}/>
+                    <Text style={styles.btnTxt}> { i18n.t('addToCart') }</Text>
+                </Button>
+            </Animatable.View>
+        );
+    }
 
     onFocus(payload){
         this.setState({ status: null });
@@ -253,13 +304,13 @@ class NewOrderProduct extends Component {
                                            <View style={[styles.directionRow, styles.mb15]}>
                                                <Image source={require('../../assets/images/smartphone.png')}
                                                       style={[styles.headerMenu, styles.mr10]} resizeMode={'contain'}/>
-                                               <Text style={[styles.type, {color: COLORS.mediumgray}]}>0123456789</Text>
+                                               <Text style={[styles.type, {color: COLORS.mediumgray}]}>{ this.props.newOrder.delegated.phone }</Text>
                                            </View>
-                                           <View style={[styles.directionRow, styles.mb15]}>
-                                               <Image source={require('../../assets/images/ride_gray.png')}
-                                                      style={[styles.headerMenu, styles.mr10]} resizeMode={'contain'}/>
-                                               <Text style={[styles.type, {color: COLORS.mediumgray}]}>4568 س م ع</Text>
-                                           </View>
+                                           {/*<View style={[styles.directionRow, styles.mb15]}>*/}
+                                               {/*<Image source={require('../../assets/images/ride_gray.png')}*/}
+                                                      {/*style={[styles.headerMenu, styles.mr10]} resizeMode={'contain'}/>*/}
+                                               {/*<Text style={[styles.type, {color: COLORS.mediumgray}]}>4568 س م ع</Text>*/}
+                                           {/*</View>*/}
                                        </View>
                                    }
 
@@ -274,15 +325,8 @@ class NewOrderProduct extends Component {
                                    </View>
                                </View>
                                     :
-                                <Animatable.View animation="flash" duration={1400}>
-                                    <Button onPress={() => this.props.navigation.navigate('cart')} style={[styles.cartBtn , styles.mv35 ]}>
-                                        <Image source={require('../../assets/images/shopping_cart.png')} style={[styles.btnImg , styles.transform]} resizeMode={'contain'}/>
-                                        <Text style={styles.btnTxt}> { i18n.t('addToCart') }</Text>
-                                    </Button>
-                                </Animatable.View>
-
+                                this.renderSubmit()
                         }
-
                     </View>
 
                     <Modal style={{}} isVisible={this.state.fancyModal} onBackdropPress={() => this.fancyModal()}>
@@ -316,71 +360,11 @@ class NewOrderProduct extends Component {
                                 </View>
                                 <View style={[styles.line ]}/>
 
-                                <Text style={[styles.ques , styles.mb10]}>صيغة سؤال من المشكلات المواجهة للتطبيق ؟</Text>
-                                <View style={[styles.directionRowSpace , {flexWrap:'wrap'}]}>
-                                    <View style={[ styles.directionRow , styles.mt10 ]}>
-                                        <CheckBox checked={true}  color={COLORS.labelBackground} style={styles.quesCheckBox} />
-                                        <Text style={[styles.check]}>{ i18n.t('excellent') } </Text>
-                                    </View>
-                                    <View style={[ styles.directionRow , styles.mt10 ]}>
-                                        <CheckBox checked={false} color={COLORS.labelBackground} style={styles.quesCheckBox} />
-                                        <Text style={[styles.check]}>{ i18n.t('good') } </Text>
-                                    </View>
-                                    <View style={[ styles.directionRow , styles.mt10 ]}>
-                                        <CheckBox checked={false} color={COLORS.labelBackground} style={styles.quesCheckBox} />
-                                        <Text style={[styles.check]}>{ i18n.t('acceptable') } </Text>
-                                    </View>
-                                    <View style={[ styles.directionRow , styles.mt10 ]}>
-                                        <CheckBox checked={false} color={COLORS.labelBackground} style={styles.quesCheckBox} />
-                                        <Text style={[styles.check]}>{ i18n.t('poor') } </Text>
-                                    </View>
-                                </View>
-
-                                <View style={[styles.line ]}/>
-
-                                <Text style={[styles.ques , styles.mb10]}>صيغة سؤال من المشكلات المواجهة للتطبيق ؟</Text>
-                                <View style={[styles.directionRowSpace , {flexWrap:'wrap'}]}>
-                                    <View style={[ styles.directionRow , styles.mt10 ]}>
-                                        <CheckBox checked={true}  color={COLORS.labelBackground} style={styles.quesCheckBox} />
-                                        <Text style={[styles.check]}>{ i18n.t('excellent') } </Text>
-                                    </View>
-                                    <View style={[ styles.directionRow , styles.mt10 ]}>
-                                        <CheckBox checked={false} color={COLORS.labelBackground} style={styles.quesCheckBox} />
-                                        <Text style={[styles.check]}>{ i18n.t('good') } </Text>
-                                    </View>
-                                    <View style={[ styles.directionRow , styles.mt10 ]}>
-                                        <CheckBox checked={false} color={COLORS.labelBackground} style={styles.quesCheckBox} />
-                                        <Text style={[styles.check]}>{ i18n.t('acceptable') } </Text>
-                                    </View>
-                                    <View style={[ styles.directionRow , styles.mt10 ]}>
-                                        <CheckBox checked={false} color={COLORS.labelBackground} style={styles.quesCheckBox} />
-                                        <Text style={[styles.check]}>{ i18n.t('poor') } </Text>
-                                    </View>
-                                </View>
-
-                                <View style={[styles.line ]}/>
-
-                                <Text style={[styles.ques , styles.mb10]}>صيغة سؤال من المشكلات المواجهة للتطبيق ؟</Text>
-                                <View style={[styles.directionRowSpace , {flexWrap:'wrap'}]}>
-                                    <View style={[ styles.directionRow , styles.mt10 ]}>
-                                        <CheckBox checked={true}  color={COLORS.labelBackground} style={styles.quesCheckBox} />
-                                        <Text style={[styles.check]}>{ i18n.t('excellent') } </Text>
-                                    </View>
-                                    <View style={[ styles.directionRow , styles.mt10 ]}>
-                                        <CheckBox checked={false} color={COLORS.labelBackground} style={styles.quesCheckBox} />
-                                        <Text style={[styles.check]}>{ i18n.t('good') } </Text>
-                                    </View>
-                                    <View style={[ styles.directionRow , styles.mt10 ]}>
-                                        <CheckBox checked={false} color={COLORS.labelBackground} style={styles.quesCheckBox} />
-                                        <Text style={[styles.check]}>{ i18n.t('acceptable') } </Text>
-                                    </View>
-                                    <View style={[ styles.directionRow , styles.mt10 ]}>
-                                        <CheckBox checked={false} color={COLORS.labelBackground} style={styles.quesCheckBox} />
-                                        <Text style={[styles.check]}>{ i18n.t('poor') } </Text>
-                                    </View>
-                                </View>
-
-                                <View style={[styles.line ]}/>
+                                {
+                                    this.state.questions.map((qu, i) => (
+                                        <Question pushQuestions={(quAns) => this.pushQuestions(quAns)} data={qu} key={i}/>
+                                    ))
+                                }
 
                                 <View style={styles.directionRowSpace}>
                                     <TouchableOpacity onPress={() => this.sendEval()} style={[styles.loginBtn ,{width:'45%'}]}>

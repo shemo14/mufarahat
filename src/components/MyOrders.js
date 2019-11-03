@@ -24,7 +24,7 @@ class MyOrders extends Component {
             status: null,
             backgroundColor: new Animated.Value(0),
             availabel: 0,
-            orderType:1,
+            orderType:0,
             loader: true
         }
     }
@@ -34,7 +34,7 @@ class MyOrders extends Component {
     });
 
     componentWillMount() {
-        this.getOrders(1);
+        this.getOrders(0);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -159,31 +159,47 @@ class MyOrders extends Component {
     }
 
     renderOrders(){
-        if(this.state.orderType === 1){
+        if(this.state.orderType === 0){
             return(
                 <View style={styles.flatContainer}>
                     { this.renderNoData() }
                     {
                         this.props.myOrders.map((myOrder, i) => (
-                            <Animatable.View key={i} animation="zoomIn" duration={1000}
-                                             style={[styles.scrollParent2, styles.orderProduct]}>
+                            <Animatable.View key={i} animation="zoomIn" duration={1000} style={[styles.scrollParent2 , styles.orderProduct ]}>
                                 <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct', { id: myOrder.id })}>
                                     { this.renderImages(myOrder.images) }
                                 </TouchableOpacity>
-                                <Image source={require('../../assets/images/orange_circle.png')}
-                                       style={styles.orangeCircle} resizeMode={'contain'}/>
+                                <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
                                 <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct', { id: myOrder.id })}>
-                                    <Text style={[styles.type, {color: COLORS.boldgray}]}>{myOrder.order_no}</Text>
+                                    <Text style={[styles.type ,{color:COLORS.boldgray}]}>{myOrder.order_no}</Text>
                                 </TouchableOpacity>
-                                <Text style={[styles.headerText, {color: COLORS.labelBackground}]}>{myOrder.price} { i18n.t('RS') }</Text>
-                                <TouchableOpacity onPress={() => this.deleteOrder(myOrder.id)} style={{alignSelf: 'flex-end'}}>
-                                    <Image source={require('../../assets/images/dustbin_red.png')}
-                                           style={styles.headerMenu} resizeMode={'contain'}/>
+                                {/*<Text style={[styles.type ,{color:COLORS.mediumgray}]}>التصنيف</Text>*/}
+                                <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>{myOrder.price} { i18n.t('RS') } </Text>
+                            </Animatable.View>
+
+                        ))
+                    }
+                </View>
+            )
+        } else if(this.state.orderType === 1){
+            return(
+                <View style={styles.flatContainer}>
+                    { this.renderNoData() }
+                    {
+                        this.props.myOrders.map((myOrder, i) => (
+                            <Animatable.View key={i} animation="zoomIn" duration={1000} style={[styles.scrollParent2 , styles.orderProduct ]}>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct', { id: myOrder.id })}>
+                                    { this.renderImages(myOrder.images) }
                                 </TouchableOpacity>
+                                <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct', { id: myOrder.id })}>
+                                    <Text style={[styles.type ,{color:COLORS.boldgray}]}>{myOrder.order_no}</Text>
+                                </TouchableOpacity>
+                                {/*<Text style={[styles.type ,{color:COLORS.mediumgray}]}>التصنيف</Text>*/}
+                                <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>{myOrder.price} { i18n.t('RS') }</Text>
                             </Animatable.View>
                         ))
                     }
-
                 </View>
             )
         } else {
@@ -192,16 +208,21 @@ class MyOrders extends Component {
                     { this.renderNoData() }
                     {
                         this.props.myOrders.map((myOrder, i) => (
-                    <Animatable.View key={i} animation="zoomIn" duration={1000} style={[styles.scrollParent2 , styles.orderProduct ]}>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct', { id: myOrder.id })}>
-                            { this.renderImages(myOrder.images) }
-                        </TouchableOpacity>
-                        <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct', { id: myOrder.id })}>
-                            <Text style={[styles.type ,{color:COLORS.boldgray}]}>{myOrder.order_no}</Text>
-                        </TouchableOpacity>
-                        <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>{myOrder.price} { i18n.t('RS') }</Text>
-                    </Animatable.View>
+                            <Animatable.View key={i} animation="zoomIn" duration={1000} style={[styles.scrollParent2 , styles.orderProduct ]}>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct', { id: myOrder.id })}>
+                                    { this.renderImages(myOrder.images) }
+                                </TouchableOpacity>
+                                <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct', { id: myOrder.id })}>
+                                    <Text style={[styles.type ,{color:COLORS.boldgray}]}>{myOrder.order_no}</Text>
+                                </TouchableOpacity>
+                                {/*<Text style={[styles.type ,{color:COLORS.mediumgray}]}>التصنيف</Text>*/}
+                                <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>{myOrder.price} { i18n.t('RS') }</Text>
+                                <TouchableOpacity onPress={() => this.deleteOrder(myOrder.id)} style={{alignSelf:'flex-end'}}>
+                                    <Image source={require('../../assets/images/dustbin_red.png')} style={styles.headerMenu} resizeMode={'contain'} />
+                                </TouchableOpacity>
+                            </Animatable.View>
+
                         ))
                     }
                 </View>
@@ -237,11 +258,14 @@ class MyOrders extends Component {
                         <View style={Platform.OS === 'ios' ? styles.mt90 : styles.mT70}>
 
                             <View style={styles.orderTabs}>
-                                <TouchableOpacity onPress={  () => this.getOrders(1)} style={this.state.orderType === 1 ? styles.activeTab : styles.normalTab}>
-                                    <Text style={this.state.orderType === 1 ? styles.activeTabText :styles.normalTabText} >{ i18n.t('implementedOrd') }</Text>
+                                <TouchableOpacity onPress={ () => this.getOrders(0)} style={this.state.orderType == 0 ? styles.activeTab : styles.normalTab}>
+                                    <Text style={this.state.orderType == 0 ? styles.activeTabText :styles.normalTabText} >{ i18n.t('newOrd') }</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={ () => this.getOrders(0)} style={this.state.orderType === 0 ? styles.activeTab : styles.normalTab}>
-                                    <Text style={this.state.orderType === 0 ? styles.activeTabText :styles.normalTabText} >{ i18n.t('newOrd') }</Text>
+                                <TouchableOpacity onPress={ () => this.getOrders(1)} style={this.state.orderType == 1 ? styles.activeTab : styles.normalTab}>
+                                    <Text style={this.state.orderType == 1 ? styles.activeTabText :styles.normalTabText} >{ i18n.t('underway') }</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={ () => this.getOrders(2)} style={this.state.orderType == 2?  styles.activeTab : styles.normalTab}>
+                                    <Text style={this.state.orderType == 2 ? styles.activeTabText :styles.normalTabText} >{ i18n.t('implementedOrd') }</Text>
                                 </TouchableOpacity>
                             </View>
 

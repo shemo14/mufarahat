@@ -24,6 +24,7 @@ class Products extends Component {
             status: null,
             backgroundColor: new Animated.Value(0),
             availabel: 0,
+            loader: true
         }
     }
 
@@ -39,13 +40,17 @@ class Products extends Component {
     }
 
     renderLoader(){
-        if (this.props.loader){
+        if (this.state.loader){
             return(
                 <View style={{ alignItems: 'center', justifyContent: 'center', height: height , alignSelf:'center' , backgroundColor:'#fff' , width:'100%' , position:'absolute' , zIndex:1  }}>
                     <DoubleBounce size={20} color={COLORS.labelBackground} />
                 </View>
             );
         }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({ loader: nextProps.loader })
     }
 
 
@@ -60,7 +65,7 @@ class Products extends Component {
                     <Text style={[styles.type ,{color:COLORS.boldgray}]}>{item.name}</Text>
                     <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{item.category}</Text>
                     <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>{item.price} { i18n.t('RS') }</Text>
-                    <Text style={styles.oldPrice}>{item.old_price} { i18n.t('RS') }</Text>
+                    <Text style={[styles.oldPrice, { marginTop: item.old_price == item.price ? 7 : 0 }]}>{ item.old_price != item.price ? item.old_price + ' ' + i18n.t('RS') : '' }</Text>
                 </TouchableOpacity>
             </Animatable.View>
         );
@@ -123,7 +128,7 @@ class Products extends Component {
                 </Header>
                 <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
                     { this.renderLoader() }
-                    <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground}>
+                    <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground} >
                         <View style={Platform.OS === 'ios' ? styles.mt90 : styles.mT70}>
                             <View style={styles.flatContainer}>
                                 <FlatList

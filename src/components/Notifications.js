@@ -121,6 +121,10 @@ class Notifications extends Component {
 		return <View />
 	}
 
+	navigateToOrder(id){
+		if (id)
+			this.props.navigation.navigate('newOrderProduct', { id })
+	}
 
 	render() {
 		const backgroundColor = this.state.backgroundColor.interpolate({
@@ -147,12 +151,12 @@ class Notifications extends Component {
 								this.state.notifications.map(( notification, i ) => (
 									<Animatable.View key={i} animation="fadeInUp" duration={1000} style={styles.notiBlock}>
 										<View style={styles.notiBorder}/>
-										<View style={[styles.directionRowSpace ,styles.mb5]}>
+										<TouchableOpacity onPress={() => this.navigateToOrder(notification.order_id)} style={[styles.directionRowSpace ,styles.mb5]}>
 											<Text style={[styles.termsText , {color:COLORS.boldgray , fontSize:14}]}>{ notification.title }</Text>
 											<TouchableOpacity onPress={() => this.onDeleteNotification(notification.id)}>
 												<Image source={require('../../assets/images/error.png')} style={styles.error} resizeMode={'contain'} />
 											</TouchableOpacity>
-										</View>
+										</TouchableOpacity>
 										<Text style={[styles.type ,{color:COLORS.mediumgray , lineHeight:22,  writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr'}]}>{ notification.body }</Text>
 									</Animatable.View>
 								))

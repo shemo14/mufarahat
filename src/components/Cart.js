@@ -212,31 +212,33 @@ class Cart extends Component {
                         <View style={Platform.OS === 'ios' ? styles.mt90 : styles.mT70}>
                             { this.renderNoData() }
                             { (this.props.cart).length > 0 ? (
-                                <View style={[styles.inputView ,styles.mb15]}>
-                                    <Item  style={styles.inputItem} bordered>
-                                        <Input autoCapitalize='none' onSubmitEditing={() => this.submitSearch() } onChangeText={(search) => this.setState({ search })} placeholder={ i18n.t('searchPlaceholder') } placeholderTextColor={'#acabae'} style={styles.modalInput}   />
-                                    </Item>
-                                    <Image source={require('../../assets/images/search.png')} style={[styles.searchImg , styles.transform]} resizeMode={'contain'}/>
+                                <View>
+                                    <View style={[styles.inputView ,styles.mb15]}>
+                                        <Item  style={styles.inputItem} bordered>
+                                            <Input autoCapitalize='none' onSubmitEditing={() => this.submitSearch() } onChangeText={(search) => this.setState({ search })} placeholder={ i18n.t('searchPlaceholder') } placeholderTextColor={'#acabae'} style={styles.modalInput}   />
+                                        </Item>
+                                        <Image source={require('../../assets/images/search.png')} style={[styles.searchImg , styles.transform]} resizeMode={'contain'}/>
+                                    </View>
+
+                                    <View style={[styles.directionRowSpace , styles.ph23 ]}>
+                                        <View style={styles.directionRow}>
+                                            <TouchableOpacity onPress={() => this.showCheckBox()}>
+                                                <Text style={styles.type}>{ i18n.t('select') }</Text>
+                                            </TouchableOpacity>
+                                            <View style={styles.verticalLine}/>
+                                            <TouchableOpacity  onPress={() => this.checkAll()}>
+                                                <Text style={styles.type}>{  this.state.checkAll && this.state.hideCheck  ? i18n.t('removeSelected') : i18n.t('selectAll') }</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        {
+                                            this.state.hideCheck ?
+                                                <TouchableOpacity onPress={() => selectedItems.length > 0 ? this.props.navigation.navigate('paymentSteps' , {selectedItems , totalPrice}) : false } style={styles.doneStyle}>
+                                                    <Text style={[styles.type , {color:COLORS.labelBackground}]}>{ i18n.t('done') }</Text>
+                                                </TouchableOpacity> : <View />
+                                        }
+                                    </View>
                                 </View>
                             ) : ( <View /> ) }
-
-                            <View style={[styles.directionRowSpace , styles.ph23 ]}>
-                                <View style={styles.directionRow}>
-                                    <TouchableOpacity onPress={() => this.showCheckBox()}>
-                                        <Text style={styles.type}>{ i18n.t('select') }</Text>
-                                    </TouchableOpacity>
-                                    <View style={styles.verticalLine}/>
-                                    <TouchableOpacity  onPress={() => this.checkAll()}>
-                                        <Text style={styles.type}>{  this.state.checkAll && this.state.hideCheck  ? i18n.t('removeSelected') : i18n.t('selectAll') }</Text>
-                                    </TouchableOpacity>
-                                </View>
-                                {
-                                    this.state.hideCheck ?
-                                        <TouchableOpacity onPress={() => selectedItems.length > 0 ? this.props.navigation.navigate('paymentSteps' , {selectedItems , totalPrice}) : false } style={styles.doneStyle}>
-                                            <Text style={[styles.type , {color:COLORS.labelBackground}]}>{ i18n.t('done') }</Text>
-                                        </TouchableOpacity> : <View />
-                                }
-                            </View>
 
                             <View style={styles.flatContainer}>
                                 <Accordion

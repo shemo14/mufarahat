@@ -109,7 +109,7 @@ class NewOrders extends Component {
                                     <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct')}>
                                         <Image source={require('../../assets/images/pic_two-1.png')} style={styles.scrollImg2} resizeMode={'contain'} />
                                     </TouchableOpacity>
-                                    <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
+                                    {/*<Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />*/}
                                     <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct')}>
                                         <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم الحلويات</Text>
                                     </TouchableOpacity>
@@ -123,7 +123,7 @@ class NewOrders extends Component {
                                         <Image source={require('../../assets/images/pic_of_sweet.png')} style={styles.scrollImg2} resizeMode={'contain'} />
                                         <Image source={require('../../assets/images/pic_of_sweet.png')} style={[styles.scrollImg2 , {position:'absolute' , right:10}]} resizeMode={'contain'} />
                                     </TouchableOpacity>
-                                    <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
+                                    {/*<Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />*/}
                                     <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct')}>
                                         <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم الحلويات</Text>
                                     </TouchableOpacity>
@@ -135,7 +135,7 @@ class NewOrders extends Component {
                                     <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct')}>
                                         <Image source={require('../../assets/images/pic_two-1.png')} style={styles.scrollImg2} resizeMode={'contain'} />
                                     </TouchableOpacity>
-                                    <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
+                                    {/*<Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />*/}
                                     <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct')}>
                                         <Text style={[styles.type ,{color:COLORS.boldgray}]}>اسم الحلويات</Text>
                                     </TouchableOpacity>

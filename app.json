@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "mufarahat",
-    "slug": "mufarahat",
+    "name": "mofrihat",
+    "slug": "mofrihat",
     "privacy": "public",
     "sdkVersion": "34.0.0",
     "platforms": [
@@ -29,7 +29,7 @@
     },
     "android": {
       "package": "com.aait.mofrehatclient",
-      "versionCode": 4,
+      "versionCode": 5,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyDDGCkEv3jHUzSA1FVI26h_OadsG297Pe8"

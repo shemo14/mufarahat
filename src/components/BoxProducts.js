@@ -55,7 +55,7 @@ class BoxProducts extends Component {
             <Animatable.View animation="zoomIn" duration={1000} style={[ styles.touchProduct]}>
                 <TouchableOpacity onPress={() => this.props.navigation.navigate('product', { id: item.id })} style={[styles.scrollParent2 , styles.touchProduct]}>
                     <Image source={{ uri: item.image }} style={styles.scrollImg2} resizeMode={'cover'} />
-                    <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
+                    {/*<Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />*/}
                     <Text style={[styles.type ,{color:COLORS.boldgray}]}>{item.name}</Text>
                     <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{item.category}</Text>
                     <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>{item.price}</Text>

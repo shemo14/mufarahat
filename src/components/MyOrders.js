@@ -11,6 +11,8 @@ import DrawerCustomization from '../routes/DrawerCustomization';
 import * as Animatable from 'react-native-animatable';
 import {connect} from "react-redux";
 import {getOrders , profile , deleteOrder} from "../actions";
+import { Notifications } from 'expo';
+
 
 const height = Dimensions.get('window').height;
 const width  = Dimensions.get('window').width;
@@ -40,6 +42,14 @@ class MyOrders extends Component {
     componentWillReceiveProps(nextProps) {
         this.setState({ loader: nextProps.loader });
     }
+
+	componentDidMount() {
+		Notifications.addListener(this.handleNotification);
+	}
+
+	handleNotification = () => {
+		this.componentWillMount()
+	}
 
     renderLoader(){
         if (this.state.loader){
@@ -154,6 +164,7 @@ class MyOrders extends Component {
 
         return view;
     }
+
     closeDrawer(){
         this.RBSheet.close()
     }
@@ -169,7 +180,7 @@ class MyOrders extends Component {
                                 <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct', { id: myOrder.id })}>
                                     { this.renderImages(myOrder.images) }
                                 </TouchableOpacity>
-                                <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
+                                {/*<Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />*/}
                                 <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct', { id: myOrder.id })}>
                                     <Text style={[styles.type ,{color:COLORS.boldgray}]}>{myOrder.order_no}</Text>
                                 </TouchableOpacity>
@@ -191,7 +202,7 @@ class MyOrders extends Component {
                                 <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct', { id: myOrder.id })}>
                                     { this.renderImages(myOrder.images) }
                                 </TouchableOpacity>
-                                <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
+                                {/*<Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />*/}
                                 <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct', { id: myOrder.id })}>
                                     <Text style={[styles.type ,{color:COLORS.boldgray}]}>{myOrder.order_no}</Text>
                                 </TouchableOpacity>
@@ -212,7 +223,7 @@ class MyOrders extends Component {
                                 <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct', { id: myOrder.id })}>
                                     { this.renderImages(myOrder.images) }
                                 </TouchableOpacity>
-                                <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
+                                {/*<Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />*/}
                                 <TouchableOpacity onPress={() => this.props.navigation.navigate('newOrderProduct', { id: myOrder.id })}>
                                     <Text style={[styles.type ,{color:COLORS.boldgray}]}>{myOrder.order_no}</Text>
                                 </TouchableOpacity>

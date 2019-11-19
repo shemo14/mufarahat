@@ -1,34 +1,6 @@
 import React, { Component } from "react";
-import {
-    View,
-    Text,
-    Image,
-    TouchableOpacity,
-    I18nManager,
-    FlatList,
-    Platform,
-    Dimensions,
-    ImageBackground,
-    Animated,
-    ScrollView,
-    KeyboardAvoidingView
-} from "react-native";
-import {
-    Container,
-    Content,
-    Icon,
-    Header,
-    List,
-    Right,
-    Left,
-    Button,
-    Item,
-    Input,
-    Form,
-    Label,
-    Toast,
-    Picker, Textarea
-} from 'native-base'
+import { View, Text, Image, TouchableOpacity, I18nManager, FlatList, Platform, Dimensions, ImageBackground, Animated, ScrollView, KeyboardAvoidingView } from "react-native";
+import { Container, Content, Icon, Header, List, Right, Left, Button, Item, Input, Form, Label, Toast, Picker, Textarea } from 'native-base'
 import styles from '../../assets/styles'
 import i18n from '../../locale/i18n'
 import COLORS from '../../src/consts/colors'
@@ -102,9 +74,14 @@ class PaymentSteps extends Component {
             this.setState({  initMap: false, mapRegion: userLocation });
         }
 
+
         let getCity = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
         getCity += this.state.mapRegion.latitude + ',' + this.state.mapRegion.longitude;
         getCity += '&key=AIzaSyCJTSwkdcdRpIXp2yG7DfSRKFWxKhQdYhQ&language=ar&sensor=true';
+
+		axios.post(CONST.url + 'chapping', { city_id: this.state.cityId, lat: this.state.mapRegion.latitude, lng: this.state.mapRegion.longitude }).then(response => {
+			this.setState({ shippingPrice: response.data.data.chapping })
+		})
 
         try {
             const { data } = await axios.get(getCity);
@@ -140,8 +117,9 @@ class PaymentSteps extends Component {
         getCity += mapRegion.latitude + ',' + mapRegion.longitude;
         getCity += '&key=AIzaSyDYjCVA8YFhqN2pGiW4I8BCwhlxThs1Lc0&language=ar&sensor=true';
 
-        console.log('locations data', getCity);
-
+        axios.post(CONST.url + 'chapping', { city_id: this.state.cityId, lat: mapRegion.latitude, lng: mapRegion.longitude }).then(response => {
+        	this.setState({ shippingPrice: response.data.data.chapping })
+		})
 
         try {
             const { data } = await axios.get(getCity);
@@ -244,7 +222,7 @@ class PaymentSteps extends Component {
             headers: { Authorization: this.props.user.token },
             data: { cart_items: this.state.selectedItems, coupon_number: disCode }
         }).then(response => {
-            if (response.data.status)
+            if (response.data.status == 200)
                 this.setState({ totalPrice: response.data.data.totalPrice, couponId: response.data.data.coupon_id })
 
             Toast.show({
@@ -260,13 +238,11 @@ class PaymentSteps extends Component {
 		this.componentWillMount()
 	}
 
-
 	render() {
         const backgroundColor = this.state.backgroundColor.interpolate({
             inputRange: [0, 1],
             outputRange: ['rgba(0, 0, 0, 0)', '#00000099']
         });
-
 
         return (
             <Container>
@@ -306,7 +282,7 @@ class PaymentSteps extends Component {
 											<View style={[styles.itemView ,{borderColor: COLORS.mediumgray , width:'90%'}]}>
 												<Item floatingLabel style={[styles.loginItem,{width:'100%'}]} bordered>
 													<Label style={[styles.label , {backgroundColor: '#fff' , color:COLORS.mediumgray , top:15 , left:12}]}>{ i18n.t('disCode') }</Label>
-													<Input onChangeText={(disCode) => this.enterCode(disCode)} keyboardType={'number-pad'} style={[styles.input ,{color:COLORS.mediumgray}]}  />
+													<Input onChangeText={(disCode) => this.enterCode(disCode)} style={[styles.input ,{color:COLORS.mediumgray}]}  />
 												</Item>
 											</View>
 
@@ -347,24 +323,6 @@ class PaymentSteps extends Component {
 														<Image source={require('../../assets/images/right_arrow_drop.png')} style={styles.pickerImg} resizeMode={'contain'} />
 													</Item>
 												</View>
-												{/*<View>*/}
-												{/*<Item style={styles.itemPicker} regular >*/}
-												{/*<Label style={[styles.labelItem , {top:-18 , left:15 , position:'absolute'}]}>{ i18n.t('region') }</Label>*/}
-												{/*<Picker*/}
-												{/*mode="dropdown"*/}
-												{/*style={styles.picker}*/}
-												{/*placeholderStyle={{ color: "#acabae" }}*/}
-												{/*placeholderIconColor="#acabae"*/}
-												{/*selectedValue={this.state.selectedRegion}*/}
-												{/*onValueChange={(value) => this.setState({ selectedRegion: value })}*/}
-												{/*>*/}
-												{/*<Picker.Item label={ i18n.t('selectRegion') } value={null} />*/}
-												{/*<Picker.Item label={'المنصوره'} value={"1"} />*/}
-												{/*<Picker.Item label={'القاهره'} value={"2"} />*/}
-												{/*</Picker>*/}
-												{/*<Image source={require('../../assets/images/right_arrow_drop.png')} style={styles.pickerImg} resizeMode={'contain'} />*/}
-												{/*</Item>*/}
-												{/*</View>*/}
 												<Text style={[styles.type , styles.aSFS ,{color:COLORS.labelBackground , marginTop:15}]}>{ i18n.t('additionalOrders') }</Text>
 												<View>
 													<Item style={styles.itemPicker} regular >
@@ -499,7 +457,6 @@ class PaymentSteps extends Component {
 						</View>
 					</ImageBackground>
 				</Content>
-
             </Container>
 
         );

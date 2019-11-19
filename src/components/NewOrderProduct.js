@@ -195,7 +195,7 @@ class NewOrderProduct extends Component {
         return (
             <Container>
                 <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
-                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
+                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: '#00000099'}]}>
                         <Button transparent onPress={() => this.props.navigation.goBack()} style={styles.headerBtn}>
                             <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
                         </Button>
@@ -207,7 +207,7 @@ class NewOrderProduct extends Component {
                 <Content  contentContainerStyle={styles.flexGrow} style={styles.homecontent}  onScroll={e => this.headerScrollingAnimation(e) }>
                     <NavigationEvents onWillFocus={payload => this.onFocus(payload)} />
                     { this.renderLoader() }
-                    <Swiper horizontal={Platform.OS === 'ios' ? true :false} dotStyle={styles.eventdoteStyle2} activeDotStyle={styles.eventactiveDot2}
+                    <Swiper key={(this.props.newOrder.items).length} horizontal={Platform.OS === 'ios' ? true :false} dotStyle={styles.eventdoteStyle2} activeDotStyle={styles.eventactiveDot2}
                             containerStyle={styles.eventswiper2} showsButtons={false} autoplay={true}>
                         {
                             this.props.newOrder.items.map((item,i) => (
@@ -263,17 +263,22 @@ class NewOrderProduct extends Component {
                             <Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('deliveryPrice') } : </Text>
                             <Text style={[styles.type ,{color:COLORS.labelBackground}]}>{this.props.newOrder.shaping_price}</Text>
                         </View>
+
+						<View style={[styles.line , {marginVertical:0}]}/>
+						<View style={[styles.tklfa , { borderColor:COLORS.yellowBorder}]}>
+							<Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('vat') } : </Text>
+							<Text style={[styles.type ,{color:COLORS.labelBackground}]}>{this.props.newOrder.vat}</Text>
+						</View>
                         <View style={[styles.line , {marginVertical:0}]}/>
 
                         {
                             this.props.newOrder.status !=2?
                                <View style={[styles.directionColumnCenter , styles.w100]}>
-                                   <Animatable.View animation="flash" duration={1400}>
-                                       <Button  onPress={() => this.evaluateModal()} style={[styles.cartBtn , styles.mv35 ]}>
-                                           <Image source={require('../../assets/images/tick_white.png')} style={[styles.btnImg , styles.transform]} resizeMode={'contain'}/>
-                                           <Text style={styles.btnTxt}> { i18n.t('finishOrder') }</Text>
-                                       </Button>
-                                   </Animatable.View>
+								   <Animatable.View animation="flash" duration={1400}>
+									   <Button disabled={true} style={[styles.loginBtn , styles.mv35, {backgroundColor:'#e5e5e5'}]}>
+										   <Text style={[styles.btnTxt , {color:'#888888'}]}>{ i18n.t('hanging') }</Text>
+									   </Button>
+								   </Animatable.View>
 
                                    <View style={[styles.line , {marginVertical:0}]}/>
 

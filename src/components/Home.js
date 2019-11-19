@@ -22,6 +22,7 @@ import DrawerCustomization from '../routes/DrawerCustomization';
 import * as Animatable from 'react-native-animatable';
 import {getSweet , getNewlyAdded , getRecentOffers} from "../actions";
 import {connect} from "react-redux";
+import {NavigationEvents} from "react-navigation";
 
 
 const height = Dimensions.get('window').height;
@@ -95,6 +96,10 @@ class Home extends Component {
         this.RBSheet.close()
     }
 
+	onFocus(){
+        this.componentWillMount()
+    }
+
     render() {
 
         const backgroundColor = this.state.backgroundColor.interpolate({
@@ -105,7 +110,7 @@ class Home extends Component {
 
         return (
             <Container>
-
+				<NavigationEvents onWillFocus={() => this.onFocus()} />
                 <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
                     <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
                         <Button transparent onPress={() => this.RBSheet.open()} style={styles.headerBtn}>
@@ -120,7 +125,8 @@ class Home extends Component {
 
                 <Content  contentContainerStyle={styles.flexGrow} style={styles.homecontent}  onScroll={e => this.headerScrollingAnimation(e) }>
                     { this.renderLoader() }
-                    <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground}>
+
+                    <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={[styles.imageBackground, { width: null, height: null }]}>
                         <View style={styles.mT70}>
 
                             <View style={styles.inputView}>
@@ -137,12 +143,10 @@ class Home extends Component {
                                     {
                                         this.props.sweets.map((sweet, i) => (
 
-                                            <TouchableOpacity key={i} onPress={() => this.props.navigation.navigate('products' , { category_id: sweet.id , category_name: sweet.name})}
-                                                              style={styles.scrollParent}>
+                                            <TouchableOpacity key={i} onPress={() => this.props.navigation.navigate('products' , { category_id: sweet.id , category_name: sweet.name})} style={styles.scrollParent}>
                                                 <Image source={{ uri: sweet.image }}
                                                        style={styles.scrollImg} resizeMode={'cover'}/>
-                                                <Animatable.View animation="slideInUp" duration={1000}
-                                                                 style={styles.scrollText}>
+                                                <Animatable.View animation="slideInUp" duration={1000} style={styles.scrollText}>
                                                     <Text style={[styles.type]}>{sweet.name}</Text>
                                                 </Animatable.View>
                                             </TouchableOpacity>
@@ -160,30 +164,30 @@ class Home extends Component {
 
 													<Animatable.View key={i} animation="zoomIn" duration={1000}
 														style={styles.scrollParent2}>
-														<Image  source={{ uri: offer.image }}
-															style={styles.scrollImg2} resizeMode={'cover'}/>
-														<Image source={require('../../assets/images/orange_circle.png')}
-															style={styles.orangeCircle} resizeMode={'contain'}/>
-														<Text style={[styles.type, {color: COLORS.boldgray}]}>{offer.name}</Text>
-														<Text style={[styles.type, {color: COLORS.mediumgray}]}>{offer.category}</Text>
-														<CountDown
-															size={12}
-															until={offer.seconds}
-															onFinish={() => alert('Finished')}
-															style={styles.count}
-															digitStyle={{backgroundColor: 'transparent'}}
-															digitTxtStyle={styles.counterStyle}
-															separatorStyle={styles.counterStyle}
-															timeToShow={['H', 'M']}
-															timeLabels={{H: null, M: null}}
-															showSeparator
-														/>
-														<Text style={[styles.headerText, {color: COLORS.labelBackground}]}>{offer.price}</Text>
-														<Text style={styles.oldPrice}>{offer.old_price}</Text>
+														<TouchableOpacity onPress={() => this.props.navigation.navigate('product', { id: offer.id })} style={styles.scrollParent2}>
+                                                            <Image  source={{ uri: offer.image }}
+                                                                style={styles.scrollImg2} resizeMode={'cover'}/>
+                                                            {/*<Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'}/>*/}
+                                                            <Text style={[styles.type, {color: COLORS.boldgray}]}>{offer.name}</Text>
+                                                            <Text style={[styles.type, {color: COLORS.mediumgray}]}>{offer.category}</Text>
+                                                            <CountDown
+                                                                size={12}
+                                                                until={offer.seconds}
+                                                                onFinish={() => alert('Finished')}
+                                                                style={styles.count}
+                                                                digitStyle={{backgroundColor: 'transparent'}}
+                                                                digitTxtStyle={styles.counterStyle}
+                                                                separatorStyle={styles.counterStyle}
+                                                                timeToShow={['H', 'M']}
+                                                                timeLabels={{H: null, M: null}}
+                                                                showSeparator
+                                                            />
+                                                            <Text style={[styles.headerText, {color: COLORS.labelBackground}]}>{offer.price}</Text>
+                                                            <Text style={styles.oldPrice}>{offer.old_price}</Text>
+                                                        </TouchableOpacity>
 													</Animatable.View>
 												))
 											}
-
 										</ScrollView>
                                     </View>
                                 ) : ( <View /> ) }
@@ -192,25 +196,19 @@ class Home extends Component {
                                 <ScrollView style={{marginVertical:10}} horizontal={true} showsHorizontalScrollIndicator={false}>
 
                                     {
-
                                         this.props.newlyAdded.map((newly, i) => (
-
                                             <Animatable.View key={i} animation="zoomIn" duration={1000}>
                                                 <TouchableOpacity
                                                     onPress={() => this.props.navigation.navigate('product', { id: newly.id })}
                                                     style={styles.scrollParent2}>
-                                                    <Image source={{ uri: newly.image }}
-                                                           style={styles.scrollImg2} resizeMode={'cover'}/>
-                                                    <Image source={require('../../assets/images/orange_circle.png')}
-                                                           style={styles.orangeCircle} resizeMode={'contain'}/>
+                                                    <Image source={{ uri: newly.image }} style={styles.scrollImg2} resizeMode={'cover'}/>
+                                                    {/*<Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'}/>*/}
                                                     <Text style={[styles.type, {color: COLORS.boldgray}]}>{newly.name}</Text>
-                                                    <Text
-                                                        style={[styles.type, {color: COLORS.mediumgray}]}>{newly.category}</Text>
+                                                    <Text style={[styles.type, {color: COLORS.mediumgray}]}>{newly.category}</Text>
                                                     <Text style={[styles.headerText, {color: COLORS.labelBackground, marginTop: newly.old_price == newly.price ? 7 : 0}]}>{newly.price}</Text>
 													<Text style={styles.oldPrice}>{ newly.old_price != newly.price ? newly.old_price : ''}</Text>
                                                 </TouchableOpacity>
                                             </Animatable.View>
-
                                         ))
                                     }
                                 </ScrollView>

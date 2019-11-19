@@ -19,7 +19,7 @@ import * as Animatable from 'react-native-animatable';
 import {connect} from "react-redux";
 import {getBoxes} from "../actions";
 import boxes from "../reducers/BoxesReducer";
-
+import {NavigationEvents} from "react-navigation";
 
 
 const height = Dimensions.get('window').height;
@@ -57,7 +57,7 @@ class Boxes extends Component {
 
     renderItems = (item) => {
         return(
-            <TouchableOpacity onPress={() => this.props.navigation.navigate('boxProducts' , { box_id: item.id })} style={[styles.scrollParent , styles.touchProduct]}>
+            <TouchableOpacity onPress={() => this.props.navigation.navigate('product' , { id: item.id })} style={[styles.scrollParent , styles.touchProduct]}>
                 <Animatable.View animation="zoomIn" duration={1000}>
                     <Image source={{ uri: item.image }} style={[styles.scrollImg , styles.w100]} resizeMode={'cover'} />
                     <View style={styles.scrollText}>
@@ -102,8 +102,11 @@ class Boxes extends Component {
         }
     }
 
-    render() {
+	onFocus(){
+		this.componentWillMount()
+    }
 
+    render() {
         const backgroundColor = this.state.backgroundColor.interpolate({
             inputRange: [0, 1],
             outputRange: ['rgba(0, 0, 0, 0)', '#00000099']
@@ -112,6 +115,7 @@ class Boxes extends Component {
 
         return (
             <Container>
+				<NavigationEvents onWillFocus={() => this.onFocus()} />
                 <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
                     <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
                         <Right style={styles.flex0}>

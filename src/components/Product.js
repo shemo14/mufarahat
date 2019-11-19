@@ -41,8 +41,6 @@ class Product extends Component {
 
     componentWillReceiveProps(nextProps) {
         this.setState({ fav: nextProps.product.isLiked, starCount: nextProps.product.rate, loader: nextProps.loader });
-
-        console.log('producthhh', nextProps);
     }
 
     renderLoader(){
@@ -131,7 +129,7 @@ class Product extends Component {
         return (
             <Container>
                 <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
-                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
+                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: '#00000099'}]}>
                         <Button transparent onPress={() => this.props.navigation.goBack()} style={styles.headerBtn}>
                             <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
                         </Button>

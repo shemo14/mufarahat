@@ -48,7 +48,7 @@ class CartHeaderItem extends Component {
         return (
             <View style={[ styles.acorrHeader , {borderBottomRightRadius: this.props.expanded ? 0 : 20 }]}>
                 <View style={styles.directionRow}>
-                    <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircleItem} resizeMode={'contain'} />
+                    {/*<Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircleItem} resizeMode={'contain'} />*/}
                     <Image source={{ uri :this.props.item.image}} style={[styles.scrollImg2 , styles.mh10]} resizeMode={'cover'} />
                     <View>
                         <Text style={[styles.type ,{color:COLORS.boldgray}]}>{this.props.item.name}</Text>

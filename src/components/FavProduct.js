@@ -39,7 +39,7 @@ class FavProduct extends Component {
                 <TouchableOpacity onPress={() => this.props.navigation.navigate('product', { id: this.props.data.id })}>
                     <Image source={{uri:this.props.data.image}} style={styles.scrollImg2} resizeMode={'cover'} />
                 </TouchableOpacity>
-                <Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />
+                {/*<Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />*/}
                 <TouchableOpacity onPress={() => this.props.navigation.navigate('product' , { id: this.props.data.id })}>
                     <Text style={[styles.type ,{color:COLORS.boldgray}]}>{this.props.data.name}</Text>
                 </TouchableOpacity>

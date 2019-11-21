@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "mofrihat",
-    "slug": "mofrihat",
+    "name": "مفرحات | MOFRIHAT",
+    "slug": "MOFRIHAT",
     "privacy": "public",
     "sdkVersion": "34.0.0",
     "platforms": [
@@ -9,7 +9,7 @@
       "android",
       "web"
     ],
-    "version": "1.0.3",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -24,15 +24,20 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.aait.mofrehatclient"
+      "supportsTablet": false,
+      "bundleIdentifier": "com.aait.mofrehatclient",
+      "infoPlist": {
+        "NSCameraUsageDescription": "App need this permission to update profile photo.",
+        "NSPhotoLibraryAddUsageDescription": "App need this permission to update profile photo.",
+        "NSPhotoLibraryUsageDescription": "App need this permission to update profile photo."
+      }
     },
     "android": {
-      "package": "com.aait.mofrehatclient",
-      "versionCode": 5,
+      "package": "com.app.mofrehatclient",
+      "versionCode": 1,
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyDDGCkEv3jHUzSA1FVI26h_OadsG297Pe8"
+          "apiKey": "AIzaSyAgzmORJanbdUSBkC1U8gQx-DQHwOzX6CI"
         }
       }
     }

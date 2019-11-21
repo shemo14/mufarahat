@@ -12,6 +12,11 @@ import { store, persistedStore } from './src/store';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 
+// Keystore password: a1f8f61b85354793baaece9fbd921f67
+// Key alias:         QG1fc2hhbXMvbW9mcmloYXQ=
+// Key password:      46cc779d16724ffbbe1c96e9cf97d212
+
+
 
 export default class App extends React.Component {
 

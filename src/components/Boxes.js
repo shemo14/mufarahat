@@ -22,8 +22,9 @@ import boxes from "../reducers/BoxesReducer";
 import {NavigationEvents} from "react-navigation";
 
 
-const height = Dimensions.get('window').height;
-const IS_IPHONE_X = height === 812 || height === 896;
+const height        = Dimensions.get('window').height;
+const IS_IPHONE_X 	= height === 812 || height === 896;
+const is_iphone   	= Platform.OS === 'ios' ;
 
 
 class Boxes extends Component {
@@ -130,7 +131,7 @@ class Boxes extends Component {
                 <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
                     { this.renderLoader() }
                     <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground}>
-                        <View style={Platform.OS === 'ios' ? styles.mt90 : styles.mT70}>
+                        <View style={IS_IPHONE_X && is_iphone ? styles.mt15 : styles.mT70}>
                             <View style={styles.flatContainer}>
                                 <FlatList
                                     data={this.props.boxes}

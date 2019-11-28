@@ -238,7 +238,7 @@ class Register extends Component {
 									<View style={[ styles.itemView , styles.inputMarginTop ]}>
 										<Item floatingLabel style={styles.loginItem} bordered>
 											<Label style={styles.label}>{ i18n.t('phoneNumber') }</Label>
-											<Input onChangeText={(phone) => this.setState({phone})} keyboardType={'number-pad'} style={styles.input}  />
+											<Input maxLength={10} onChangeText={(phone) => this.setState({phone})} keyboardType={'number-pad'} style={styles.input}  />
 										</Item>
 									</View>
 
@@ -256,7 +256,7 @@ class Register extends Component {
 												mode="dropdown"
 												style={[styles.picker, { color: '#fff' } ]}
 												placeholderStyle={{ color: "#fff" }}
-												placeholderIconColor="#fff"
+												textStyle={{ color: '#fff', fontFamily: I18nManager.isRTL ? 'cairo' : 'openSans', }}
 												selectedValue={this.state.selectedCity}
 												onValueChange={(value) => this.setState({ selectedCity: value })}
 											>
@@ -297,7 +297,7 @@ class Register extends Component {
 
 									<TouchableOpacity onPress={() => this.setState({ checked: !this.state.checked })} style={[ styles.inputMarginTop ,styles.directionRow]}>
 										<CheckBox onPress={() => this.setState({ checked: !this.state.checked })} checked={this.state.checked} color={'transparent'} style={styles.checkBox} />
-										<Text style={styles.agreeText}>{ i18n.t('agreeTo') } <Text  style={styles.termsText}>{ i18n.t('terms') }</Text></Text>
+										<Text style={styles.agreeText}>{ i18n.t('agreeTo') } <Text onPress={() => this.props.navigation.navigate('rules', { navigate: 'register' })} style={styles.termsText}>{ i18n.t('terms') }</Text></Text>
 									</TouchableOpacity>
 
 									<View style={styles.loginBtnContainer}>

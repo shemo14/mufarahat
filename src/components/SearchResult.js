@@ -13,9 +13,8 @@ import searchResult from "../reducers/SearchReducer";
 
 
 const height = Dimensions.get('window').height;
-const IS_IPHONE_X = height === 812 || height === 896;
-
-
+const IS_IPHONE_X 	= height === 812 || height === 896;
+const is_iphone   	= Platform.OS === 'ios' ;
 
 
 class SearchResult extends Component {
@@ -29,8 +28,6 @@ class SearchResult extends Component {
             search:'',
         }
     }
-
-
 
     static navigationOptions = () => ({
         drawerLabel: () => null
@@ -57,7 +54,7 @@ class SearchResult extends Component {
     renderItems = (item) => {
         return(
             <Animatable.View animation="zoomIn" duration={1000} style={[ styles.touchProduct]}>
-                <TouchableOpacity onPress={() => this.props.navigation.navigate('product')} style={[styles.scrollParent2 , styles.touchProduct]}>
+                <TouchableOpacity onPress={() => this.props.navigation.navigate('product', { id: item.id })} style={[styles.scrollParent2 , styles.touchProduct]}>
                     <Image source={{ uri: item.image }} style={styles.scrollImg2} resizeMode={'cover'} />
                     {/*<Image source={require('../../assets/images/orange_circle.png')} style={styles.orangeCircle} resizeMode={'contain'} />*/}
                     <Text style={[styles.type ,{color:COLORS.boldgray}]}>{item.name}</Text>
@@ -131,7 +128,7 @@ class SearchResult extends Component {
                 <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
                     <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground}>
                         { this.renderLoader() }
-                        <View style={Platform.OS === 'ios' ? styles.mt90 : styles.mT70}>
+                        <View style={IS_IPHONE_X && is_iphone ? styles.mt15 : styles.mT70}>
                             <View style={styles.inputView}>
                                 <Item  style={styles.inputItem} bordered>
                                     <Input autoCapitalize='none' onSubmitEditing={() => this.submitSearch() } onChangeText={(search) => this.setState({ search })} placeholder={ i18n.t('searchProduct') } placeholderTextColor={'#acabae'} style={styles.modalInput}   />

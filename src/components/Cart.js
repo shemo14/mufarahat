@@ -33,18 +33,20 @@ import * as Animatable from 'react-native-animatable';
 import {getCart , profile , deleteCart , cartSearch , cartQuantity} from "../actions";
 import {connect} from "react-redux";
 import Reactotron from '../../ReactotronConfig'
+import {NavigationEvents} from "react-navigation";
 
-const height = Dimensions.get('window').height;
-const width  = Dimensions.get('window').width;
-const IS_IPHONE_X = height === 812 || height === 896;
+const height        = Dimensions.get('window').height;
+const width         = Dimensions.get('window').width;
+const IS_IPHONE_X 	= height === 812 || height === 896;
+const is_iphone   	= Platform.OS === 'ios' ;
 
 let selectedItems = [];
-let totalPrice= 0
+let totalPrice= 0;
 class Cart extends Component {
     constructor(props){
         super(props);
 
-        this.state={
+        this.state = {
             status: null,
             backgroundColor: new Animated.Value(0),
             availabel: 0,
@@ -115,6 +117,7 @@ class Cart extends Component {
 
     deleteCart(cart_id){
         const token =  this.props.user ?  this.props.user.token : null;
+        this.setState({ loader: true });
         this.props.deleteCart( this.props.lang  , cart_id , token)
     }
 
@@ -187,6 +190,11 @@ class Cart extends Component {
         return <View />
     }
 
+	onFocus(payload){
+		this.setState({ status: null, loader: true });
+		this.componentWillMount()
+	}
+
     render() {
         const backgroundColor = this.state.backgroundColor.interpolate({
             inputRange: [0, 1],
@@ -195,6 +203,7 @@ class Cart extends Component {
 
         return (
             <Container>
+				<NavigationEvents onWillFocus={payload => this.onFocus(payload)} />
                 <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
                     <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
                         <Right style={styles.flex0}>
@@ -208,8 +217,8 @@ class Cart extends Component {
                 </Header>
                 <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
                     { this.renderLoader() }
-                    <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground}>
-                        <View style={Platform.OS === 'ios' ? styles.mt90 : styles.mT70}>
+                    <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={[styles.imageBackground, { height: null }]}>
+                        <View style={IS_IPHONE_X && is_iphone ? styles.mt15 : styles.mT70}>
                             { this.renderNoData() }
                             { (this.props.cart).length > 0 ? (
                                 <View>
@@ -232,7 +241,7 @@ class Cart extends Component {
                                         </View>
                                         {
                                             this.state.hideCheck ?
-                                                <TouchableOpacity onPress={() => selectedItems.length > 0 ? this.props.navigation.navigate('paymentSteps' , {selectedItems , totalPrice}) : false } style={styles.doneStyle}>
+                                                <TouchableOpacity onPress={() => selectedItems.length > 0 ? this.props.navigation.navigate( this.props.user ? 'paymentSteps' : 'login' , {selectedItems , totalPrice}) : false } style={styles.doneStyle}>
                                                     <Text style={[styles.type , {color:COLORS.labelBackground}]}>{ i18n.t('done') }</Text>
                                                 </TouchableOpacity> : <View />
                                         }

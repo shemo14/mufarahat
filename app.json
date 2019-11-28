@@ -3,13 +3,13 @@
     "name": "مفرحات | MOFRIHAT",
     "slug": "MOFRIHAT",
     "privacy": "public",
-    "sdkVersion": "34.0.0",
+    "sdkVersion": "35.0.0",
     "platforms": [
       "ios",
       "android",
       "web"
     ],
-    "version": "1.0.5",
+    "version": "1.2.4",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -29,12 +29,13 @@
       "infoPlist": {
         "NSCameraUsageDescription": "App need this permission to update profile photo.",
         "NSPhotoLibraryAddUsageDescription": "App need this permission to update profile photo.",
+        "NSLocationWhenInUseUsageDescription": "App need this permission to determine your order location.",
         "NSPhotoLibraryUsageDescription": "App need this permission to update profile photo."
       }
     },
     "android": {
       "package": "com.app.mofrehatclient",
-      "versionCode": 1,
+      "versionCode": 8,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyAgzmORJanbdUSBkC1U8gQx-DQHwOzX6CI"

@@ -24,8 +24,6 @@ class CartBodyItem extends Component {
     });
 
 
-
-
     increment(){
         if(this.state.value < 5)
             this.setState({value: this.state.value + 1 })

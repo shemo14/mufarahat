@@ -16,7 +16,8 @@ import {connect} from "react-redux";
 import {NavigationEvents} from "react-navigation";
 
 const height = Dimensions.get('window').height;
-const IS_IPHONE_X = height === 812 || height === 896;
+const IS_IPHONE_X 	= height === 812 || height === 896;
+const is_iphone   	= Platform.OS === 'ios' ;
 
 class PaymentSteps extends Component {
     constructor(props){
@@ -115,7 +116,7 @@ class PaymentSteps extends Component {
 
         let getCity = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
         getCity += mapRegion.latitude + ',' + mapRegion.longitude;
-        getCity += '&key=AIzaSyDYjCVA8YFhqN2pGiW4I8BCwhlxThs1Lc0&language=ar&sensor=true';
+        getCity += '&key=AIzaSyCJTSwkdcdRpIXp2yG7DfSRKFWxKhQdYhQ&language=ar&sensor=true';
 
         axios.post(CONST.url + 'chapping', { city_id: this.state.cityId, lat: mapRegion.latitude, lng: mapRegion.longitude }).then(response => {
         	this.setState({ shippingPrice: response.data.data.chapping })
@@ -260,11 +261,11 @@ class PaymentSteps extends Component {
                 </Header>
 
 				<Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
-					<ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue.png') : require('../../assets/images/bg_blue2.png')} resizeMode={'cover'} style={styles.imageBackground}>
+					<ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue.png') : require('../../assets/images/bg_blue2.png')} resizeMode={'cover'} style={[styles.imageBackground, {height: null}]}>
 						<View style={[styles.finishOrder]}>
 							<Swiper scrollEnabled={true} horizontal={true} dotStyle={styles.orderdoteStyle} activeDotStyle={styles.orderactiveDot}
 								containerStyle={{width:'100%'}} showsButtons={true}
-								buttonWrapperStyle={[styles.directionRowCenter , { position:'absolute' , top:'37%' }]}
+								buttonWrapperStyle={[styles.directionRowCenter , { position:'absolute' , top: IS_IPHONE_X && is_iphone ? '5%' : '40%' }]}
 								prevButton={<Text></Text>}
 								nextButton={this.nextBtn()}
 								loop={false} autoplay={false}
@@ -273,7 +274,7 @@ class PaymentSteps extends Component {
 									<KeyboardAvoidingView behavior={'padding'} style={styles.w100}>
 										<View style={[styles.tklfa , { borderColor:COLORS.yellowBorder}]}>
 											<Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('fullOrderCost') } : </Text>
-											<Text style={[styles.type ,{color:COLORS.darkRed}]}>{this.state.totalPrice} { i18n.t('RS') }</Text>
+											<Text style={[styles.type ,{color:COLORS.darkRed}]}>{ this.state.totalPrice} { i18n.t('RS') }</Text>
 										</View>
 										<View style={[styles.line , {marginVertical:0}]}/>
 
@@ -290,7 +291,6 @@ class PaymentSteps extends Component {
 									</KeyboardAvoidingView>
 								</View>
 								<View style={styles.directionColumn}>
-
 									<KeyboardAvoidingView behavior={'padding'} style={styles.w100}>
 										<ScrollView>
 

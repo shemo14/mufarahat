@@ -222,15 +222,15 @@ class EditProfile extends Component {
 					</Animated.View>
 				</Header>
 				<Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent, {backgroundColor: '#fff'} ]}  onScroll={e => this.headerScrollingAnimation(e) }>
-					<ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue.png') : require('../../assets/images/bg_blue2.png')} resizeMode={'cover'} style={styles.imageBackground}>
-						{image != null?
+					<ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue.png') : require('../../assets/images/bg_blue2.png')} resizeMode={'cover'} style={[styles.imageBackground, { height: null }]}>
+						{image != null ?
 							<TouchableOpacity onPress={this._pickImage}  style={[styles.profileImgParent , styles.mtt50]}>
 								<Image source={{ uri: image }} style={[styles.profileImg]} resizeMode={'cover'} />
 							</TouchableOpacity>
 							:
 							<Animatable.View animation="zoomIn" duration={1000}>
 								<TouchableOpacity onPress={this._pickImage}  style={[styles.profileImgParent , styles.mtt50]}>
-									<Image source={{ uri: this.props.user.avatar }} style={[styles.profileImg]} resizeMode={'cover'} />
+									<Image source={{ uri: this.props.user.avatar }} style={[styles.profileImg, { borderRadius: 35 }]} resizeMode={'cover'} />
 									<View style={styles.opacityView}/>
 									<Image source={require('../../assets/images/upload.png')} style={styles.upload} resizeMode={'contain'} />
 								</TouchableOpacity>

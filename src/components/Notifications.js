@@ -1,5 +1,15 @@
 import React, { Component } from "react";
-import {View, Text, Image, TouchableOpacity, Dimensions, ImageBackground, Animated, I18nManager} from "react-native";
+import {
+	View,
+	Text,
+	Image,
+	TouchableOpacity,
+	Dimensions,
+	ImageBackground,
+	Animated,
+	I18nManager,
+	Platform
+} from "react-native";
 import {Container, Content, Icon, Header,Button} from 'native-base'
 import styles from '../../assets/styles'
 import i18n from '../../locale/i18n'
@@ -13,9 +23,10 @@ import axios from "axios";
 import CONST from "../consts";
 import {connect} from "react-redux";
 
-const height = Dimensions.get('window').height;
-const width  = Dimensions.get('window').width;
-const IS_IPHONE_X = height === 812 || height === 896;
+const height 		= Dimensions.get('window').height;
+const width  		= Dimensions.get('window').width;
+const IS_IPHONE_X 	= height === 812 || height === 896;
+const is_iphone   	= Platform.OS === 'ios' ;
 
 
 class Notifications extends Component {
@@ -36,15 +47,15 @@ class Notifications extends Component {
 	});
 
 	componentWillMount() {
-		this.setState({ loader: true })
+		this.setState({ loader: true });
 		axios({
 			url: CONST.url + 'notifications',
 			method: 'POST',
+			data: { lang: this.props.lang },
 			headers: { Authorization: this.props.user.token },
 		}).then(response => {
 			this.setState({ notifications: response.data.data, loader: false  });
 		});
-
 	}
 
 	setAnimate(availabel){
@@ -145,7 +156,7 @@ class Notifications extends Component {
 				<Content  contentContainerStyle={styles.flexGrow} style={styles.homecontent}  onScroll={e => this.headerScrollingAnimation(e) }>
 					{ this.renderLoader() }
 					<ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground}>
-						<View style={[ styles.mt90 , styles.ph25]}>
+						<View style={IS_IPHONE_X && is_iphone ? [ styles.mt15 , styles.ph25] : [ styles.mt90 , styles.ph25]}>
 							{ this.renderNoData() }
 							{
 								this.state.notifications.map(( notification, i ) => (

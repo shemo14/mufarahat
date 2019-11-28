@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import {
-    View,
-    Text,
-    Image,
-    TouchableOpacity,
-    Dimensions,
-    ImageBackground,
-    Animated,
-    ScrollView,
-    I18nManager
+	View,
+	Text,
+	Image,
+	TouchableOpacity,
+	Dimensions,
+	ImageBackground,
+	Animated,
+	ScrollView,
+	I18nManager, Platform
 } from "react-native";
 import {Container, Content,  Header, Button, Item, Input} from 'native-base'
 import FooterSection from './FooterSection';
@@ -25,7 +25,9 @@ import {connect} from "react-redux";
 import {NavigationEvents} from "react-navigation";
 
 
-const height = Dimensions.get('window').height;
+const height        = Dimensions.get('window').height;
+const IS_IPHONE_X 	= height === 812 || height === 896;
+const is_iphone   	= Platform.OS === 'ios' ;
 
 class Home extends Component {
     constructor(props){
@@ -127,7 +129,7 @@ class Home extends Component {
                     { this.renderLoader() }
 
                     <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={[styles.imageBackground, { width: null, height: null }]}>
-                        <View style={styles.mT70}>
+                        <View style={ IS_IPHONE_X && is_iphone ? styles.mt10 : styles.mT70}>
 
                             <View style={styles.inputView}>
                                 <Item  style={styles.inputItem} bordered>

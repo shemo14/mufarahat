@@ -6,15 +6,12 @@ import i18n from '../../locale/i18n'
 import COLORS from '../../src/consts/colors'
 import { DoubleBounce } from 'react-native-loader';
 import * as Animatable from 'react-native-animatable';
-import {getProducts} from "../actions";
+import {getProducts, setCart} from "../actions";
 import {connect} from "react-redux";
 
-
-
-const height = Dimensions.get('window').height;
-const IS_IPHONE_X = height === 812 || height === 896;
-
-
+const height        = Dimensions.get('window').height;
+const IS_IPHONE_X 	= height === 812 || height === 896;
+const is_iphone   	= Platform.OS === 'ios' ;
 
 class Products extends Component {
     constructor(props){
@@ -27,8 +24,6 @@ class Products extends Component {
             loader: true
         }
     }
-
-
 
     static navigationOptions = () => ({
         drawerLabel: () => null
@@ -49,10 +44,14 @@ class Products extends Component {
         }
     }
 
+	addToCart(id){
+		const token     =  this.props.user ?  this.props.user.token : null;
+		this.props.setCart( this.props.lang , id , 1 , token , this.props)
+	}
+
     componentWillReceiveProps(nextProps) {
         this.setState({ loader: nextProps.loader })
     }
-
 
     _keyExtractor = (item, index) => item.id;
 
@@ -66,6 +65,9 @@ class Products extends Component {
                     <Text style={[styles.type ,{color:COLORS.mediumgray}]}>{item.category}</Text>
                     <Text style={[styles.headerText ,{color:COLORS.labelBackground}]}>{item.price} { i18n.t('RS') }</Text>
                     <Text style={[styles.oldPrice, { marginTop: item.old_price == item.price ? 7 : 0 }]}>{ item.old_price != item.price ? item.old_price + ' ' + i18n.t('RS') : '' }</Text>
+					<TouchableOpacity onPress={() => this.addToCart(item.id)} style={{alignSelf:'flex-end'}}>
+						<Icon type={'AntDesign'} name={'shoppingcart'} style={{ fontSize: 25, color: this.state.fav? '#ff5252' : COLORS.lightgray }} />
+					</TouchableOpacity>
                 </TouchableOpacity>
             </Animatable.View>
         );
@@ -116,7 +118,7 @@ class Products extends Component {
         return (
             <Container>
                 <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
-                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
+                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor, top: -3}]}>
                         <Right style={styles.flex0}>
                             <Button transparent onPress={() => this.props.navigation.goBack()} style={styles.headerBtn}>
                                 <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
@@ -129,7 +131,7 @@ class Products extends Component {
                 <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
                     { this.renderLoader() }
                     <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground} >
-                        <View style={Platform.OS === 'ios' ? styles.mt90 : styles.mT70}>
+                        <View style={IS_IPHONE_X && is_iphone ? styles.mt15 : styles.mT70}>
                             <View style={styles.flatContainer}>
                                 <FlatList
                                     data={this.props.products}
@@ -141,7 +143,6 @@ class Products extends Component {
                         </View>
                     </ImageBackground>
                 </Content>
-
             </Container>
 
         );
@@ -149,11 +150,13 @@ class Products extends Component {
 }
 
 
-const mapStateToProps = ({ lang  , products}) => {
+const mapStateToProps = ({ lang  , products, addCart, profile}) => {
     return {
         lang: lang.lang,
         products: products.products,
-        loader: products.loader
+        user: profile.user,
+        loader: products.loader,
+		addCart: addCart.addCart,
     };
 };
-export default connect(mapStateToProps, {getProducts})(Products);
+export default connect(mapStateToProps, {getProducts, setCart})(Products);

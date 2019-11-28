@@ -16,7 +16,8 @@ import {NavigationEvents} from "react-navigation";
 
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
-const IS_IPHONE_X = height === 812 || height === 896;
+const IS_IPHONE_X 	= height === 812 || height === 896;
+const is_iphone   	= Platform.OS === 'ios' ;
 
 class Favourites extends Component {
     constructor(props){
@@ -61,8 +62,10 @@ class Favourites extends Component {
     _keyExtractor = (item, index) => item.id;
 
     renderItems = (item) => {
+        console.log(item.index);
+
         return(
-            <FavProduct data={item} navigation={this.props.navigation} />
+            <FavProduct data={item.item} navigation={this.props.navigation} />
         );
     }
 
@@ -132,7 +135,7 @@ class Favourites extends Component {
         return (
             <Container>
                 <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
-                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
+                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor:  IS_IPHONE_X && is_iphone ? 'transparent' : backgroundColor }]}>
                         <Button transparent onPress={() => this.RBSheet.open()} style={styles.headerBtn}>
                             <Image source={require('../../assets/images/menu.png')} style={[styles.headerMenu , styles.transform]} resizeMode={'contain'} />
                         </Button>
@@ -145,13 +148,13 @@ class Favourites extends Component {
                 <Content  contentContainerStyle={styles.flexGrow} style={styles.homecontent}  onScroll={e => this.headerScrollingAnimation(e) }>
                     <NavigationEvents onWillFocus={payload => this.onFocus(payload)} />
                     { this.renderLoader() }
-                    <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground}>
-                        <View style={Platform.OS === 'ios' ? styles.mt90 : styles.mT70}>
+                    <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={[styles.imageBackground, { height: null }]}>
+                        <View style={IS_IPHONE_X && is_iphone ? styles.mt15 : styles.mT70}>
                             { this.renderNoData() }
                             <View style={styles.flatContainer}>
                                 <FlatList
                                     data={this.props.favs}
-                                    renderItem={({item}) => this.renderItems(item)}
+                                    renderItem={(item) => this.renderItems(item)}
                                     numColumns={2}
                                     keyExtractor={this._keyExtractor}
                                     extraData={this.state.refreshed}

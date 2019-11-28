@@ -97,12 +97,15 @@ class Rules extends Component {
             inputRange: [0, 1],
             outputRange: ['rgba(0, 0, 0, 0)', '#00000099']
         });
+
+        const navigate = this.props.navigation.state.params.navigate;
+
         return (
             <Container>
                 <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
                     <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
                         <Right style={styles.flex0}>
-                            <Button transparent onPress={() => this.props.navigation.goBack()} style={styles.headerBtn}>
+                            <Button transparent onPress={() => this.props.navigation.navigate(navigate)} style={styles.headerBtn}>
                                 <Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
                             </Button>
                         </Right>

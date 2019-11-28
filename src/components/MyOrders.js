@@ -14,9 +14,10 @@ import {getOrders , profile , deleteOrder} from "../actions";
 import { Notifications } from 'expo';
 
 
-const height = Dimensions.get('window').height;
-const width  = Dimensions.get('window').width;
-const IS_IPHONE_X = height === 812 || height === 896;
+const height        = Dimensions.get('window').height;
+const width         = Dimensions.get('window').width;
+const IS_IPHONE_X 	= height === 812 || height === 896;
+const is_iphone   	= Platform.OS === 'ios' ;
 
 class MyOrders extends Component {
     constructor(props){
@@ -138,11 +139,8 @@ class MyOrders extends Component {
         if(images[1]){
             view = (
                 <View>
-                    <Image source={{ uri: images[0] }}
-                           style={[styles.scrollImg2, {position: 'absolute', left: 10}]}
-                           resizeMode={'cover'}/>
-                    <Image source={{ uri: images[1] }}
-                           style={styles.scrollImg2} resizeMode={'cover'}/>
+                    <Image source={{ uri: images[0] }} style={[styles.scrollImg2, {position: 'absolute', left: 10}]} resizeMode={'cover'}/>
+                    <Image source={{ uri: images[1] }} style={styles.scrollImg2} resizeMode={'cover'}/>
                 </View>
             )
         }
@@ -150,14 +148,9 @@ class MyOrders extends Component {
         if(images[2]){
             view = (
                 <View>
-                    <Image source={{ uri: images[0] }}
-                           style={[styles.scrollImg2, {position: 'absolute', left: 10}]}
-                           resizeMode={'cover'}/>
-                    <Image source={{ uri: images[1] }}
-                           style={styles.scrollImg2} resizeMode={'cover'}/>
-                    <Image ssource={{ uri: images[2] }}
-                           style={[styles.scrollImg2, {position: 'absolute', right: 10}]}
-                           resizeMode={'cover'}/>
+                    <Image source={{ uri: images[0] }} style={[styles.scrollImg2, {position: 'absolute', left: 10}]} resizeMode={'cover'}/>
+                    <Image source={{ uri: images[1] }} style={styles.scrollImg2} resizeMode={'cover'}/>
+                    <Image ssource={{ uri: images[2] }} style={[styles.scrollImg2, {position: 'absolute', right: 10}]} resizeMode={'cover'}/>
                 </View>
             )
         }
@@ -253,7 +246,7 @@ class MyOrders extends Component {
         return (
             <Container>
                 <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
-                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
+                    <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor, top: -3}]}>
                         <Button transparent onPress={() => this.RBSheet.open()} style={styles.headerBtn}>
                             <Image source={require('../../assets/images/menu.png')} style={[styles.headerMenu , styles.transform]} resizeMode={'contain'} />
                         </Button>
@@ -265,8 +258,8 @@ class MyOrders extends Component {
                 </Header>
                 <Content  contentContainerStyle={styles.flexGrow} style={styles.homecontent}  onScroll={e => this.headerScrollingAnimation(e) }>
                     { this.renderLoader() }
-                    <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={styles.imageBackground}>
-                        <View style={Platform.OS === 'ios' ? styles.mt90 : styles.mT70}>
+                    <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={[styles.imageBackground, { height: null } ]}>
+                        <View style={IS_IPHONE_X && is_iphone ? styles.mt15 : styles.mT70}>
 
                             <View style={styles.orderTabs}>
                                 <TouchableOpacity onPress={ () => this.getOrders(0)} style={this.state.orderType == 0 ? styles.activeTab : styles.normalTab}>

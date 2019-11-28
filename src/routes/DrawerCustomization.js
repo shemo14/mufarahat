@@ -25,6 +25,10 @@ class DrawerCustomization extends Component {
             return this.props.navigation.navigate(this.props.user ? tabName : 'login')
         }
 
+		if (tabName == 'rules'){
+			return this.props.navigation.navigate(tabName, { navigate: 'home' })
+        }
+
         this.props.navigation.navigate(tabName)
     }
 

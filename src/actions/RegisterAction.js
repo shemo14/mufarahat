@@ -20,8 +20,8 @@ export const register = (data, props) => {
 					city_id: data.selectedCity,
 					device_id,
 					lang: data.lang,
-					lat: data.mapRegion.latitude,
-					lng: data.mapRegion.longitude,
+					// lat: data.mapRegion.latitude,
+					// lng: data.mapRegion.longitude,
 				}
 			}).then(response => {
 				dispatch({type: 'register', payload: response.data});

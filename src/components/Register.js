@@ -128,38 +128,6 @@ class Register extends Component {
 
     async componentWillMount() {
 		this.props.getCities(this.props.lang);
-
-        let { status } = await Permissions.askAsync(Permissions.LOCATION);
-        if (status !== 'granted') {
-            alert('صلاحيات تحديد موقعك الحالي ملغاه');
-        }else {
-            const { coords: { latitude, longitude } } = await Location.getCurrentPositionAsync({});
-            const userLocation = { latitude, longitude };
-            this.setState({  initMap: false, mapRegion: userLocation });
-
-        }
-
-        let getCity = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
-        getCity += this.state.mapRegion.latitude + ',' + this.state.mapRegion.longitude;
-        getCity += '&key=AIzaSyDYjCVA8YFhqN2pGiW4I8BCwhlxThs1Lc0&language=ar&sensor=true';
-
-        console.log(getCity);
-
-        try {
-            const { data } = await axios.get(getCity);
-            this.setState({ city: data.results[0].formatted_address });
-
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    async componentDidMount(){
-        await Permissions.askAsync(Permissions.CAMERA);
-        await Permissions.askAsync(Permissions.CAMERA_ROLL);
-        const { coords: { latitude, longitude } } = await Location.getCurrentPositionAsync({});
-        const userLocation = { latitude, longitude };
-        this.setState({  initMap: false, mapRegion: userLocation });
     }
 
 	componentWillReceiveProps(nextProps) {
@@ -213,13 +181,12 @@ class Register extends Component {
     render() {
         return (
 
-			<Container style={styles.container}>
-
+			<Container style={[styles.container, { backgroundColor: '#0A8EBB' }]}>
 				<TouchableOpacity style={styles.authBack} onPress={() => this.props.navigation.goBack()}>
 					<Icon type={'FontAwesome'} name={'angle-right'} style={[styles.transform, styles.rightHeaderIcon]} />
 				</TouchableOpacity>
 
-				<Content contentContainerStyle={styles.flexGrow}>
+				<Content contentContainerStyle={styles.flexGrow} style={{ backgroundColor: '#0A8EBB' }}>
 					<View style={styles.imageBackgroundStyle}>
 						<Animatable.View animation="zoomIn" duration={1400}>
 							<Image source={require('../../assets/images/logo.png')} style={styles.logoStyle} resizeMode={'contain'} />

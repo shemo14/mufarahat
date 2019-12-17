@@ -1,4 +1,4 @@
 
 export default {
-	url: 'https://mofrihat.com/backend/api/',
+	url: 'https://shams.arabsdesign.com/mufarahat-backend/api/',
 };

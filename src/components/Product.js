@@ -28,7 +28,8 @@ class Product extends Component {
 			fav:false,
 			starCount:0,
 			value:1,
-			loader: true
+			loader: true,
+			isSubmitted: false
 		}
 	}
 
@@ -42,7 +43,7 @@ class Product extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		this.setState({ fav: nextProps.product.isLiked, starCount: nextProps.product.rate, loader: nextProps.loader });
+		this.setState({ fav: nextProps.product.isLiked, starCount: nextProps.product.rate, loader: nextProps.loader, isSubmitted: false });
 	}
 
 	renderLoader(){
@@ -53,6 +54,25 @@ class Product extends Component {
 				</View>
 			);
 		}
+	}
+
+	renderSubmit(){
+		if (this.state.isSubmitted){
+			return(
+				<View style={{ justifyContent: 'center', alignItems: 'center' }}>
+					<DoubleBounce size={20} color="#B7264B" style={{ alignSelf: 'center' }} />
+				</View>
+			)
+		}
+
+		return (
+			<Animatable.View animation="flash" duration={1400}>
+				<Button onPress={() => this.addToCart()} style={styles.cartBtn}>
+					<Image source={require('../../assets/images/shopping_cart.png')} style={[styles.btnImg , styles.transform]} resizeMode={'contain'}/>
+					<Text style={styles.btnTxt}> {i18n.t('addToCart')}</Text>
+				</Button>
+			</Animatable.View>
+		);
 	}
 
 	onStarRatingPress(rating) {
@@ -102,9 +122,11 @@ class Product extends Component {
 	}
 
 	addToCart(){
+		this.setState({ isSubmitted: true });
 		const token =  this.props.user ?  this.props.user.token : null;
 		const quantity = this.state.value ;
-		this.props.setCart( this.props.lang , this.props.navigation.state.params.id , quantity , token , this.props)
+		this.props.setCart( this.props.lang , this.props.navigation.state.params.id , quantity , token , this.props);
+		// this.props.navigation.navigate('cart');
 	}
 
 
@@ -200,12 +222,7 @@ class Product extends Component {
 									</TouchableOpacity>
 								</View>
 
-								<Animatable.View animation="flash" duration={1400}>
-									<Button onPress={() => this.addToCart()} style={styles.cartBtn}>
-										<Image source={require('../../assets/images/shopping_cart.png')} style={[styles.btnImg , styles.transform]} resizeMode={'contain'}/>
-										<Text style={styles.btnTxt}> {i18n.t('addToCart')}</Text>
-									</Button>
-								</Animatable.View>
+								{ this.renderSubmit() }
 
 								<View style={styles.line}/>
 								<View style={styles.desc}>

@@ -19,6 +19,7 @@ import Question from './Question'
 import _ from 'lodash'
 
 const height = Dimensions.get('window').height;
+const width = Dimensions.get('window').width;
 const IS_IPHONE_X = height === 812 || height === 896;
 
 let questions = [];
@@ -262,6 +263,16 @@ class NewOrderProduct extends Component {
 					{
 						this.props.newOrder ?
 							<View style={styles.prodDet}>
+								{
+									this.props.newOrder.coupon_name ?
+										<View style={{ width }}>
+											<View style={[styles.line , {marginVertical:0}]}/>
+											<View style={[styles.tklfa , { borderColor:COLORS.purpleBorder}]}>
+												<Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('disCode') } : </Text>
+												<Text style={[styles.type ,{color:COLORS.labelBackground}]}>{this.props.newOrder.coupon_name}</Text>
+											</View>
+										</View>	: <View />
+								}
 
 								<View style={[styles.line , {marginVertical:0}]}/>
 								<View style={[styles.tklfa , { borderColor:COLORS.yellowBorder}]}>

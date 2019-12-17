@@ -30,21 +30,9 @@ export default class App extends React.Component {
 	}
 
 	async componentWillMount() {
-		const { status: existingStatus } = await Permissions.getAsync(
-			Permissions.NOTIFICATIONS
-		);
-		let finalStatus = existingStatus;
-
-		if (existingStatus !== 'granted') {
-			const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-			finalStatus = status;
-		}
-
-		if (finalStatus !== 'granted') {
-			return;
-		}
-
-		let token = await Notifications.getExpoPushTokenAsync();
+		console.disableYellowBox = true;
+		if (Text.defaultProps == null) Text.defaultProps = {};
+		Text.defaultProps.allowFontScaling = false;
 
 		// AsyncStorage.clear()
 	}
@@ -57,14 +45,14 @@ export default class App extends React.Component {
 	}
 
 	async componentDidMount() {
-		if (Platform.OS === 'android') {
-			Notifications.createChannelAndroidAsync('orders', {
-				name: 'Chat messages',
-				sound: true,
-			});
-		}
-
-		Notifications.addListener(this.handleNotification);
+		// if (Platform.OS === 'android') {
+		// 	Notifications.createChannelAndroidAsync('orders', {
+		// 		name: 'Chat messages',
+		// 		sound: true,
+		// 	});
+		// }
+		//
+		// Notifications.addListener(this.handleNotification);
 
 		await Font.loadAsync({
 			cairo: require('./assets/fonts/Cairo-Regular.ttf'),

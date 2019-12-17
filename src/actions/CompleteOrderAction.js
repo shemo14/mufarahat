@@ -3,14 +3,14 @@ import CONST from "../consts";
 import {Toast} from "native-base";
 
 export const getCompleteOrder = (lang , city_id , coupon_id, lat , long, payment_type , packaging_id ,cart_items,
-                                 price ,  notes , address , token , props) => {
+                                 price ,  notes , address , token ,name, phone, props) => {
     return (dispatch) => {
             axios({
                 url: CONST.url + 'set_order',
                 method: 'POST',
                 headers: token != null ? {Authorization: token} : null,
                 data: {city_id , coupon_id, lat , long, payment_type , packaging_id ,cart_items,
-                    price ,  notes , address, lang}
+                    price ,  notes , address, lang, name, phone}
             }).then(response => {
                 dispatch({type: 'getCompleteOrder', payload: response.data});
                 Toast.show({

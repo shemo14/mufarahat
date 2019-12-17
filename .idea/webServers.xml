@@ -2,8 +2,8 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="a7a9ddd9-6070-43b2-be3a-fdbb40c624ce" name="mufarahat" url="http://mofrihat.com/">
-        <fileTransfer host="mofrihat.com" port="21" rootFolder="/public_html/backend">
+      <webServer id="a7a9ddd9-6070-43b2-be3a-fdbb40c624ce" name="mufarahat" url="https://shams.arabsdesign.com">
+        <fileTransfer host="shams.arabsdesign.com" port="21" rootFolder="/public_html/mufarahat-backend">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

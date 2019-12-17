@@ -18,7 +18,7 @@ export const profile = (token) => {
 }
 
 
-export const updateProfile = (data) => {
+export const updateProfile = (data, currentUser) => {
     return (dispatch) => {
         axios({
             url: CONST.url + 'update_profile',
@@ -35,7 +35,12 @@ export const updateProfile = (data) => {
             if (response.data.status == 200) {
                 const data = response.data.data;
                 dispatch({type: 'update_profile', data})
+            }else{
+				const data = currentUser;
+				dispatch({type: 'error_update_profile', data})
             }
+
+
             Toast.show({
                 text: response.data.msg,
                 type: response.data.status == 200 ? "success" : "danger",

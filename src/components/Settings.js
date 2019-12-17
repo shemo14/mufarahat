@@ -12,7 +12,7 @@ import {updateProfile , chooseLang} from "../actions";
 import * as Animatable from 'react-native-animatable';
 
 const height = Dimensions.get('window').height;
-const width = Dimensions.get('window').width;
+const width  = Dimensions.get('window').width;
 const IS_IPHONE_X = height === 812 || height === 896;
 
 
@@ -31,7 +31,7 @@ class Settings extends Component {
     }
 
     onChangeLang(value){
-        this.setState({ language: value })
+        this.setState({ language: value });
         if (this.props.lang != value){
             this.props.chooseLang(value);
         }

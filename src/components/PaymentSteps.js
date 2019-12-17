@@ -30,7 +30,7 @@ class PaymentSteps extends Component {
             disCode:null,
             selectedCountry: null,
             // selectedRegion: null,
-            selectedPayment: 1,
+            selectedPayment: 0,
             selectedPacking: null,
             msg:'',
             name: this.props.user.name,
@@ -66,23 +66,22 @@ class PaymentSteps extends Component {
         }
 
         let { status } = await Permissions.askAsync(Permissions.LOCATION);
-        console.log('status__', status);
+
         if (status !== 'granted') {
-            alert('صلاحيات تحديد موقعك الحالي ملغاه');
+			this.setState({  initMap: false });
+            // return;
         }else {
             const { coords: { latitude, longitude } } = await Location.getCurrentPositionAsync({});
             const userLocation = { latitude, longitude };
             this.setState({  initMap: false, mapRegion: userLocation });
         }
 
+		const lat  	= this.state.mapRegion ? this.state.mapRegion.latitude : 24.714194;
+		const long 	= this.state.mapRegion ? this.state.mapRegion.longitude : 46.670000;
 
         let getCity = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
-        getCity += this.state.mapRegion.latitude + ',' + this.state.mapRegion.longitude;
+        getCity += lat + ',' + long;
         getCity += '&key=AIzaSyCJTSwkdcdRpIXp2yG7DfSRKFWxKhQdYhQ&language=ar&sensor=true';
-
-		axios.post(CONST.url + 'chapping', { city_id: this.state.cityId, lat: this.state.mapRegion.latitude, lng: this.state.mapRegion.longitude }).then(response => {
-			this.setState({ shippingPrice: response.data.data.chapping })
-		})
 
         try {
             const { data } = await axios.get(getCity);
@@ -91,10 +90,14 @@ class PaymentSteps extends Component {
         } catch (e) {
             console.log(e);
         }
+
+		axios.post(CONST.url + 'chapping', { city_id: this.state.cityId, lat, lng: long }).then(response => {
+			this.setState({ shippingPrice: response.data.data.chapping })
+		})
     }
 
     selectedCity(value){
-        this.setState({selectedCountry : value})
+        this.setState({cityId : value})
         for(let i =0 ; i < (this.props.cities).length ; i++){
             if((this.props.cities)[i].id == value ){
                 this.setState({ shippingPrice: (this.props.cities)[i].shipping , cityId: (this.props.cities)[i].id})
@@ -116,7 +119,7 @@ class PaymentSteps extends Component {
 
         let getCity = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
         getCity += mapRegion.latitude + ',' + mapRegion.longitude;
-        getCity += '&key=AIzaSyCJTSwkdcdRpIXp2yG7DfSRKFWxKhQdYhQ&language=ar&sensor=true';
+        getCity += '&key=AIzaSyCJTSwkdcdRpIXp2yG7DfSRKFWxKhQdYhQ&language=' + this.props.lang + '&sensor=true';
 
         axios.post(CONST.url + 'chapping', { city_id: this.state.cityId, lat: mapRegion.latitude, lng: mapRegion.longitude }).then(response => {
         	this.setState({ shippingPrice: response.data.data.chapping })
@@ -157,21 +160,23 @@ class PaymentSteps extends Component {
 
 
     completeOrder(){
-        const token =  this.props.user ?  this.props.user.token : null;
-        const city_id = this.state.cityId ;
-        const coupon_id = this.state.couponId ;
-        const notes = this.state.msg ;
-        const payment_type = this.state.selectedPayment;
-        const packaging_id = this.state.selectedPacking;
-        const cart_items = JSON.stringify(this.props.navigation.state.params.selectedItems) ;
-        const price = Number(this.state.shippingPrice) + Number(this.state.totalPrice) ;
-        const lat = this.state.mapRegion.latitude;
-        const long= this.state.mapRegion.longitude;
-        const address= this.state.city;
-        this.props.getCompleteOrder( this.props.lang , city_id , coupon_id, lat , long, payment_type , packaging_id ,cart_items,
-            price ,  notes , address ,token ,this.props)
-    }
+        const token 		=  this.props.user ?  this.props.user.token : null;
+        const city_id 		= this.state.cityId ;
+        const coupon_id 	= this.state.couponId ;
+        const notes 		= this.state.msg ;
+        const payment_type 	= this.state.selectedPayment;
+        const packaging_id 	= this.state.selectedPacking;
+        const name 			= this.state.name;
+        const phone		 	= this.state.phone;
+        const cart_items 	= JSON.stringify(this.props.navigation.state.params.selectedItems) ;
+        const price 		= Number(this.state.shippingPrice) + Number(this.state.totalPrice) ;
+        const lat  			= this.state.mapRegion ? this.state.mapRegion.latitude : 24.714194;
+        const long 			= this.state.mapRegion ? this.state.mapRegion.longitude : 46.670000;
+        const address		= this.state.city != '' ? this.state.city : 'الرياض';
 
+        this.props.getCompleteOrder( this.props.lang , city_id , coupon_id, lat , long, payment_type , packaging_id ,cart_items,
+            price ,  notes , address ,token ,name , phone, this.props)
+    }
 
 
     setAnimate(availabel){
@@ -217,6 +222,7 @@ class PaymentSteps extends Component {
 
     enterCode(disCode){
         this.setState({ disCode })
+		if (disCode != '')
         axios({
             method: 'post',
             url: CONST.url + 'couponDiscountOnOrder',
@@ -224,12 +230,15 @@ class PaymentSteps extends Component {
             data: { cart_items: this.state.selectedItems, coupon_number: disCode }
         }).then(response => {
             if (response.data.status == 200)
-                this.setState({ totalPrice: response.data.data.totalPrice, couponId: response.data.data.coupon_id })
+                this.setState({ couponId: response.data.data.coupon_id });
+
+			this.setState({ totalPrice: response.data.data.totalPrice });
 
             Toast.show({
                 text: response.data.msg,
                 type: response.data.status == 200 ? "success" : "danger",
-                duration: 3000
+                duration: 4000,
+				position: 'top'
             });
         })
     }
@@ -244,6 +253,9 @@ class PaymentSteps extends Component {
             inputRange: [0, 1],
             outputRange: ['rgba(0, 0, 0, 0)', '#00000099']
         });
+
+		const lat  	= this.state.mapRegion ? this.state.mapRegion.latitude : 24.714194;
+		const long 	= this.state.mapRegion ? this.state.mapRegion.longitude : 46.670000;
 
         return (
             <Container>
@@ -263,7 +275,7 @@ class PaymentSteps extends Component {
 				<Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
 					<ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue.png') : require('../../assets/images/bg_blue2.png')} resizeMode={'cover'} style={[styles.imageBackground, {height: null}]}>
 						<View style={[styles.finishOrder]}>
-							<Swiper scrollEnabled={true} horizontal={true} dotStyle={styles.orderdoteStyle} activeDotStyle={styles.orderactiveDot}
+							<Swiper removeClippedSubviews={false} scrollEnabled={true} horizontal={true} dotStyle={styles.orderdoteStyle} activeDotStyle={styles.orderactiveDot}
 								containerStyle={{width:'100%'}} showsButtons={true}
 								buttonWrapperStyle={[styles.directionRowCenter , { position:'absolute' , top: IS_IPHONE_X && is_iphone ? '5%' : '40%' }]}
 								prevButton={<Text></Text>}
@@ -274,7 +286,7 @@ class PaymentSteps extends Component {
 									<KeyboardAvoidingView behavior={'padding'} style={styles.w100}>
 										<View style={[styles.tklfa , { borderColor:COLORS.yellowBorder}]}>
 											<Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('fullOrderCost') } : </Text>
-											<Text style={[styles.type ,{color:COLORS.darkRed}]}>{ this.state.totalPrice} { i18n.t('RS') }</Text>
+											<Text style={[styles.type ,{color:COLORS.darkRed}]}>{ Math.round(Number(this.state.totalPrice) * 10) / 10 } { i18n.t('RS') }</Text>
 										</View>
 										<View style={[styles.line , {marginVertical:0}]}/>
 
@@ -293,10 +305,9 @@ class PaymentSteps extends Component {
 								<View style={styles.directionColumn}>
 									<KeyboardAvoidingView behavior={'padding'} style={styles.w100}>
 										<ScrollView>
-
 											<View style={[styles.tklfa , { borderColor:COLORS.yellowBorder}]}>
 												<Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('fullOrderCost') } : </Text>
-												<Text style={[styles.type ,{color:COLORS.darkRed}]}>{this.state.totalPrice} { i18n.t('RS') }</Text>
+												<Text style={[styles.type ,{color:COLORS.darkRed}]}>{ Math.round(Number(this.state.totalPrice) * 10) / 10 } { i18n.t('RS') }</Text>
 											</View>
 
 											<View style={[styles.line , {marginVertical:0}]}/>
@@ -311,7 +322,7 @@ class PaymentSteps extends Component {
 															style={styles.picker}
 															placeholderStyle={{ color: "#acabae" }}
 															placeholderIconColor="#acabae"
-															selectedValue={this.state.selectedCountry}
+															selectedValue={this.state.cityId}
 															onValueChange={(value) => this.selectedCity(value)}
 														>
 															{
@@ -336,7 +347,6 @@ class PaymentSteps extends Component {
 															onValueChange={(value) => this.setState({ selectedPacking: value })}
 														>
 															<Picker.Item label={ i18n.t('chooseMethod') } value={null} />
-
 
 															{
 																this.props.packages.map((pack, i) => (
@@ -370,7 +380,7 @@ class PaymentSteps extends Component {
 
 											<View style={[styles.tklfa , { borderColor:COLORS.yellowBorder}]}>
 												<Text style={[styles.type ,{color:COLORS.boldgray}]}>{ i18n.t('fullOrderCost') } : </Text>
-												<Text style={[styles.type ,{color:COLORS.darkRed}]}>{this.state.totalPrice} { i18n.t('RS') }</Text>
+												<Text style={[styles.type ,{color:COLORS.darkRed}]}>{ Math.round(Number(this.state.totalPrice) * 10) / 10 } { i18n.t('RS') }</Text>
 											</View>
 											<View style={[styles.line , {marginVertical:0}]}/>
 											<View style={[styles.tklfa , { borderColor:COLORS.purpleBorder}]}>
@@ -393,13 +403,15 @@ class PaymentSteps extends Component {
 														<Input onChangeText={(phone) => this.setState({phone})} value={this.state.phone} keyboardType={'number-pad'} style={[styles.input ,{color:COLORS.mediumgray}]}  />
 													</Item>
 												</View>
-												<View onPress={() =>this._toggleModal()} style={[ styles.itemView , {borderColor: COLORS.mediumgray , marginTop:25} ]}>
-													<Item floatingLabel style={[styles.loginItem ,{width:'100%'}]} bordered onPress={() =>this._toggleModal()}>
-														<Label style={[styles.label , {backgroundColor: '#fff' , color:COLORS.mediumgray , top:15 , left:12}]}>{ i18n.t('deliveryPlace') }</Label>
-														<Input autoCapitalize='none'  disabled value={this.state.city}  style={[styles.input ,{color:COLORS.mediumgray}]}  />
-													</Item>
+
+												<TouchableOpacity onPress={() => this._toggleModal()} style={[ styles.itemView , {borderColor: COLORS.mediumgray , marginTop:25} ]}>
+													<TouchableOpacity floatingLabel style={[styles.loginItem ,{width:'100%'}]} bordered onPress={() =>this._toggleModal()}>
+														<Label style={[styles.label , {backgroundColor: '#fff' , color:COLORS.mediumgray , top:5 , left:12}]}>{ i18n.t('deliveryPlace') }</Label>
+														<Text style={[styles.input ,{color:COLORS.mediumgray, top: 10, left: -10, width: '100%' }]} >{(this.state.city).substring(1, 30)}...</Text>
+													</TouchableOpacity>
 													<Image onPress={() =>this._toggleModal()} source={require('../../assets/images/marker_gray.png')} style={{width:20 , height:20 , position:'absolute' , right:5 , zIndex:1 , top:'40%'}} resizeMode={'contain'} />
-												</View>
+												</TouchableOpacity>
+
 												<View>
 													<Item style={styles.itemPicker} regular >
 														<Label style={[styles.labelItem , {top:-18 , left:15 , position:'absolute'}]}>{ i18n.t('paymentMethod') }</Label>
@@ -434,14 +446,14 @@ class PaymentSteps extends Component {
 											<MapView
 												style={styles.mapView}
 												initialRegion={{
-													latitude: this.state.mapRegion.latitude,
-													longitude: this.state.mapRegion.longitude,
+													latitude: lat,
+													longitude: long,
 													latitudeDelta: 0.0922,
 													longitudeDelta: 0.0421,
 												}}
 											>
 												<MapView.Marker draggable
-													coordinate={this.state.mapRegion}
+													coordinate={{latitude: lat, longitude: long}}
 													onDragEnd={(e) =>  this._handleMapRegionChange(e.nativeEvent.coordinate)}
 												>
 													<Image source={require('../../assets/images/location_map.png')} resizeMode={'contain'} style={styles.mapMarker}/>

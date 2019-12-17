@@ -97,7 +97,7 @@ class EditProfile extends Component {
 		};
 
 		this.setState({ isSubmitted: true, profileType: 0 });
-		this.props.updateProfile(data);
+		this.props.updateProfile(data, this.props.user);
 	}
 
 	renderEditProfile(){
@@ -324,6 +324,7 @@ class EditProfile extends Component {
 const mapStateToProps = ({ profile, cities, lang }) => {
 	return {
 		user: profile.user,
+		notUpdated: profile.notUpdated,
 		cities: cities.cities,
 		lang: lang.lang,
 	};

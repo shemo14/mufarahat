@@ -23,6 +23,8 @@ import * as Animatable from 'react-native-animatable';
 import {getSweet , getNewlyAdded , getRecentOffers} from "../actions";
 import {connect} from "react-redux";
 import {NavigationEvents} from "react-navigation";
+import * as Permissions from 'expo-permissions';
+import * as Location from 'expo-location';
 
 
 const height        = Dimensions.get('window').height;
@@ -42,12 +44,29 @@ class Home extends Component {
     }
 
     componentWillMount() {
-        this.props.getSweet( this.props.lang )
-        this.props.getNewlyAdded( this.props.lang )
-        this.props.getRecentOffers( this.props.lang )
+        this.props.getSweet( this.props.lang );
+        this.props.getNewlyAdded( this.props.lang );
+        this.props.getRecentOffers( this.props.lang );
     }
 
-    renderLoader(){
+    async componentDidMount() {
+		const { status: existingStatus } = await Permissions.getAsync(
+			Permissions.LOCATION
+		);
+
+		let finalStatus = existingStatus;
+
+		if (existingStatus !== 'granted') {
+			let { status } = await Permissions.askAsync(Permissions.LOCATION);
+			finalStatus = status;
+		}
+
+		if (finalStatus !== 'granted') {
+			return;
+		}
+	}
+
+	renderLoader(){
         if (this.props.loader){
             return(
                 <View style={{ alignItems: 'center', justifyContent: 'center', height: height , alignSelf:'center' , backgroundColor:'#fff' , width:'100%' , position:'absolute' , zIndex:1  }}>

@@ -23,19 +23,17 @@ class CartBodyItem extends Component {
         drawerLabel: () => null
     });
 
-
     increment(){
-        if(this.state.value < 5)
-            this.setState({value: this.state.value + 1 })
+		this.setState({value: this.state.value + 1 })
         this.props.cartQuantity(this.props.item.cart_id , this.state.value +1)
     }
 
     decrement(){
-        if (this.state.value > 1)
-            this.setState({value: this.state.value - 1})
-        this.props.cartQuantity(this.props.item.cart_id , this.state.value -1)
+        if (this.state.value > 1){
+			this.setState({value: this.state.value - 1})
+			this.props.cartQuantity(this.props.item.cart_id , this.state.value -1)
+        }
     }
-
 
     render() {
         const totalPrice = this.props.item.price;

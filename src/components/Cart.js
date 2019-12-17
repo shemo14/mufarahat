@@ -41,7 +41,7 @@ const IS_IPHONE_X 	= height === 812 || height === 896;
 const is_iphone   	= Platform.OS === 'ios' ;
 
 let selectedItems = [];
-let totalPrice= 0;
+let totalPrice = 0;
 class Cart extends Component {
     constructor(props){
         super(props);
@@ -54,7 +54,8 @@ class Cart extends Component {
             search:'',
             hideCheck:false,
             checkAll:false,
-            loader: true
+            loader: true,
+            cart: []
         }
     }
 
@@ -63,12 +64,16 @@ class Cart extends Component {
     });
 
     componentWillMount() {
-        const token =  this.props.user ?  this.props.user.token : null;
+		selectedItems   = [];
+		totalPrice      = 0;
+
+        const token     =  this.props.user ?  this.props.user.token : null;
         this.props.getCart( this.props.lang  , token )
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({ loader: nextProps.loader });
+        this.setState({ loader: nextProps.loader, cart: nextProps.cart });
+        console.log(nextProps.cart)
     }
 
     pushSelectedChecks(cart_id , price){
@@ -99,7 +104,7 @@ class Cart extends Component {
     renderLoader(){
         if (this.state.loader){
             return(
-                <View style={{ alignItems: 'center', justifyContent: 'center', height: height , alignSelf:'center' , backgroundColor:'#fff' , width:'100%' , position:'absolute' , zIndex:1  }}>
+                <View style={{ alignItems: 'center', justifyContent: 'center', height , alignSelf:'center' , backgroundColor:'#fff' , width:'100%' , position:'absolute' , zIndex:1  }}>
                     <DoubleBounce size={20} color={COLORS.labelBackground} />
                 </View>
             );
@@ -122,6 +127,7 @@ class Cart extends Component {
     }
 
     cartQuantity(cart_id , quantity){
+        this.setState({ loader: true });
         const token =  this.props.user ?  this.props.user.token : null;
         this.props.cartQuantity( this.props.lang  , cart_id , token , quantity)
     }
@@ -192,6 +198,7 @@ class Cart extends Component {
 
 	onFocus(payload){
 		this.setState({ status: null, loader: true });
+		selectedItems = [];
 		this.componentWillMount()
 	}
 
@@ -203,6 +210,7 @@ class Cart extends Component {
 
         return (
             <Container>
+				{ this.renderLoader() }
 				<NavigationEvents onWillFocus={payload => this.onFocus(payload)} />
                 <Header style={[styles.header , styles.plateformMarginTop]} noShadow>
                     <Animated.View style={[styles.headerView  , styles.animatedHeader ,{ backgroundColor: backgroundColor}]}>
@@ -216,7 +224,6 @@ class Cart extends Component {
                     </Animated.View>
                 </Header>
                 <Content  contentContainerStyle={styles.flexGrow} style={[styles.homecontent ]}  onScroll={e => this.headerScrollingAnimation(e) }>
-                    { this.renderLoader() }
                     <ImageBackground source={  I18nManager.isRTL ? require('../../assets/images/bg_blue_big.png') : require('../../assets/images/bg_blue_big2.png')} resizeMode={'cover'} style={[styles.imageBackground, { height: null }]}>
                         <View style={IS_IPHONE_X && is_iphone ? styles.mt15 : styles.mT70}>
                             { this.renderNoData() }
@@ -251,7 +258,7 @@ class Cart extends Component {
 
                             <View style={styles.flatContainer}>
                                 <Accordion
-                                    dataArray={this.props.cart}
+                                    dataArray={this.state.cart}
                                     animation={true}
                                     expanded={true}
                                     renderHeader={(item, expanded) => this._renderHeader(item, expanded , this.state.hideCheck)}
